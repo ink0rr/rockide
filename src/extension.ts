@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { jsonSelector } from "./constants";
 import { JsonProvider } from "./providers/json";
 import { MolangProvider } from "./providers/molang";
 import { Rockide } from "./rockide";
@@ -21,15 +22,15 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("rockide.reloadWorkspace", () => rockide.indexWorkspace()),
 
     // json
-    vscode.languages.registerCompletionItemProvider(jsonProvider.selector, jsonProvider, "."),
-    vscode.languages.registerDefinitionProvider(jsonProvider.selector, jsonProvider),
+    vscode.languages.registerCompletionItemProvider(jsonSelector, jsonProvider, "."),
+    vscode.languages.registerDefinitionProvider(jsonSelector, jsonProvider),
     vscode.workspace.onDidChangeTextDocument((e) => jsonProvider.onDidChangeTextDocument(e)),
     vscode.workspace.onDidCreateFiles((e) => jsonProvider.onDidCreateFiles(e)),
     vscode.workspace.onDidRenameFiles((e) => jsonProvider.onDidRenameFiles(e)),
     vscode.workspace.onDidDeleteFiles((e) => jsonProvider.onDidDeleteFiles(e)),
 
     // molang
-    vscode.languages.registerDocumentSemanticTokensProvider(molangProvider.selector, molangProvider, legend),
+    vscode.languages.registerDocumentSemanticTokensProvider(jsonSelector, molangProvider, legend),
   );
 }
 
