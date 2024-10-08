@@ -10,9 +10,9 @@ export function createContext(document: vscode.TextDocument, position: vscode.Po
   const node = location.previousNode ?? NullNode;
   const path = location.path;
   const nodeValue = JSONC.getNodeValue(node) ?? node.value ?? "";
-  if (typeof nodeValue !== "string") {
-    throw new Error("nodeValue is not a string");
-  }
+  // if (typeof nodeValue !== "string") {
+  // throw new Error("nodeValue is not a string");
+  // }
   return {
     document,
     position,

@@ -21,6 +21,7 @@ export class Rockide {
   files = new Map<string, JSONC.Node>();
   assets: AssetData[] = [];
   jsonAssets: AssetData[] = [];
+  mcfunctions = new Map<string, string>(); // path, content
 
   async checkWorkspace() {
     for (const path of await vscode.workspace.findFiles("**/manifest.json")) {
@@ -44,18 +45,25 @@ export class Rockide {
     const workspace = vscode.workspace.workspaceFolders[0];
     this.files.clear();
     this.assets = [];
-    vscode.window.withProgress({ title: "Indexing", location: vscode.ProgressLocation.Window }, async (progress) => {
-      const fileList = await vscode.workspace.findFiles(`**/${projectGlob}/**/*.json`, "{.*,build}/**");
-      const increment = 100 / fileList.length;
-      for (const uri of fileList) {
-        progress.report({ message: relative(workspace.uri.fsPath, uri.fsPath), increment });
-        await this.indexFile(uri);
-      }
-      const assetList = await vscode.workspace.findFiles(`**/${rpGlob}/**/*.{png,tga,fsb,ogg,wav}`, "{.*,build}/**");
-      for (const uri of assetList) {
-        this.indexAsset(uri);
-      }
-    });
+    vscode.window.withProgress(
+      { title: "Indexing", location: vscode.ProgressLocation.Notification },
+      async (progress) => {
+        const fileList = await vscode.workspace.findFiles(`**/${projectGlob}/**/*.json`, "{.*,build}/**");
+        const increment = 100 / fileList.length;
+        for (const uri of fileList) {
+          progress.report({ message: relative(workspace.uri.fsPath, uri.fsPath), increment });
+          await this.indexFile(uri);
+        }
+        const mcfunctionList = await vscode.workspace.findFiles(`**/${bpGlob}/functions/*.mcfunction`, "{.*,build}/**");
+        for (const uri of mcfunctionList) {
+          this.indexMcfunction(uri);
+        }
+        const assetList = await vscode.workspace.findFiles(`**/${rpGlob}/**/*.{png,tga,fsb,ogg,wav}`, "{.*,build}/**");
+        for (const uri of assetList) {
+          this.indexAsset(uri);
+        }
+      },
+    );
   }
 
   async indexFile(uri: vscode.Uri) {
@@ -78,6 +86,11 @@ export class Rockide {
       }
       break;
     }
+  }
+
+  async indexMcfunction(uri: vscode.Uri) {
+    const document = await vscode.workspace.openTextDocument(uri);
+    this.mcfunctions.set(uri.fsPath, document.getText());
   }
 
   indexAsset(uri: vscode.Uri) {

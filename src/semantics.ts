@@ -47,4 +47,6 @@ export const legend = new vscode.SemanticTokensLegend([
   "regexp",
   "string",
   "variable",
+  "comment",
+  "keyword",
 ]);
