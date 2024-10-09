@@ -8,6 +8,7 @@ import { ParamInfo, ParamType } from "./types";
  * - Handle regex & parse location (~~~, ^^^, etc)
  * - idk why multiline doesn't work
  * - create separate context for non json files
+ * - Merge signature location params
  */
 
 /**
@@ -131,20 +132,28 @@ function getParamCompletion(info: ParamInfo): CompletionItem | CompletionItem[] 
 
 export function commandCompletion(ctx: RockideContext): CompletionItem[] {
   const { document, position } = ctx;
-  console.log("d");
   const line = document.lineAt(position.line).text;
-  console.log(line);
   for (const { command, overloads } of commands) {
     if (line.startsWith("#")) {
       return [];
     }
     const match = line.match(new RegExp(`(\\b|\\/)${command}\\b`));
-    console.log(match);
     if (match) {
       if (!overloads) {
         return [];
       }
-      const [, ...args] = line.slice(match[0].length).split(/\s+/g);
+      const [, ...args] = line
+        .slice(match[0].length)
+        .split(/\s+/g)
+        .map((arg) => {
+          const ok = new RegExp(/((~|\^)-?\d+())/g).test(arg);
+          if (!ok) {
+            return arg;
+          }
+          return arg.match(/((~|\^)-?\d+(\.\d+)?)/g) || [];
+        })
+        .flat();
+      console.log(args);
       if (args.length === 1) {
         return overloads
           .map((overload) => getParamCompletion(overload.params[0]))
@@ -207,7 +216,17 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
         ];
         return signature;
       }
-      const [, ...args] = line.slice(match[0].length).split(/\s+/g);
+      const [, ...args] = line
+        .slice(match[0].length)
+        .split(/\s+/g)
+        .map((arg) => {
+          const ok = new RegExp(/((~|\^)-?\d+())/g).test(arg);
+          if (!ok) {
+            return arg;
+          }
+          return arg.match(/((~|\^)-?\d+(\.\d+)?)/g) || [];
+        })
+        .flat();
       let tempOverloads = [...overloads];
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
