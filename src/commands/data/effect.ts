@@ -1,3 +1,4 @@
+import { spellEffects } from "../../literals/spell_effects";
 import { CommandInfo, ParamType } from "../types";
 
 const effect: CommandInfo = {
@@ -7,8 +8,8 @@ const effect: CommandInfo = {
     {
       params: [
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<target>",
+          type: ParamType.entitySelector,
         },
         {
           value: ["clear"],
@@ -19,60 +20,25 @@ const effect: CommandInfo = {
     {
       params: [
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<target>",
+          type: ParamType.entitySelector,
         },
         {
-          value: [
-            "wither",
-            "speed",
-            "slowness",
-            "haste",
-            "mining_fatigue",
-            "strength",
-            "instant_health",
-            "instant_damage",
-            "jump_boost",
-            "nausea",
-            "regeneration",
-            "resistance",
-            "fire_resistance",
-            "water_breathing",
-            "invisibility",
-            "blindness",
-            "night_vision",
-            "hunger",
-            "weakness",
-            "poison",
-            "health_boost",
-            "absorption",
-            "saturation",
-            "levitation",
-            "fatal_poison",
-            "conduit_power",
-            "slow_falling",
-            "bad_omen",
-            "village_hero",
-            "darkness",
-            "trial_omen",
-            "wind_charged",
-            "weaving",
-            "oozing",
-            "infested",
-            "raid_omen",
-          ],
-          type: ParamType.keyword,
+          value: spellEffects,
+          signatureValue: "<effect>",
+          type: ParamType.enum,
         },
         {
-          value: "int",
-          type: ParamType.keyword,
+          value: "[seconds]",
+          type: ParamType.number,
         },
         {
-          value: "int",
-          type: ParamType.keyword,
+          value: "[amplifier]",
+          type: ParamType.number,
         },
         {
           value: ["true", "false"],
+          signatureValue: "[hideParticles]",
           type: ParamType.keyword,
         },
       ],

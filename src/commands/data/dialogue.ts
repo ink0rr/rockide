@@ -11,16 +11,16 @@ const dialogue: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
+          value: "<npc>",
+          type: ParamType.entitySelector,
+        },
+        {
+          value: "<player>",
           type: ParamType.playerSelector,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
-        },
-        {
-          value: "todo",
-          type: ParamType.keyword,
+          value: "<sceneName>",
+          type: ParamType.string,
         },
       ],
     },
@@ -31,15 +31,15 @@ const dialogue: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<npc>",
+          type: ParamType.entitySelector,
         },
         {
-          value: "todo",
-          type: ParamType.keyword,
+          value: "<sceneName>",
+          type: ParamType.string,
         },
         {
-          value: "selector",
+          value: "<player>",
           type: ParamType.playerSelector,
         },
       ],

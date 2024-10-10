@@ -1,5 +1,5 @@
 import { blockIdentifier } from "../../literals/block_identifier";
-import { Parameter } from "../shared";
+import { Parameter } from "../parameter";
 import { CommandInfo, ParamType } from "../types";
 
 const clone: CommandInfo = {

@@ -11,11 +11,13 @@ const event: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<target>",
+          type: ParamType.entitySelector,
         },
         {
+          // todo: defined entity events
           value: ["entity_events", "minecraft:on_spawned"],
+          signatureValue: "<eventName>",
           type: ParamType.keyword,
         },
       ],

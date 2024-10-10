@@ -1,4 +1,4 @@
-import { Parameter } from "../shared";
+import { Parameter } from "../parameter";
 import { CommandInfo, ParamInfo, ParamType } from "../types";
 
 const presetParam: ParamInfo = {

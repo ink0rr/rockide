@@ -1,6 +1,7 @@
 import { CompletionItem, CompletionItemKind, MarkdownString, SignatureHelp } from "vscode";
 import { commands } from ".";
 import { RockideContext } from "../context";
+import execute from "./data/execute";
 import { ParamInfo, ParamType } from "./types";
 
 /**
@@ -32,6 +33,8 @@ function getParamValue(info: ParamInfo) {
       return "0.0";
     case ParamType.location:
       return ["~", "^", "0"];
+    case ParamType.executeChainedOption:
+      return execute.overloads!.map((overload) => overload.params[0].value).flat();
     default:
       return info.value;
   }
@@ -142,7 +145,6 @@ function getParamCompletion(info: ParamInfo): CompletionItem | CompletionItem[] 
     return completion;
   };
 
-  // return Array.isArray(label) ? label.map(createCompletionItem) : createCompletionItem(label);
   return createCompletionItem(label);
 }
 
@@ -169,7 +171,6 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
           return arg.match(/((~|\^)-?\d+(\.\d+)?)/g) || [];
         })
         .flat();
-      console.log(args);
       if (args.length === 1) {
         return overloads
           .map((overload) => getParamCompletion(overload.params[0]))
@@ -177,14 +178,31 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
           .filter((v, i, s) => s.findIndex((obj) => JSON.stringify(obj) === JSON.stringify(v)) === i);
       }
       let tempOverloads = [...overloads];
+      let executeIndex = 0;
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
+        // Reset tempOverloads for exeucte index
+        if (executeIndex !== 0 && i === executeIndex + 1) {
+          tempOverloads = tempOverloads.filter((overload) =>
+            getParamRegex(overload.params[i - executeIndex - 1]).test(args[i - 1]),
+          );
+        }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
-            if (!overload.params[i]) {
+            let param = overload.params[i];
+            // execute index
+            if (executeIndex !== -1) {
+              param = overload.params[i - executeIndex];
+            }
+            // execute check
+            if (param.type === ParamType.executeChainedOption) {
+              executeIndex = i;
+              return true;
+            }
+            if (!param) {
               return false;
             }
-            const regex = getParamRegex(overload.params[i]);
+            const regex = getParamRegex(param);
             if (i === args.length - 1) {
               return !regex.test(arg);
             }
@@ -193,9 +211,12 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
             console.error(e);
           }
         });
+        if (executeIndex !== 0 && i === executeIndex) {
+          tempOverloads = [...overloads];
+        }
       }
       const completions = tempOverloads
-        .map((overload) => getParamCompletion(overload.params[args.length - 1]))
+        .map((overload) => getParamCompletion(overload.params[args.length - 1 - executeIndex]))
         .flat()
         .filter((v, i, s) => s.findIndex((obj) => JSON.stringify(obj) === JSON.stringify(v)) === i);
       return completions;
@@ -244,14 +265,31 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
         })
         .flat();
       let tempOverloads = [...overloads];
+      let executeIndex = 0;
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
+        // Reset tempOverloads for exeucte index
+        if (executeIndex !== 0 && i === executeIndex + 1) {
+          tempOverloads = tempOverloads.filter((overload) =>
+            getParamRegex(overload.params[i - executeIndex - 1]).test(args[i - 1]),
+          );
+        }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
-            if (!overload.params[i]) {
+            let param = overload.params[i];
+            // execute index
+            if (executeIndex !== -1) {
+              param = overload.params[i - executeIndex];
+            }
+            // execute check
+            if (param.type === ParamType.executeChainedOption) {
+              executeIndex = i;
+              return true;
+            }
+            if (!param) {
               return false;
             }
-            const regex = getParamRegex(overload.params[i]);
+            const regex = getParamRegex(param);
             if (i === args.length - 1) {
               return !regex.test(arg);
             }
@@ -260,6 +298,9 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
             console.error(e);
           }
         });
+        if (executeIndex !== 0 && i === executeIndex) {
+          tempOverloads = [...overloads];
+        }
       }
       const sigs = tempOverloads.map((overload) => {
         const params = overload.params.map((param) => {
@@ -285,76 +326,11 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
           }),
         };
       });
-      // const sigs: SignatureInformation[] = [];
-      // tempOverloads.forEach((overload) => {
-      //   const params = overload.params.map((param) => {
-      //     let label = param.value;
-      //     if (Array.isArray(label)) {
-      //       label = label.join("|");
-      //     }
-      //     return {
-      //       label,
-      //       documentation: param.documentation,
-      //     };
-      //   });
-
-      //   sigs.push({
-      //     label: `${command} ${params.map((param) => param.label).join(" ")}`,
-      //     documentation,
-      //     parameters: params.map((param) => {
-      //       let label = param.label;
-      //       if (Array.isArray(label)) {
-      //         label = label.join("|");
-      //       }
-      //       return {
-      //         label,
-      //         documentation: param.documentation,
-      //       };
-      //     }),
-      //   });
-      // });
       signature.activeSignature = 0;
-      signature.activeParameter = args.length - 1;
+      signature.activeParameter = args.length - 1 - executeIndex;
       signature.signatures = sigs;
       return signature;
     }
   }
   return;
-}
-
-export namespace Parameter {
-  export const position: ParamInfo[] = [
-    {
-      value: "<x>",
-      type: ParamType.location,
-    },
-    {
-      value: "<y>",
-      type: ParamType.location,
-    },
-    {
-      value: "<z>",
-      type: ParamType.location,
-    },
-  ];
-  export const rotXY: ParamInfo[] = [
-    {
-      value: "<pitch>",
-      type: ParamType.pitch,
-    },
-    {
-      value: "<yaw>",
-      type: ParamType.yaw,
-    },
-  ];
-  export const rotYX: ParamInfo[] = [
-    {
-      value: "<yaw>",
-      type: ParamType.yaw,
-    },
-    {
-      value: "<pitch>",
-      type: ParamType.pitch,
-    },
-  ];
 }

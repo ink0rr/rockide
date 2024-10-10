@@ -8,6 +8,7 @@ const difficulty: CommandInfo = {
       params: [
         {
           value: ["normal", "peaceful", "easy", "hard", "p", "e", "n", "h"],
+          signatureValue: "<difficulty>",
           type: ParamType.keyword,
         },
       ],
@@ -15,8 +16,11 @@ const difficulty: CommandInfo = {
     {
       params: [
         {
-          value: "int",
-          type: ParamType.keyword,
+          value: ["0", "1", "2", "3"],
+          // documentation: "0: peaceful, 1: easy, 2: normal, 3: hard",
+          documentation: ["peaceful", "easy", "normal", "hard"],
+          signatureValue: "<difficulty>",
+          type: ParamType.enum,
         },
       ],
     },

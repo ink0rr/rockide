@@ -1,3 +1,5 @@
+import { blockIdentifier } from "../../literals/block_identifier";
+import { Parameter } from "../parameter";
 import { CommandInfo, ParamType } from "../types";
 
 const execute: CommandInfo = {
@@ -11,12 +13,12 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<origin>",
+          type: ParamType.entitySelector,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -27,12 +29,12 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<origin>",
+          type: ParamType.entitySelector,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -44,11 +46,12 @@ const execute: CommandInfo = {
         },
         {
           value: ["overworld", "nether", "the_end"],
+          signatureValue: "<dimension>",
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -58,13 +61,10 @@ const execute: CommandInfo = {
           value: ["positioned"],
           type: ParamType.keyword,
         },
+        ...Parameter.position,
         {
-          value: "position",
-          type: ParamType.keyword,
-        },
-        {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -79,12 +79,12 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<origin>",
+          type: ParamType.entitySelector,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -94,17 +94,10 @@ const execute: CommandInfo = {
           value: ["rotated"],
           type: ParamType.keyword,
         },
+        ...Parameter.rotYX,
         {
-          value: "rot",
-          type: ParamType.keyword,
-        },
-        {
-          value: "rot",
-          type: ParamType.keyword,
-        },
-        {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -119,12 +112,12 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<origin>",
+          type: ParamType.entitySelector,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -134,13 +127,10 @@ const execute: CommandInfo = {
           value: ["facing"],
           type: ParamType.keyword,
         },
+        ...Parameter.position,
         {
-          value: "position",
-          type: ParamType.keyword,
-        },
-        {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -155,16 +145,16 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<origin>",
+          type: ParamType.entitySelector,
         },
         {
           value: ["eyes", "feet"],
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -175,12 +165,12 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "todo",
-          type: ParamType.keyword,
+          value: ["x", "y", "z", "xy", "xz", "yz", "xyz"],
+          type: ParamType.enum,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -195,8 +185,8 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -210,17 +200,14 @@ const execute: CommandInfo = {
           value: ["block"],
           type: ParamType.keyword,
         },
+        ...Parameter.position,
         {
-          value: "position",
-          type: ParamType.keyword,
+          value: blockIdentifier,
+          type: ParamType.enum,
         },
         {
-          value: ["minecraft:dirt", "dirt", "todo"],
-          type: ParamType.keyword,
-        },
-        {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -234,21 +221,18 @@ const execute: CommandInfo = {
           value: ["block"],
           type: ParamType.keyword,
         },
+        ...Parameter.position,
         {
-          value: "position",
-          type: ParamType.keyword,
-        },
-        {
-          value: ["minecraft:dirt", "dirt", "todo"],
-          type: ParamType.keyword,
+          value: blockIdentifier,
+          type: ParamType.enum,
         },
         {
           value: "blockState",
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -279,8 +263,8 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -299,8 +283,8 @@ const execute: CommandInfo = {
           type: ParamType.playerSelector,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -315,8 +299,8 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<player>",
+          type: ParamType.selectorWildcard,
         },
         {
           value: [],
@@ -327,16 +311,16 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<player>",
+          type: ParamType.selectorWildcard,
         },
         {
           value: [],
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -351,8 +335,8 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<player>",
+          type: ParamType.selectorWildcard,
         },
         {
           value: [],
@@ -367,8 +351,8 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_EXECUTECHAINEDOPTION_0"],
-          type: ParamType.keyword,
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
         },
       ],
     },
@@ -379,8 +363,8 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: ["unknown_CODEBUILDERARGS"],
-          type: ParamType.keyword,
+          value: ["<subcommand>"],
+          type: ParamType.subcommnad,
         },
       ],
     },
