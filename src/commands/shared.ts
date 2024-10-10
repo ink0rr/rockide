@@ -148,14 +148,17 @@ function getParamCompletion(info: ParamInfo): CompletionItem | CompletionItem[] 
   return createCompletionItem(label);
 }
 
-export function commandCompletion(ctx: RockideContext): CompletionItem[] {
+export function commandCompletion(ctx: RockideContext, overLine?: string): CompletionItem[] {
   const { document, position } = ctx;
-  const line = document.lineAt(position.line).text;
+  const line = overLine ?? document.lineAt(position.line).text;
+  if (overLine) {
+    console.log("overLine", overLine);
+  }
   for (const { command, overloads } of commands) {
     if (line.startsWith("#")) {
       return [];
     }
-    const match = line.match(new RegExp(`(\\b|\\/)${command}\\b`));
+    const match = line.match(new RegExp(`^${command}\\b`));
     if (match) {
       if (!overloads) {
         return [];
@@ -179,6 +182,7 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
       }
       let tempOverloads = [...overloads];
       let executeIndex = 0;
+      let runIndex = 0;
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
         // Reset tempOverloads for exeucte index
@@ -189,7 +193,15 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
         }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
+            if (runIndex !== 0) {
+              return true;
+            }
             const param = overload.params[i - executeIndex];
+            // run subcommand check
+            if (param.type === ParamType.subcommand) {
+              runIndex = i;
+              return true;
+            }
             // execute check
             if (param.type === ParamType.executeChainedOption) {
               executeIndex = i;
@@ -210,6 +222,14 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
         if (executeIndex !== 0 && i === executeIndex) {
           tempOverloads = [...overloads];
         }
+        if (runIndex !== 0 && i === runIndex) {
+          const line = args.slice(runIndex).join(" ");
+          return commandCompletion(ctx, line);
+        }
+      }
+      if (runIndex !== 0) {
+        const line = args.slice(runIndex).join(" ");
+        return commandCompletion(ctx, line);
       }
       const completions = tempOverloads
         .map((overload) => getParamCompletion(overload.params[args.length - 1 - executeIndex]))
@@ -226,9 +246,9 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
   });
 }
 
-export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined {
+export function signatureHelper(ctx: RockideContext, overLine?: string): SignatureHelp | undefined {
   const { document, position } = ctx;
-  const line = document.lineAt(position.line).text;
+  const line = overLine ?? document.lineAt(position.line).text;
   const signature: SignatureHelp = new SignatureHelp();
 
   for (const { command, overloads, documentation } of commands) {
@@ -262,6 +282,7 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
         .flat();
       let tempOverloads = [...overloads];
       let executeIndex = 0;
+      let runIndex = 0;
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
         // Reset tempOverloads for exeucte index
@@ -272,8 +293,16 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
         }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
+            if (runIndex !== 0) {
+              return true;
+            }
             const param = overload.params[i - executeIndex];
             // execute check
+            // run subcommand check
+            if (param.type === ParamType.subcommand) {
+              runIndex = i;
+              return true;
+            }
             if (param.type === ParamType.executeChainedOption) {
               executeIndex = i;
               return true;
@@ -292,6 +321,10 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
         });
         if (executeIndex !== 0 && i === executeIndex) {
           tempOverloads = [...overloads];
+        }
+        if (runIndex !== 0 && i === runIndex) {
+          const line = args.slice(runIndex).join(" ");
+          return signatureHelper(ctx, line);
         }
       }
       const sigs = tempOverloads.map((overload) => {

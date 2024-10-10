@@ -34,5 +34,5 @@ export enum ParamType {
   yaw = "yaw",
   pitch = "pitch",
   executeChainedOption = "executeChainedOption",
-  subcommnad = "subcommand",
+  subcommand = "subcommand",
 }

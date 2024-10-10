@@ -364,7 +364,7 @@ const execute: CommandInfo = {
         },
         {
           value: ["<subcommand>"],
-          type: ParamType.subcommnad,
+          type: ParamType.subcommand,
         },
       ],
     },
