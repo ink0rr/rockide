@@ -150,6 +150,7 @@ const execute: CommandInfo = {
         },
         {
           value: ["eyes", "feet"],
+          signatureValue: "<anchor>",
           type: ParamType.keyword,
         },
         {
@@ -166,6 +167,7 @@ const execute: CommandInfo = {
         },
         {
           value: ["x", "y", "z", "xy", "xz", "yz", "xyz"],
+          signatureValue: "<axes>",
           type: ParamType.enum,
         },
         {
@@ -182,6 +184,7 @@ const execute: CommandInfo = {
         },
         {
           value: ["eyes", "feet"],
+          signatureValue: "<anchor>",
           type: ParamType.keyword,
         },
         {
@@ -203,27 +206,7 @@ const execute: CommandInfo = {
         ...Parameter.position,
         {
           value: blockIdentifier,
-          type: ParamType.enum,
-        },
-        {
-          value: ["<chainedCommand>"],
-          type: ParamType.executeChainedOption,
-        },
-      ],
-    },
-    {
-      params: [
-        {
-          value: ["if", "unless"],
-          type: ParamType.keyword,
-        },
-        {
-          value: ["block"],
-          type: ParamType.keyword,
-        },
-        ...Parameter.position,
-        {
-          value: blockIdentifier,
+          signatureValue: "<block>",
           type: ParamType.enum,
         },
         {
@@ -243,23 +226,35 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
+          value: ["block"],
+          type: ParamType.keyword,
+        },
+        ...Parameter.position,
+        {
+          value: blockIdentifier,
+          signatureValue: "<block>",
+          type: ParamType.enum,
+        },
+        {
+          value: ["<chainedCommand>"],
+          type: ParamType.executeChainedOption,
+        },
+      ],
+    },
+    {
+      params: [
+        {
+          value: ["if", "unless"],
+          type: ParamType.keyword,
+        },
+        {
           value: ["blocks"],
           type: ParamType.keyword,
         },
-        {
-          value: "position",
-          type: ParamType.keyword,
-        },
-        {
-          value: "position",
-          type: ParamType.keyword,
-        },
-        {
-          value: "position",
-          type: ParamType.keyword,
-        },
+        ...Parameter.position,
         {
           value: ["masked", "all"],
+          signatureValue: "<scanMode>",
           type: ParamType.keyword,
         },
         {
@@ -279,8 +274,8 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "selector",
-          type: ParamType.playerSelector,
+          value: "<target>",
+          type: ParamType.entitySelector,
         },
         {
           value: ["<chainedCommand>"],
@@ -299,24 +294,24 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "<player>",
+          value: "<target>",
           type: ParamType.selectorWildcard,
         },
         {
-          value: [],
-          type: ParamType.keyword,
+          value: ["todo:objective name"],
+          type: ParamType.string,
         },
         {
           value: ["%=", "*=", "+=", "-=", "/=", "<", "=", ">", "><", "matches"],
           type: ParamType.keyword,
         },
         {
-          value: "<player>",
+          value: "<source>",
           type: ParamType.selectorWildcard,
         },
         {
-          value: [],
-          type: ParamType.keyword,
+          value: ["todo:objective name"],
+          type: ParamType.string,
         },
         {
           value: ["<chainedCommand>"],
@@ -335,12 +330,12 @@ const execute: CommandInfo = {
           type: ParamType.keyword,
         },
         {
-          value: "<player>",
+          value: "<target>",
           type: ParamType.selectorWildcard,
         },
         {
-          value: [],
-          type: ParamType.keyword,
+          value: ["todo:objective name"],
+          type: ParamType.string,
         },
         {
           value: ["matches"],

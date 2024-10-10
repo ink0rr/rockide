@@ -167,11 +167,11 @@ export function commandCompletion(ctx: RockideContext, overLine?: string): Compl
         .slice(match[0].length)
         .split(/\s+/g)
         .map((arg) => {
-          const ok = new RegExp(/((~|\^)-?\d+())/g).test(arg);
+          const ok = new RegExp(/((~|\^)-?(\d+)?())/g).test(arg);
           if (!ok) {
             return arg;
           }
-          return arg.match(/((~|\^)-?\d+(\.\d+)?)/g) || [];
+          return arg.match(/((~|\^)-?(\d+)?(\.\d+)?)/g) || [];
         })
         .flat();
       if (args.length === 1) {
@@ -193,7 +193,7 @@ export function commandCompletion(ctx: RockideContext, overLine?: string): Compl
         }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
-            if (runIndex !== 0) {
+            if (runIndex !== 0 || executeIndex !== 0) {
               return true;
             }
             const param = overload.params[i - executeIndex];
@@ -273,11 +273,11 @@ export function signatureHelper(ctx: RockideContext, overLine?: string): Signatu
         .slice(match[0].length)
         .split(/\s+/g)
         .map((arg) => {
-          const ok = new RegExp(/((~|\^)-?\d+())/g).test(arg);
+          const ok = new RegExp(/((~|\^)-?(\d+)?())/g).test(arg);
           if (!ok) {
             return arg;
           }
-          return arg.match(/((~|\^)-?\d+(\.\d+)?)/g) || [];
+          return arg.match(/((~|\^)-?(\d+)?(\.\d+)?)/g) || [];
         })
         .flat();
       let tempOverloads = [...overloads];
@@ -293,7 +293,7 @@ export function signatureHelper(ctx: RockideContext, overLine?: string): Signatu
         }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
-            if (runIndex !== 0) {
+            if (runIndex !== 0 || executeIndex !== 0) {
               return true;
             }
             const param = overload.params[i - executeIndex];
