@@ -189,11 +189,7 @@ export function commandCompletion(ctx: RockideContext): CompletionItem[] {
         }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
-            let param = overload.params[i];
-            // execute index
-            if (executeIndex !== -1) {
-              param = overload.params[i - executeIndex];
-            }
+            const param = overload.params[i - executeIndex];
             // execute check
             if (param.type === ParamType.executeChainedOption) {
               executeIndex = i;
@@ -276,11 +272,7 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
         }
         tempOverloads = tempOverloads.filter((overload) => {
           try {
-            let param = overload.params[i];
-            // execute index
-            if (executeIndex !== -1) {
-              param = overload.params[i - executeIndex];
-            }
+            const param = overload.params[i - executeIndex];
             // execute check
             if (param.type === ParamType.executeChainedOption) {
               executeIndex = i;
