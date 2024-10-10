@@ -16,7 +16,7 @@ export type ParamInfo = {
   signatureValue?: string;
   type: ParamType;
   required?: boolean;
-  documentation?: string | MarkdownString;
+  documentation?: string | MarkdownString | string[] | MarkdownString[];
 };
 
 export enum ParamType {
@@ -33,4 +33,5 @@ export enum ParamType {
   vector3 = "vector3",
   yaw = "yaw",
   pitch = "pitch",
+  executeChainedOption = "executeChainedOption",
 }

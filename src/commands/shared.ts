@@ -58,9 +58,9 @@ function getParamRegex(info: ParamInfo): RegExp {
       return /((~|\^|\d+)\.?)/g;
     default: {
       if (Array.isArray(info.value)) {
-        return new RegExp(info.value.join("|"), "g");
+        return new RegExp(`\\b${info.value.join("|")}\\b`, "g");
       }
-      return new RegExp(`${info.value}\\b`, "g");
+      return new RegExp(`\\b${info.value}\\b`, "g");
     }
   }
 }
@@ -120,14 +120,30 @@ function getParamCompletion(info: ParamInfo): CompletionItem | CompletionItem[] 
     }
   };
   const label = getParamValue(info);
-  const createCompletionItem = (value: string) => {
-    const documentation = getDocs(info.type, value) ?? info.documentation;
+  const createCompletionItem = (value: string[] | string) => {
+    if (Array.isArray(value)) {
+      return value.map((v, i) => {
+        let documentation = getDocs(info.type, v) ?? info.documentation;
+        if (Array.isArray(documentation)) {
+          documentation = documentation[i];
+        }
+        const completion = new CompletionItem(v, getKind(info.type));
+        completion.documentation = documentation;
+        return completion;
+      });
+    }
+    let documentation = getDocs(info.type, value) ?? info.documentation;
     const completion = new CompletionItem(value, getKind(info.type));
-    completion.documentation = documentation;
+    if (Array.isArray(documentation)) {
+      documentation = documentation[0];
+    } else {
+      completion.documentation = documentation;
+    }
     return completion;
   };
 
-  return Array.isArray(label) ? label.map(createCompletionItem) : createCompletionItem(label);
+  // return Array.isArray(label) ? label.map(createCompletionItem) : createCompletionItem(label);
+  return createCompletionItem(label);
 }
 
 export function commandCompletion(ctx: RockideContext): CompletionItem[] {
@@ -261,9 +277,10 @@ export function signatureHelper(ctx: RockideContext): SignatureHelp | undefined 
           label: `${command} ${params.map((param) => param.label).join(" ")}`,
           documentation,
           parameters: params.map(({ documentation, label }) => {
+            const docs = Array.isArray(documentation) ? documentation.join("|") : documentation;
             return {
               label,
-              documentation,
+              documentation: docs,
             };
           }),
         };
