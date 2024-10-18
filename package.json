@@ -87,19 +87,8 @@
     ],
     "jsonValidation": [
       {
-        "fileMatch": [
-          "behavior_pack/texts/languages.{json,jsonc,json5}",
-          "*BP/texts/languages.{json,jsonc,json5}",
-          "BP_*/texts/languages.{json,jsonc,json5}",
-          "*bp/texts/languages.{json,jsonc,json5}",
-          "bp_*/texts/languages.{json,jsonc,json5}",
-          "resource_pack/texts/languages.{json,jsonc,json5}",
-          "*RP/texts/languages.{json,jsonc,json5}",
-          "RP_*/texts/languages.{json,jsonc,json5}",
-          "*rp/texts/languages.{json,jsonc,json5}",
-          "rp_*/texts/languages.{json,jsonc,json5}"
-        ],
-        "url": "./schemas/language/languages.json"
+        "fileMatch": "skin_pack/skins.{json,jsonc,json5}",
+        "url": "https://ink0rr.github.io/rockide-schemas/skins/main.json"
       },
       {
         "fileMatch": [
@@ -114,7 +103,7 @@
           "*rp/manifest.{json,jsonc,json5}",
           "rp_*/manifest.{json,jsonc,json5}"
         ],
-        "url": "./schemas/general/manifest.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/manifest/main.json"
       },
       {
         "fileMatch": [
@@ -124,7 +113,7 @@
           "*rp/animation_controllers/**/*.{json,jsonc,json5}",
           "rp_*/animation_controllers/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/animation_controllers/animation_controller.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/clientAnimationController/main.json"
       },
       {
         "fileMatch": [
@@ -134,7 +123,7 @@
           "*rp/animations/**/*.{json,jsonc,json5}",
           "rp_*/animations/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/animations/actor_animation.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/clientAnimation/main.json"
       },
       {
         "fileMatch": [
@@ -144,7 +133,7 @@
           "*rp/attachables/**/*.{json,jsonc,json5}",
           "rp_*/attachables/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/attachables/attachables.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/attachable/main.json"
       },
       {
         "fileMatch": [
@@ -154,7 +143,7 @@
           "*rp/block_culling/**/*.{json,jsonc,json5}",
           "rp_*/block_culling/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/block_culling/block_culling.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/blockCulling/main.json"
       },
       {
         "fileMatch": [
@@ -164,7 +153,7 @@
           "*rp/biomes_client.{json,jsonc,json5}",
           "rp_*/biomes_client.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/biomes_client.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/biomesClient/main.json"
       },
       {
         "fileMatch": [
@@ -174,7 +163,7 @@
           "*rp/blocks.{json,jsonc,json5}",
           "rp_*/blocks.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/blocks.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/clientBlock/main.json"
       },
       {
         "fileMatch": [
@@ -184,7 +173,7 @@
           "*rp/entity/**/*.{json,jsonc,json5}",
           "rp_*/entity/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/entity/entity.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/clientEntity/main.json"
       },
       {
         "fileMatch": [
@@ -194,7 +183,7 @@
           "*rp/fogs/**/*.{json,jsonc,json5}",
           "rp_*/fogs/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/fog/fog.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/fog/main.json"
       },
       {
         "fileMatch": [
@@ -204,7 +193,7 @@
           "*rp/textures/flipbook_textures.{json,jsonc,json5}",
           "rp_*/textures/flipbook_textures.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/textures/flipbook_textures.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/flipbookTexture/main.json"
       },
       {
         "fileMatch": [
@@ -214,17 +203,7 @@
           "*rp/textures/item_texture.{json,jsonc,json5}",
           "rp_*/textures/item_texture.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/textures/item_texture.json"
-      },
-      {
-        "fileMatch": [
-          "resource_pack/textures/textures_list.{json,jsonc,json5}",
-          "*RP/textures/textures_list.{json,jsonc,json5}",
-          "RP_*/textures/textures_list.{json,jsonc,json5}",
-          "*rp/textures/textures_list.{json,jsonc,json5}",
-          "rp_*/textures/textures_list.{json,jsonc,json5}"
-        ],
-        "url": "./schemas/resource/textures/textures_list.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/itemTexture/main.json"
       },
       {
         "fileMatch": [
@@ -234,7 +213,7 @@
           "*rp/textures/**/*.texture_set.{json,jsonc,json5}",
           "rp_*/textures/**/*.texture_set.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/textures/texture_set.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/textureSet/main.json"
       },
       {
         "fileMatch": [
@@ -244,7 +223,7 @@
           "*rp/items/**/*.{json,jsonc,json5}",
           "rp_*/items/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/items/items.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/clientItem/main.json"
       },
       {
         "fileMatch": [
@@ -254,7 +233,7 @@
           "*rp/models/entity/**/*.{json,jsonc,json5}",
           "rp_*/models/entity/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/models/entity/model_entity.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/geometry/main.json"
       },
       {
         "fileMatch": [
@@ -264,7 +243,7 @@
           "*rp/materials/**/*.material",
           "rp_*/materials/**/*.material"
         ],
-        "url": "./schemas/resource/materials/materials.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/material/main.json"
       },
       {
         "fileMatch": [
@@ -274,7 +253,7 @@
           "*rp/sounds/music_definitions.{json,jsonc,json5}",
           "rp_*/sounds/music_definitions.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/sounds/music_definitions.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/musicDefinition/main.json"
       },
       {
         "fileMatch": [
@@ -284,7 +263,7 @@
           "*rp/particles/**/*.{json,jsonc,json5}",
           "rp_*/particles/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/particles/particles.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/particle/main.json"
       },
       {
         "fileMatch": [
@@ -294,7 +273,7 @@
           "*rp/render_controllers/**/*.{json,jsonc,json5}",
           "rp_*/render_controllers/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/render_controllers/render_controllers.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/renderController/main.json"
       },
       {
         "fileMatch": [
@@ -304,7 +283,7 @@
           "*rp/sounds/sound_definitions.{json,jsonc,json5}",
           "rp_*/sounds/sound_definitions.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/sounds/sound_definitions.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/soundDefinition/main.json"
       },
       {
         "fileMatch": [
@@ -314,7 +293,7 @@
           "*rp/sounds.{json,jsonc,json5}",
           "rp_*/sounds.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/sounds.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/clientSound/main.json"
       },
       {
         "fileMatch": [
@@ -324,27 +303,7 @@
           "*rp/textures/terrain_texture.{json,jsonc,json5}",
           "rp_*/textures/terrain_texture.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/textures/terrain_texture.json"
-      },
-      {
-        "fileMatch": [
-          "resource_pack/ui/_ui_defs.{json,jsonc,json5}",
-          "*RP/ui/_ui_defs.{json,jsonc,json5}",
-          "RP_*/ui/_ui_defs.{json,jsonc,json5}",
-          "*rp/ui/_ui_defs.{json,jsonc,json5}",
-          "rp_*/ui/_ui_defs.{json,jsonc,json5}"
-        ],
-        "url": "./schemas/resource/ui/_ui_defs.json"
-      },
-      {
-        "fileMatch": [
-          "resource_pack/ui/_global_variables.{json,jsonc,json5}",
-          "*RP/ui/_global_variables.{json,jsonc,json5}",
-          "RP_*/ui/_global_variables.{json,jsonc,json5}",
-          "*rp/ui/_global_variables.{json,jsonc,json5}",
-          "rp_*/ui/_global_variables.{json,jsonc,json5}"
-        ],
-        "url": "./schemas/resource/ui/_global_variables.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/terrainTexture/main.json"
       },
       {
         "fileMatch": [
@@ -354,7 +313,7 @@
           "*rp/ui/**/*.{json,jsonc,json5}",
           "rp_*/ui/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/resource/ui/ui.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/ui/main.json"
       },
       {
         "fileMatch": [
@@ -364,7 +323,7 @@
           "*bp/animation_controllers/**/*.{json,jsonc,json5}",
           "bp_*/animation_controllers/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/animation_controllers/animation_controller.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/animationController/main.json"
       },
       {
         "fileMatch": [
@@ -374,7 +333,7 @@
           "*bp/animations/**/*.{json,jsonc,json5}",
           "bp_*/animations/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/animations/animations.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/animation/main.json"
       },
       {
         "fileMatch": [
@@ -384,7 +343,7 @@
           "*bp/biomes/**/*.{json,jsonc,json5}",
           "bp_*/biomes/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/biomes/biomes.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/biome/main.json"
       },
       {
         "fileMatch": [
@@ -394,7 +353,7 @@
           "*bp/blocks/**/*.{json,jsonc,json5}",
           "bp_*/blocks/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/blocks/blocks.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/block/main.json"
       },
       {
         "fileMatch": [
@@ -404,7 +363,7 @@
           "*bp/cameras/presets/**/*.{json,jsonc,json5}",
           "bp_*/cameras/presets/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/cameras/presets/camera.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/cameraPreset/main.json"
       },
       {
         "fileMatch": [
@@ -414,7 +373,7 @@
           "*bp/dialogue/**/*.{json,jsonc,json5}",
           "bp_*/dialogue/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/dialogue/dialogue.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/dialogue/main.json"
       },
       {
         "fileMatch": [
@@ -424,13 +383,7 @@
           "*bp/entities/**/*.{json,jsonc,json5}",
           "bp_*/entities/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/entities/entities.json"
-      },
-      {
-        "fileMatch": [
-          "functions/tick.{json,jsonc,json5}"
-        ],
-        "url": "./schemas/behavior/functions/tick.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/entity/main.json"
       },
       {
         "fileMatch": [
@@ -440,7 +393,7 @@
           "*bp/features/**/*.{json,jsonc,json5}",
           "bp_*/features/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/features/features.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/feature/main.json"
       },
       {
         "fileMatch": [
@@ -450,27 +403,17 @@
           "*bp/feature_rules/**/*.{json,jsonc,json5}",
           "bp_*/feature_rules/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/feature_rules/feature_rules.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/featureRule/main.json"
       },
       {
         "fileMatch": [
-          "behavior_pack/lighting/global.{json,jsonc,json5}",
-          "*BP/lighting/global.{json,jsonc,json5}",
-          "BP_*/lighting/global.{json,jsonc,json5}",
-          "*bp/lighting/global.{json,jsonc,json5}",
-          "bp_*/lighting/global.{json,jsonc,json5}"
+          "behavior_pack/functions/tick.{json,jsonc,json5}",
+          "*BP/functions/tick.{json,jsonc,json5}",
+          "BP_*/functions/tick.{json,jsonc,json5}",
+          "*bp/functions/tick.{json,jsonc,json5}",
+          "bp_*/functions/tick.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/lighting/global.json"
-      },
-      {
-        "fileMatch": [
-          "behavior_pack/lighting/atmospherics.{json,jsonc,json5}",
-          "*BP/lighting/atmospherics.{json,jsonc,json5}",
-          "BP_*/lighting/atmospherics.{json,jsonc,json5}",
-          "*bp/lighting/atmospherics.{json,jsonc,json5}",
-          "bp_*/lighting/atmospherics.{json,jsonc,json5}"
-        ],
-        "url": "./schemas/behavior/lighting/atmospherics.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/tick/main.json"
       },
       {
         "fileMatch": [
@@ -480,17 +423,7 @@
           "*bp/items/**/*.{json,jsonc,json5}",
           "bp_*/items/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/items/items.json"
-      },
-      {
-        "fileMatch": [
-          "behavior_pack/recipes/**/*.{json,jsonc,json5}",
-          "*BP/recipes/**/*.{json,jsonc,json5}",
-          "BP_*/recipes/**/*.{json,jsonc,json5}",
-          "*bp/recipes/**/*.{json,jsonc,json5}",
-          "bp_*/recipes/**/*.{json,jsonc,json5}"
-        ],
-        "url": "./schemas/behavior/recipes/recipes.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/item/main.json"
       },
       {
         "fileMatch": [
@@ -500,7 +433,17 @@
           "*bp/loot_tables/**/*.{json,jsonc,json5}",
           "bp_*/loot_tables/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/loot_tables/loot_tables.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/lootTable/main.json"
+      },
+      {
+        "fileMatch": [
+          "behavior_pack/recipes/**/*.{json,jsonc,json5}",
+          "*BP/recipes/**/*.{json,jsonc,json5}",
+          "BP_*/recipes/**/*.{json,jsonc,json5}",
+          "*bp/recipes/**/*.{json,jsonc,json5}",
+          "bp_*/recipes/**/*.{json,jsonc,json5}"
+        ],
+        "url": "https://ink0rr.github.io/rockide-schemas/recipe/main.json"
       },
       {
         "fileMatch": [
@@ -510,7 +453,7 @@
           "*bp/spawn_rules/**/*.{json,jsonc,json5}",
           "bp_*/spawn_rules/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/spawn_rules/spawn_rules.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/spawnRule/main.json"
       },
       {
         "fileMatch": [
@@ -520,7 +463,7 @@
           "*bp/trading/**/*.{json,jsonc,json5}",
           "bp_*/trading/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/trading/trading.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/tradeTable/main.json"
       },
       {
         "fileMatch": [
@@ -530,7 +473,7 @@
           "*bp/volumes/**/*.{json,jsonc,json5}",
           "bp_*/volumes/**/*.{json,jsonc,json5}"
         ],
-        "url": "./schemas/behavior/volumes/volumes.json"
+        "url": "https://ink0rr.github.io/rockide-schemas/volume/main.json"
       }
     ]
   }
