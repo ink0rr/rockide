@@ -22,9 +22,9 @@ type Rockide struct {
 	stores  []core.Store
 }
 
-func NewRockide() *Rockide {
+func New(baseDir string) *Rockide {
 	return &Rockide{
-		baseDir: ".",
+		baseDir: baseDir,
 		stores: []core.Store{
 			&core.AnimationControllerStore,
 			&core.AnimationStore,

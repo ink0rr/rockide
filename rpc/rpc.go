@@ -1,10 +1,8 @@
 package rpc
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
 )
 
 type RequestMessage struct {
@@ -45,21 +43,4 @@ func DecodeMessage(msg []byte) (*RequestMessage, error) {
 		return nil, err
 	}
 	return &message, nil
-}
-
-func Split(data []byte, atEOF bool) (int, []byte, error) {
-	header, content, found := bytes.Cut(data, []byte{'\r', '\n', '\r', '\n'})
-	if !found {
-		return 0, nil, nil
-	}
-	contentLengthBytes := header[len("Content-Length: "):]
-	contentLength, err := strconv.Atoi(string(contentLengthBytes))
-	if err != nil {
-		return 0, nil, err
-	}
-	if len(content) < contentLength {
-		return 0, nil, nil
-	}
-	totalLength := len(header) + 4 + contentLength
-	return totalLength, content, nil
 }

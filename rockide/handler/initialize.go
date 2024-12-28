@@ -23,10 +23,7 @@ func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protoc
 }
 
 func Initialized(ctx context.Context, params *protocol.InitializedParams) error {
-	server, err := rockide.NewServer()
-	if err != nil {
-		return err
-	}
-	server.Rockide.IndexWorkspaces(ctx)
+	rockide := rockide.New(".")
+	rockide.IndexWorkspaces(ctx)
 	return nil
 }
