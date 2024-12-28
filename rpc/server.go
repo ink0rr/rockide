@@ -32,7 +32,7 @@ func (s *Server) Listen(handler func(ctx context.Context, req *RequestMessage) (
 			continue
 		}
 		if res != nil {
-			msg := ResponseMessage{Id: req.Id, Result: &res}
+			msg := ResponseMessage{Id: req.Id, Result: res}
 			reply := EncodeMessage(msg)
 			os.Stdout.Write([]byte(reply))
 		}

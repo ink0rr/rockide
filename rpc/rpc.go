@@ -13,14 +13,14 @@ type RequestMessage struct {
 
 type ResponseMessage struct {
 	Id     int            `json:"id"`
-	Result *any           `json:"result,omitempty"`
+	Result any            `json:"result,omitempty"`
 	Error  *ResponseError `json:"error,omitempty"`
 }
 
 type ResponseError struct {
 	Code    ErrorCode `json:"code"`
 	Message string    `json:"message"`
-	Data    *any      `json:"data,omitempty"`
+	Data    any       `json:"data,omitempty"`
 }
 
 type ErrorCode int
