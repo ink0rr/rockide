@@ -4,7 +4,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/textdocument"
 	"go.lsp.dev/uri"
 )

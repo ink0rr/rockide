@@ -4,6 +4,7 @@ go 1.23.4
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.7.1
+	github.com/ink0rr/go-jsonc v0.0.0
 	go.lsp.dev/protocol v0.12.0
 	go.lsp.dev/uri v0.3.0
 )

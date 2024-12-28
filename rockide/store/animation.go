@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/rockide/core"
 )
 
