@@ -2,14 +2,14 @@ package handler
 
 import (
 	"context"
+	"log"
 
 	"github.com/ink0rr/rockide/rockide"
 	"go.lsp.dev/protocol"
 )
 
 func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
-	logger := rockide.GetLogger(ctx)
-	logger.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
+	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
 			TextDocumentSync: 1, // Full

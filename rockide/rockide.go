@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -50,7 +51,6 @@ func NewRockide() *Rockide {
 
 func (r *Rockide) IndexWorkspaces(ctx context.Context) error {
 	startTime := time.Now()
-	logger := GetLogger(ctx)
 	fsys := os.DirFS(r.baseDir)
 	totalFiles := atomic.Uint32{}
 	skippedFiles := atomic.Uint32{}
@@ -66,13 +66,13 @@ func (r *Rockide) IndexWorkspaces(ctx context.Context) error {
 				}
 				uri, err := toURI(path)
 				if err != nil {
-					logger.Printf("Error: %s", err)
+					log.Printf("Error: %s", err)
 					skippedFiles.Add(1)
 					return nil
 				}
 				err = store.Parse(uri)
 				if err != nil {
-					logger.Printf("Error: %s", err)
+					log.Printf("Error: %s", err)
 					skippedFiles.Add(1)
 					return nil
 				}
@@ -83,9 +83,9 @@ func (r *Rockide) IndexWorkspaces(ctx context.Context) error {
 	}
 	wg.Wait()
 	totalTime := time.Now().Sub(startTime)
-	logger.Printf("Scanned %d files in %s", totalFiles.Load(), totalTime)
+	log.Printf("Scanned %d files in %s", totalFiles.Load(), totalTime)
 	if count := skippedFiles.Load(); count > 0 {
-		logger.Printf("Skipped %d files", count)
+		log.Printf("Skipped %d files", count)
 	}
 	return nil
 }
