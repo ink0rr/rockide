@@ -8,10 +8,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/arexon/fsnotify"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/ink0rr/rockide/rockide/core"
 	"go.lsp.dev/uri"
@@ -59,15 +61,15 @@ func IndexWorkspaces(ctx context.Context) error {
 				if d.IsDir() {
 					return nil
 				}
-				uri, err := toURI(path)
+				uri, err := toURI(filepath.Join(baseDir, path))
 				if err != nil {
-					log.Printf("Error: %s", err)
+					log.Printf("Error parsing URI: %s\n\t%s", err, path)
 					skippedFiles.Add(1)
 					return nil
 				}
 				err = store.Parse(uri)
 				if err != nil {
-					log.Printf("Error: %s", err)
+					log.Printf("Error parsing file: %s\n\t%s", path, err)
 					skippedFiles.Add(1)
 					return nil
 				}
@@ -85,10 +87,66 @@ func IndexWorkspaces(ctx context.Context) error {
 	return nil
 }
 
+func WatchFiles(ctx context.Context) error {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return err
+	}
+	bp, rp, err := getProjectPaths()
+	if err != nil {
+		return errors.Join(errors.New("Failed to get project paths"), err)
+	}
+	if err := watcher.Add(filepath.Join(bp, "...")); err != nil {
+		return errors.Join(errors.New("Failed to watch BP path"), err)
+	}
+	if err := watcher.Add(filepath.Join(rp, "...")); err != nil {
+		return errors.Join(errors.New("Failed to watch RP path"), err)
+	}
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				stat, err := os.Stat(event.Name)
+				if err != nil || stat.IsDir() {
+					continue
+				}
+				uri, err := toURI(event.Name)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				if event.Op.Has(fsnotify.Create) {
+					OnCreate(uri)
+					continue
+				}
+				if event.Op.Has(fsnotify.Write) {
+					OnChange(uri)
+					continue
+				}
+				if event.Op.Has(fsnotify.Remove | fsnotify.Rename) {
+					OnDelete(uri)
+					continue
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Println("Error:", err)
+			}
+		}
+	}()
+	return nil
+}
+
 func OnCreate(uri uri.URI) {
 	name := uri.Filename()
+	name = strings.ReplaceAll(name, "\\", "/")
+	log.Printf("create: %s", name)
 	for _, store := range stores {
-		if doublestar.MatchUnvalidated(store.GetPattern(), name) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
 			store.Parse(uri)
 			break
 		}
@@ -97,8 +155,10 @@ func OnCreate(uri uri.URI) {
 
 func OnChange(uri uri.URI) {
 	name := uri.Filename()
+	name = strings.ReplaceAll(name, "\\", "/")
+	log.Printf("change: %s", name)
 	for _, store := range stores {
-		if doublestar.MatchUnvalidated(store.GetPattern(), name) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
 			store.Delete(uri)
 			store.Parse(uri)
 			break
@@ -108,12 +168,33 @@ func OnChange(uri uri.URI) {
 
 func OnDelete(uri uri.URI) {
 	name := uri.Filename()
+	name = strings.ReplaceAll(name, "\\", "/")
+	log.Printf("delete: %s", name)
 	for _, store := range stores {
-		if doublestar.MatchUnvalidated(store.GetPattern(), name) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
 			store.Delete(uri)
 			break
 		}
 	}
+}
+
+func getProjectPaths() (bp string, rp string, err error) {
+	fs := os.DirFS(baseDir)
+	bpPaths, err := doublestar.Glob(fs, core.BpGlob)
+	if err != nil {
+		return
+	}
+	if len(bpPaths) > 0 {
+		bp = filepath.Join(baseDir, bpPaths[0])
+	}
+	rpPaths, err := doublestar.Glob(fs, core.RpGlob)
+	if err != nil {
+		return
+	}
+	if len(rpPaths) > 0 {
+		rp = filepath.Join(baseDir, rpPaths[0])
+	}
+	return
 }
 
 func toURI(path string) (uri.URI, error) {

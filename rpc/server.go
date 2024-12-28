@@ -18,12 +18,14 @@ func NewServer(ctx context.Context) *Server {
 }
 
 func (s *Server) Listen(handler func(ctx context.Context, req *RequestMessage) (res any, err error)) {
+	bufio.NewReader(os.Stdin)
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(split)
 	for scanner.Scan() {
-		req, err := DecodeMessage(scanner.Bytes())
+		msg := scanner.Bytes()
+		req, err := DecodeMessage(msg)
 		if err != nil {
-			log.Printf("Error: %s", err)
+			log.Printf("Decode error: %s\n\t%s", err, string(msg))
 			continue
 		}
 		res, err := handler(s.ctx, req)
@@ -49,7 +51,7 @@ func split(data []byte, atEOF bool) (int, []byte, error) {
 	if err != nil {
 		return 0, nil, err
 	}
-	if len(content) < contentLength {
+	if contentLength > len(content) {
 		return 0, nil, nil
 	}
 	totalLength := len(header) + 4 + contentLength

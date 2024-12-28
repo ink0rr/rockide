@@ -17,7 +17,9 @@ type DummyStore struct {
 
 // Delete implements Store.
 func (d *DummyStore) Delete(uri uri.URI) {
-	panic("unimplemented")
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	delete(d.store, uri)
 }
 
 // Get implements Store.

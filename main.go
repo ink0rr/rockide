@@ -61,7 +61,12 @@ func Initialized(ctx context.Context, params *protocol.InitializedParams) error 
 	if err == nil && stat.IsDir() {
 		rockide.SetBaseDir("packs")
 	}
-	rockide.IndexWorkspaces(ctx)
+	if err := rockide.IndexWorkspaces(ctx); err != nil {
+		return err
+	}
+	if err := rockide.WatchFiles(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 
