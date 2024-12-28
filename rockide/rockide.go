@@ -17,46 +17,41 @@ import (
 	"go.lsp.dev/uri"
 )
 
-type Rockide struct {
-	baseDir string
-	stores  []core.Store
+var baseDir = "."
+var stores = []core.Store{
+	&core.AnimationControllerStore,
+	&core.AnimationStore,
+	&core.BlockStore,
+	&core.EntityStore,
+	&core.FeatureRuleStore,
+	&core.FeatureStore,
+	&core.ItemStore,
+	&core.TradeTableStore,
+	&core.AttachableStore,
+	&core.ClientAnimationControllersStore,
+	&core.ClientAnimationsStore,
+	&core.ClientBlockStore,
+	&core.ClientEntityStore,
+	&core.GeometryStore,
+	&core.ItemTextureStore,
+	&core.ParticleStore,
+	&core.RenderControllerStore,
+	&core.SoundDefinitionStore,
+	&core.TerrainTextureStore,
 }
 
-func New(baseDir string) *Rockide {
-	return &Rockide{
-		baseDir: baseDir,
-		stores: []core.Store{
-			&core.AnimationControllerStore,
-			&core.AnimationStore,
-			&core.BlockStore,
-			&core.EntityStore,
-			&core.FeatureRuleStore,
-			&core.FeatureStore,
-			&core.ItemStore,
-			&core.TradeTableStore,
-			&core.AttachableStore,
-			&core.ClientAnimationControllersStore,
-			&core.ClientAnimationsStore,
-			&core.ClientBlockStore,
-			&core.ClientEntityStore,
-			&core.GeometryStore,
-			&core.ItemTextureStore,
-			&core.ParticleStore,
-			&core.RenderControllerStore,
-			&core.SoundDefinitionStore,
-			&core.TerrainTextureStore,
-		},
-	}
+func SetBaseDir(dir string) {
+	baseDir = dir
 }
 
-func (r *Rockide) IndexWorkspaces(ctx context.Context) error {
+func IndexWorkspaces(ctx context.Context) error {
 	startTime := time.Now()
-	fsys := os.DirFS(r.baseDir)
+	fsys := os.DirFS(baseDir)
 	totalFiles := atomic.Uint32{}
 	skippedFiles := atomic.Uint32{}
 
 	var wg sync.WaitGroup
-	for _, store := range r.stores {
+	for _, store := range stores {
 		go func() {
 			defer wg.Done()
 			wg.Add(1)
@@ -88,6 +83,37 @@ func (r *Rockide) IndexWorkspaces(ctx context.Context) error {
 		log.Printf("Skipped %d files", count)
 	}
 	return nil
+}
+
+func OnCreate(uri uri.URI) {
+	name := uri.Filename()
+	for _, store := range stores {
+		if doublestar.MatchUnvalidated(store.GetPattern(), name) {
+			store.Parse(uri)
+			break
+		}
+	}
+}
+
+func OnChange(uri uri.URI) {
+	name := uri.Filename()
+	for _, store := range stores {
+		if doublestar.MatchUnvalidated(store.GetPattern(), name) {
+			store.Delete(uri)
+			store.Parse(uri)
+			break
+		}
+	}
+}
+
+func OnDelete(uri uri.URI) {
+	name := uri.Filename()
+	for _, store := range stores {
+		if doublestar.MatchUnvalidated(store.GetPattern(), name) {
+			store.Delete(uri)
+			break
+		}
+	}
 }
 
 func toURI(path string) (uri.URI, error) {

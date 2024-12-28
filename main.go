@@ -5,16 +5,13 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"path/filepath"
-	"runtime"
 
-	"github.com/ink0rr/rockide/rockide/handler"
+	"github.com/ink0rr/rockide/rockide"
 	"github.com/ink0rr/rockide/rpc"
 	"go.lsp.dev/protocol"
 )
 
 func main() {
-	initLogger()
 	log.Print("Rockide is running!")
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -26,17 +23,17 @@ func main() {
 		case "initialize":
 			var params protocol.InitializeParams
 			if err = json.Unmarshal(req.Params, &params); err == nil {
-				res, err = handler.Initialize(ctx, &params)
+				res, err = Initialize(ctx, &params)
 			}
 		case "initialized":
 			var params protocol.InitializedParams
 			if err = json.Unmarshal(req.Params, &params); err == nil {
-				err = handler.Initialized(ctx, &params)
+				err = Initialized(ctx, &params)
 			}
 		case "textDocument/didChange":
 			var params protocol.DidChangeTextDocumentParams
 			if err = json.Unmarshal(req.Params, &params); err == nil {
-				err = handler.TextDocumentDidChange(ctx, &params)
+				err = TextDocumentDidChange(ctx, &params)
 			}
 		default:
 			log.Printf("Unhandled method: %s", req.Method)
@@ -45,19 +42,32 @@ func main() {
 	})
 }
 
-func initLogger() {
-	var home string
-	if runtime.GOOS == "windows" {
-		home = os.Getenv("UserProfile")
-	} else {
-		home = os.Getenv("HOME")
+func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
+	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
+	result := protocol.InitializeResult{
+		Capabilities: protocol.ServerCapabilities{
+			TextDocumentSync: 1, // Full
+		},
+		ServerInfo: &protocol.ServerInfo{
+			Name:    "rockide",
+			Version: "0.0.0",
+		},
 	}
-	fileName := filepath.Join(home, ".rockide", "log.txt")
-	logFile, err := os.OpenFile(fileName, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
-	if err != nil {
-		panic("Failed to open log file")
+	return &result, nil
+}
+
+func Initialized(ctx context.Context, params *protocol.InitializedParams) error {
+	stat, err := os.Stat("packs")
+	if err == nil && stat.IsDir() {
+		rockide.SetBaseDir("packs")
 	}
-	log.SetOutput(logFile)
-	log.SetPrefix("[rockide]")
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	rockide.IndexWorkspaces(ctx)
+	return nil
+}
+
+func TextDocumentDidChange(ctx context.Context, params *protocol.DidChangeTextDocumentParams) error {
+	if len(params.ContentChanges) > 0 {
+		rockide.OnChange(params.TextDocument.URI)
+	}
+	return nil
 }
