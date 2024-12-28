@@ -2,19 +2,20 @@ package core
 
 import (
 	"go.lsp.dev/protocol"
+	"go.lsp.dev/uri"
 )
 
 type Reference struct {
 	Value string
-	Uri   protocol.URI
+	Uri   uri.URI
 	Range *protocol.Range
 }
 
 type Store interface {
-	Parse(uri protocol.URI) error
+	Parse(uri uri.URI) error
 	Get(key string) []Reference
-	GetFrom(uri protocol.URI, key Store) []Reference
-	Delete(uri protocol.URI)
+	GetFrom(uri uri.URI, key Store) []Reference
+	Delete(uri uri.URI)
 	GetPattern() string
 }
 

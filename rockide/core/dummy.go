@@ -6,17 +6,17 @@ import (
 
 	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/textdocument"
-	"go.lsp.dev/protocol"
+	"go.lsp.dev/uri"
 )
 
 type DummyStore struct {
 	pattern string
-	store   map[protocol.URI]*jsonc.Node
+	store   map[uri.URI]*jsonc.Node
 	mutex   sync.Mutex
 }
 
 // Delete implements Store.
-func (d *DummyStore) Delete(uri protocol.URI) {
+func (d *DummyStore) Delete(uri uri.URI) {
 	panic("unimplemented")
 }
 
@@ -26,7 +26,7 @@ func (d *DummyStore) Get(key string) []Reference {
 }
 
 // GetFrom implements Store.
-func (d *DummyStore) GetFrom(uri protocol.URI, key Store) []Reference {
+func (d *DummyStore) GetFrom(uri uri.URI, key Store) []Reference {
 	panic("unimplemented")
 }
 
@@ -36,7 +36,7 @@ func (d *DummyStore) GetPattern() string {
 }
 
 // Parse implements Store.
-func (d *DummyStore) Parse(uri protocol.URI) error {
+func (d *DummyStore) Parse(uri uri.URI) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	txt, err := os.ReadFile(uri.Filename())
@@ -54,7 +54,7 @@ var _ Store = (*DummyStore)(nil)
 func NewDummyStore(pattern string) DummyStore {
 	return DummyStore{
 		pattern: pattern,
-		store:   make(map[protocol.URI]*jsonc.Node),
+		store:   make(map[uri.URI]*jsonc.Node),
 	}
 }
 

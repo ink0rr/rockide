@@ -6,6 +6,7 @@ import (
 	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/textdocument"
 	"go.lsp.dev/protocol"
+	"go.lsp.dev/uri"
 )
 
 type TransformResult struct {
@@ -31,7 +32,7 @@ func (j *JsonStore) GetPattern() string {
 }
 
 // Parse implements Store.
-func (j *JsonStore) Parse(uri protocol.URI) error {
+func (j *JsonStore) Parse(uri uri.URI) error {
 	txt, err := os.ReadFile(uri.Filename())
 	if err != nil {
 		return err
@@ -85,12 +86,12 @@ func (j *JsonStore) Get(key string) []Reference {
 }
 
 // GetFrom implements Store.
-func (j *JsonStore) GetFrom(uri protocol.URI, key Store) []Reference {
+func (j *JsonStore) GetFrom(uri uri.URI, key Store) []Reference {
 	panic("unimplemented")
 }
 
 // Delete implements Store.
-func (j *JsonStore) Delete(uri protocol.URI) {
+func (j *JsonStore) Delete(uri uri.URI) {
 	panic("unimplemented")
 }
 

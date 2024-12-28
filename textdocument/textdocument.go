@@ -4,14 +4,15 @@ import (
 	"math"
 
 	"go.lsp.dev/protocol"
+	"go.lsp.dev/uri"
 )
 
 type TextDocument struct {
-	URI     protocol.URI `json:"uri"`
+	URI     uri.URI `json:"uri"`
 	content string
 }
 
-func New(uri protocol.URI, content string) *TextDocument {
+func New(uri uri.URI, content string) *TextDocument {
 	document := TextDocument{}
 	document.URI = uri
 	document.content = content

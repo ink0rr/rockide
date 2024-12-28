@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"go.lsp.dev/protocol"
+	"go.lsp.dev/uri"
 )
 
 type BehaviorStore struct {
@@ -13,7 +13,7 @@ type BehaviorStore struct {
 
 var bpRegex = regexp.MustCompile("(behavior_pack|[^\\/]*?bp|bp_[^\\/]*?)\\/")
 
-func (s *BehaviorStore) Parse(uri protocol.URI) error {
+func (s *BehaviorStore) Parse(uri uri.URI) error {
 	path, err := filepath.Rel(".", uri.Filename())
 	if err != nil {
 		return err
