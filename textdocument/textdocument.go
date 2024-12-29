@@ -2,6 +2,7 @@ package textdocument
 
 import (
 	"math"
+	"os"
 
 	"go.lsp.dev/protocol"
 	"go.lsp.dev/uri"
@@ -12,11 +13,15 @@ type TextDocument struct {
 	content string
 }
 
-func New(uri uri.URI, content string) *TextDocument {
+func New(uri uri.URI) (*TextDocument, error) {
+	txt, err := os.ReadFile(uri.Filename())
+	if err != nil {
+		return nil, err
+	}
 	document := TextDocument{}
 	document.URI = uri
-	document.content = content
-	return &document
+	document.content = string(txt)
+	return &document, nil
 }
 
 func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 {

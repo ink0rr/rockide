@@ -1,7 +1,6 @@
 package core
 
 import (
-	"os"
 	"sync"
 
 	"github.com/ink0rr/go-jsonc"
@@ -39,14 +38,13 @@ func (d *DummyStore) GetPattern() string {
 
 // Parse implements Store.
 func (d *DummyStore) Parse(uri uri.URI) error {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	txt, err := os.ReadFile(uri.Filename())
+	document, err := textdocument.New(uri)
 	if err != nil {
 		return err
 	}
-	document := textdocument.New(uri, string(txt))
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
 	d.store[uri] = root
 	return nil
 }

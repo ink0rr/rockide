@@ -1,8 +1,6 @@
 package core
 
 import (
-	"os"
-
 	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/textdocument"
 	"go.lsp.dev/protocol"
@@ -33,11 +31,10 @@ func (j *JsonStore) GetPattern() string {
 
 // Parse implements Store.
 func (j *JsonStore) Parse(uri uri.URI) error {
-	txt, err := os.ReadFile(uri.Filename())
+	document, err := textdocument.New(uri)
 	if err != nil {
 		return err
 	}
-	document := textdocument.New(uri, string(txt))
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
 	for _, entry := range j.entries {
 		data := j.store[entry.Id]
