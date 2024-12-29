@@ -38,13 +38,13 @@ func (d *DummyStore) GetPattern() string {
 
 // Parse implements Store.
 func (d *DummyStore) Parse(uri uri.URI) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
 	document, err := textdocument.New(uri)
 	if err != nil {
 		return err
 	}
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
 	d.store[uri] = root
 	return nil
 }

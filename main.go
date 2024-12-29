@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"strings"
 
+	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/rockide"
 	"github.com/ink0rr/rockide/rpc"
+	"github.com/ink0rr/rockide/textdocument"
 	"go.lsp.dev/protocol"
 )
 
@@ -35,6 +38,11 @@ func main() {
 			if err = json.Unmarshal(req.Params, &params); err == nil {
 				err = TextDocumentDidChange(ctx, &params)
 			}
+		case "textDocument/completion":
+			var params protocol.CompletionParams
+			if err = json.Unmarshal(req.Params, &params); err == nil {
+				err = Completion(ctx, &params)
+			}
 		default:
 			log.Printf("Unhandled method: %s", req.Method)
 		}
@@ -47,6 +55,10 @@ func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protoc
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
 			TextDocumentSync: 1, // Full
+			CompletionProvider: &protocol.CompletionOptions{
+				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.,'"() `, ""),
+			},
+			DefinitionProvider: &protocol.DefinitionOptions{},
 		},
 		ServerInfo: &protocol.ServerInfo{
 			Name:    "rockide",
@@ -74,5 +86,15 @@ func TextDocumentDidChange(ctx context.Context, params *protocol.DidChangeTextDo
 	if len(params.ContentChanges) > 0 {
 		rockide.OnChange(params.TextDocument.URI)
 	}
+	return nil
+}
+
+func Completion(ctx context.Context, params *protocol.CompletionParams) error {
+	document, err := textdocument.New(params.TextDocument.URI)
+	if err != nil {
+		return err
+	}
+	location := jsonc.GetLocation(document.GetText(), int(document.OffsetAt(params.Position)))
+	_ = location
 	return nil
 }
