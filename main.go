@@ -9,45 +9,58 @@ import (
 
 	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/rockide"
-	"github.com/ink0rr/rockide/rpc"
 	"github.com/ink0rr/rockide/textdocument"
+	"github.com/sourcegraph/jsonrpc2"
 	"go.lsp.dev/protocol"
 )
 
 func main() {
 	log.Print("Rockide is running!")
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := context.Background()
+	stream := jsonrpc2.NewBufferedStream(&stdio{}, jsonrpc2.VSCodeObjectCodec{})
+	conn := jsonrpc2.NewConn(ctx, stream, jsonrpc2.AsyncHandler(&handler{}))
+	<-conn.DisconnectNotify()
+}
 
-	server := rpc.NewServer(ctx)
-	server.Listen(func(ctx context.Context, req *rpc.RequestMessage) (res any, err error) {
-		switch req.Method {
-		case "initialize":
-			var params protocol.InitializeParams
-			if err = json.Unmarshal(req.Params, &params); err == nil {
-				res, err = Initialize(ctx, &params)
-			}
-		case "initialized":
-			var params protocol.InitializedParams
-			if err = json.Unmarshal(req.Params, &params); err == nil {
-				err = Initialized(ctx, &params)
-			}
-		case "textDocument/didChange":
-			var params protocol.DidChangeTextDocumentParams
-			if err = json.Unmarshal(req.Params, &params); err == nil {
-				err = TextDocumentDidChange(ctx, &params)
-			}
-		case "textDocument/completion":
-			var params protocol.CompletionParams
-			if err = json.Unmarshal(req.Params, &params); err == nil {
-				err = Completion(ctx, &params)
-			}
-		default:
-			log.Printf("Unhandled method: %s", req.Method)
+type handler struct{}
+
+func (h *handler) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) {
+	var res any
+	var err error
+	switch req.Method {
+	case "initialize":
+		var params protocol.InitializeParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			res, err = Initialize(ctx, &params)
 		}
+	case "initialized":
+		var params protocol.InitializedParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			err = Initialized(ctx, &params)
+		}
+	case "textDocument/didChange":
+		var params protocol.DidChangeTextDocumentParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			err = TextDocumentDidChange(ctx, &params)
+		}
+	case "textDocument/completion":
+		var params protocol.CompletionParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			err = Completion(ctx, &params)
+		}
+	default:
+		log.Printf("Unhandled method: %s", req.Method)
+	}
+	if err != nil {
+		log.Printf("Replying with error: %s", err)
+		conn.ReplyWithError(ctx, req.ID, &jsonrpc2.Error{Code: jsonrpc2.CodeInternalError, Message: err.Error()})
 		return
-	})
+	}
+	err = conn.Reply(ctx, req.ID, res)
+	if err != nil {
+		log.Printf("Failed to send reply: %s", err)
+	}
 }
 
 func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
