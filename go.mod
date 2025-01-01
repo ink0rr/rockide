@@ -11,4 +11,4 @@ require (
 	go.lsp.dev/uri v0.3.0
 )
 
-require golang.org/x/sys v0.13.0 // indirect
+require golang.org/x/sys v0.28.0 // indirect
