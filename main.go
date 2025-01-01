@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/rockide"
@@ -19,35 +21,35 @@ func main() {
 
 	ctx := context.Background()
 	stream := jsonrpc2.NewBufferedStream(&stdio{}, jsonrpc2.VSCodeObjectCodec{})
-	conn := jsonrpc2.NewConn(ctx, stream, jsonrpc2.AsyncHandler(&handler{}))
+	conn := jsonrpc2.NewConn(ctx, stream, jsonrpc2.AsyncHandler(&server{}))
 	<-conn.DisconnectNotify()
 }
 
-type handler struct{}
+type server struct{}
 
-func (h *handler) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) {
+func (s *server) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) {
 	var res any
 	var err error
 	switch req.Method {
 	case "initialize":
 		var params protocol.InitializeParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			res, err = Initialize(ctx, &params)
+			res, err = Initialize(ctx, conn, &params)
 		}
 	case "initialized":
 		var params protocol.InitializedParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			err = Initialized(ctx, &params)
+			err = Initialized(ctx, conn, &params)
 		}
 	case "textDocument/didChange":
 		var params protocol.DidChangeTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			err = TextDocumentDidChange(ctx, &params)
+			err = TextDocumentDidChange(ctx, conn, &params)
 		}
 	case "textDocument/completion":
 		var params protocol.CompletionParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			err = Completion(ctx, &params)
+			err = Completion(ctx, conn, &params)
 		}
 	default:
 		log.Printf("Unhandled method: %s", req.Method)
@@ -63,7 +65,8 @@ func (h *handler) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2
 	}
 }
 
-func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
+func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
+	log.Printf("Process ID: %d", params.ProcessID)
 	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
@@ -81,28 +84,47 @@ func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protoc
 	return &result, nil
 }
 
-func Initialized(ctx context.Context, params *protocol.InitializedParams) error {
+func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializedParams) error {
+	// TODO: Set baseDir from config
 	stat, err := os.Stat("packs")
 	if err == nil && stat.IsDir() {
 		rockide.SetBaseDir("packs")
 	}
+
+	token := protocol.NewProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))
+	if err = conn.Call(ctx, "window/workDoneProgress/create", &protocol.WorkDoneProgressCreateParams{Token: *token}, nil); err != nil {
+		return err
+	}
+	progress := protocol.ProgressParams{
+		Token: *token,
+		Value: &protocol.WorkDoneProgressBegin{Kind: protocol.WorkDoneProgressKindBegin, Title: "Rockide: Indexing workspace"}}
+	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
+		return err
+	}
+
 	if err := rockide.IndexWorkspaces(ctx); err != nil {
 		return err
 	}
+
+	progress.Value = &protocol.WorkDoneProgressEnd{Kind: protocol.WorkDoneProgressKindEnd}
+	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
+		return err
+	}
+
 	if err := rockide.WatchFiles(ctx); err != nil {
 		return err
 	}
 	return nil
 }
 
-func TextDocumentDidChange(ctx context.Context, params *protocol.DidChangeTextDocumentParams) error {
+func TextDocumentDidChange(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.DidChangeTextDocumentParams) error {
 	if len(params.ContentChanges) > 0 {
 		rockide.OnChange(params.TextDocument.URI)
 	}
 	return nil
 }
 
-func Completion(ctx context.Context, params *protocol.CompletionParams) error {
+func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.CompletionParams) error {
 	document, err := textdocument.New(params.TextDocument.URI)
 	if err != nil {
 		return err
