@@ -4,7 +4,7 @@ import (
 	"math"
 	"os"
 
-	"go.lsp.dev/protocol"
+	"github.com/rockide/protocol"
 	"go.lsp.dev/uri"
 )
 

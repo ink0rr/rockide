@@ -10,8 +10,8 @@ import (
 	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/rockide"
 	"github.com/ink0rr/rockide/textdocument"
+	"github.com/rockide/protocol"
 	"github.com/sourcegraph/jsonrpc2"
-	"go.lsp.dev/protocol"
 )
 
 func main() {
@@ -67,7 +67,7 @@ func Initialize(ctx context.Context, params *protocol.InitializeParams) (*protoc
 	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
-			TextDocumentSync: 1, // Full
+			TextDocumentSync: 1,
 			CompletionProvider: &protocol.CompletionOptions{
 				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.,'"() `, ""),
 			},

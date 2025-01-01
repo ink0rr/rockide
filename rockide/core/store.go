@@ -1,7 +1,7 @@
 package core
 
 import (
-	"go.lsp.dev/protocol"
+	"github.com/rockide/protocol"
 	"go.lsp.dev/uri"
 )
 

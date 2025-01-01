@@ -3,7 +3,7 @@ package core
 import (
 	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/textdocument"
-	"go.lsp.dev/protocol"
+	"github.com/rockide/protocol"
 	"go.lsp.dev/uri"
 )
 
