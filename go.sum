@@ -9,8 +9,6 @@ github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvK
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/ink0rr/go-jsonc v0.0.0 h1:Z9Wps6K5AnArUtJhrT33eLVy3mkFempz17u32a4C+30=
 github.com/ink0rr/go-jsonc v0.0.0/go.mod h1:rFAvFaFqfLC29KNOKYazHX5u5Y9428Y2lCNovHfyQIk=
-github.com/rockide/protocol v0.0.0-20250101080350-65d3d203cf46 h1:7Ul3lKdJFM6j/WkFjpG4qlqgudyZAJT/NXDsPaYdbsU=
-github.com/rockide/protocol v0.0.0-20250101080350-65d3d203cf46/go.mod h1:a8WLXVGDl1n2Yrp24tyiCT9MY0X2JN0oE8xXyw3W7vM=
 github.com/rockide/protocol v0.0.0-20250101082308-dc533532c037 h1:yR3F/V1Xm1X/4vgs+ToP/akb86ojeXn9aDXV5A7IQjs=
 github.com/rockide/protocol v0.0.0-20250101082308-dc533532c037/go.mod h1:a8WLXVGDl1n2Yrp24tyiCT9MY0X2JN0oE8xXyw3W7vM=
 github.com/sourcegraph/jsonrpc2 v0.2.0 h1:KjN/dC4fP6aN9030MZCJs9WQbTOjWHhrtKVpzzSrr/U=
