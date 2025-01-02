@@ -85,6 +85,6 @@ type Node struct {
 	Offset      uint32
 	Length      uint32
 	ColonOffset uint32
-	Parent      *Node `json:"-"` // json.Unmarshal will stuck if not excluded
+	Parent      *Node `json:"-"` // json.Marshal will stuck if not excluded
 	Children    []*Node
 }
