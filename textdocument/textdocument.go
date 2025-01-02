@@ -3,22 +3,47 @@ package textdocument
 import (
 	"math"
 	"os"
+	"sync"
 
 	"github.com/rockide/protocol"
 	"go.lsp.dev/uri"
 )
+
+var documents = make(map[protocol.URI]*TextDocument)
+var mutex sync.Mutex
 
 type TextDocument struct {
 	URI     uri.URI `json:"uri"`
 	content string
 }
 
-func New(uri uri.URI) (*TextDocument, error) {
+func Open(uri uri.URI) (*TextDocument, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	if document := documents[uri]; document != nil {
+		return document, nil
+	}
 	txt, err := os.ReadFile(uri.Filename())
 	if err != nil {
 		return nil, err
 	}
-	return &TextDocument{URI: uri, content: string(txt)}, nil
+	document := TextDocument{URI: uri, content: string(txt)}
+	documents[uri] = &document
+	return &document, nil
+}
+
+func Update(uri protocol.URI, content string) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	if document := documents[uri]; document != nil {
+		document.content = content
+	}
+}
+
+func Close(uri protocol.URI) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	delete(documents, uri)
 }
 
 func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 {
@@ -56,7 +81,7 @@ func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
 	return protocol.Position{Line: uint32(line), Character: offset - lineOffsets[line]}
 }
 
-func (d *TextDocument) OffsetAt(position protocol.Position) uint32 {
+func (d *TextDocument) OffsetAt(position *protocol.Position) uint32 {
 	lineOffsets := computeLineOffsets(d.content, true, 0)
 	maxLine := uint32(len(lineOffsets))
 	contentLength := uint32(len(d.content))
