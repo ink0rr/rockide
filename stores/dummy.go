@@ -3,8 +3,8 @@ package stores
 import (
 	"sync"
 
+	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/jsonc"
-	"github.com/ink0rr/rockide/rockide/core"
 	"github.com/ink0rr/rockide/textdocument"
 	"go.lsp.dev/uri"
 )

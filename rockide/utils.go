@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/ink0rr/rockide/rockide/core"
-	"github.com/ink0rr/rockide/rockide/handlers"
+	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/handlers"
 	"go.lsp.dev/uri"
 )
 

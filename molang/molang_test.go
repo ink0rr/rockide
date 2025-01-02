@@ -3,7 +3,7 @@ package molang_test
 import (
 	"testing"
 
-	"github.com/ink0rr/rockide/rockide/molang"
+	"github.com/ink0rr/rockide/molang"
 )
 
 func TestParser(t *testing.T) {

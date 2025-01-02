@@ -14,8 +14,8 @@ import (
 
 	"github.com/arexon/fsnotify"
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/ink0rr/rockide/rockide/handlers"
-	"github.com/ink0rr/rockide/rockide/stores"
+	"github.com/ink0rr/rockide/handlers"
+	"github.com/ink0rr/rockide/stores"
 	"go.lsp.dev/uri"
 )
 

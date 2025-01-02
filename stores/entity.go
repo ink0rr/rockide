@@ -1,7 +1,7 @@
 package stores
 
 import (
-	"github.com/ink0rr/rockide/rockide/core"
+	"github.com/ink0rr/rockide/core"
 )
 
 var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{

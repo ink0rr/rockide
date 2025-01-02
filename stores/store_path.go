@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ink0rr/rockide/rockide/core"
+	"github.com/ink0rr/rockide/core"
 	"go.lsp.dev/uri"
 )
 

@@ -3,8 +3,8 @@ package handlers
 import (
 	"strings"
 
+	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/jsonc"
-	"github.com/ink0rr/rockide/rockide/core"
 	"github.com/ink0rr/rockide/textdocument"
 	"github.com/rockide/protocol"
 	"go.lsp.dev/uri"
@@ -46,7 +46,7 @@ func (j *JsonHandler) FindEntry(location *jsonc.Location) *JsonHandlerEntry {
 			continue
 		}
 		for _, targetPath := range entry.jsonPath {
-			if core.IsJsonPathMatch(location.Path, targetPath) {
+			if isJsonPathMatch(location.Path, targetPath) {
 				return &entry
 			}
 		}

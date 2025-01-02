@@ -3,8 +3,8 @@ package handlers
 import (
 	"slices"
 
-	"github.com/ink0rr/rockide/rockide/core"
-	"github.com/ink0rr/rockide/rockide/stores"
+	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/stores"
 )
 
 var Entity = NewJsonHandler(core.EntityGlob, []JsonHandlerEntry{

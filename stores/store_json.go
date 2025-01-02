@@ -4,8 +4,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/jsonc"
-	"github.com/ink0rr/rockide/rockide/core"
 	"github.com/ink0rr/rockide/textdocument"
 	"github.com/rockide/protocol"
 	"go.lsp.dev/uri"
@@ -110,7 +110,7 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 					}
 				}
 			}
-			for _, node := range core.FindNodesAtPath(root, path) {
+			for _, node := range findNodesAtPath(root, path) {
 				extract(node)
 			}
 		}

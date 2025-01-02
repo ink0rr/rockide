@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/rockide"
-	"github.com/ink0rr/rockide/rockide/handlers"
 	"github.com/ink0rr/rockide/textdocument"
 	"github.com/rockide/protocol"
 	"github.com/sourcegraph/jsonrpc2"
