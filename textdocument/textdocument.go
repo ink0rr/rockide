@@ -18,10 +18,7 @@ func New(uri uri.URI) (*TextDocument, error) {
 	if err != nil {
 		return nil, err
 	}
-	document := TextDocument{}
-	document.URI = uri
-	document.content = string(txt)
-	return &document, nil
+	return &TextDocument{URI: uri, content: string(txt)}, nil
 }
 
 func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 {
@@ -34,8 +31,6 @@ func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 
 func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
 	if length := uint32(len(d.content)); offset > length {
 		offset = length
-	} else if offset < 0 {
-		offset = 0
 	}
 	lineOffsets := computeLineOffsets(d.content, true, 0)
 	low := 0
@@ -54,6 +49,9 @@ func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
 	// low is the least x for which the line offset is larger than the current offset
 	// or array.length if no line offset is larger than the current offset
 	line := low - 1
+	if low == 0 {
+		line = 0
+	}
 	offset = d.ensureBeforeEOL(offset, lineOffsets[line])
 	return protocol.Position{Line: uint32(line), Character: offset - lineOffsets[line]}
 }
