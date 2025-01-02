@@ -7,6 +7,6 @@ import (
 var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
-		path: []string{"minecraft:entity/description/identifier"},
+		Path: []string{"minecraft:entity/description/identifier"},
 	},
 })

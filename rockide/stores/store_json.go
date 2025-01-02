@@ -19,8 +19,8 @@ type transformResult struct {
 
 type jsonStoreEntry struct {
 	Id             string
-	path           []string
-	JsonPath       [][]string
+	Path           []string
+	jsonPath       [][]string
 	TransformValue func(node *jsonc.Node) transformResult
 }
 
@@ -38,11 +38,10 @@ func newJsonStore(pattern string, entries []jsonStoreEntry) *JsonStore {
 		store:   make(map[string][]core.Reference),
 	}
 	for i, entry := range entries {
-		jsonPath := []string{}
-		for _, path := range entry.path {
-			jsonPath = append(jsonPath, strings.Split(path, "/")...)
+		for _, path := range entry.Path {
+			entry.jsonPath = append(entry.jsonPath, strings.Split(path, "/"))
 		}
-		entries[i].JsonPath = append(entry.JsonPath, jsonPath)
+		res.entries[i] = entry
 	}
 	return &res
 }
@@ -63,7 +62,7 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
 	for _, entry := range j.entries {
 		data := j.store[entry.Id]
-		for _, path := range entry.JsonPath {
+		for _, path := range entry.jsonPath {
 			// If the last path is "*", we want to grab the values instead of keys
 			// The only exception is when the path is a single "*"
 			index := 0
@@ -152,7 +151,7 @@ func (j *JsonStore) Delete(uri uri.URI) {
 	for id, refs := range j.store {
 		filtered := []core.Reference{}
 		for _, ref := range refs {
-			if uri != ref.URI {
+			if ref.URI != uri {
 				filtered = append(filtered, ref)
 			}
 		}

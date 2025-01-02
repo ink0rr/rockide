@@ -3,7 +3,6 @@ package rockide
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io/fs"
 	"log"
 	"os"
@@ -15,13 +14,15 @@ import (
 
 	"github.com/arexon/fsnotify"
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/ink0rr/rockide/rockide/core"
+	"github.com/ink0rr/rockide/rockide/handlers"
 	"github.com/ink0rr/rockide/rockide/stores"
 	"go.lsp.dev/uri"
 )
 
 var baseDir = "."
+
 var storeList = []stores.Store{
+	// BP
 	stores.AnimationController,
 	stores.Animation,
 	stores.Block,
@@ -29,7 +30,9 @@ var storeList = []stores.Store{
 	stores.FeatureRule,
 	stores.Feature,
 	stores.Item,
+	stores.LootTable,
 	stores.TradeTable,
+	// RP
 	stores.Attachable,
 	stores.ClientAnimationControllers,
 	stores.ClientAnimations,
@@ -41,6 +44,10 @@ var storeList = []stores.Store{
 	stores.RenderController,
 	stores.SoundDefinition,
 	stores.TerrainTexture,
+}
+
+var jsonHandlers = []*handlers.JsonHandler{
+	handlers.Entity,
 }
 
 func SetBaseDir(dir string) {
@@ -177,36 +184,4 @@ func OnDelete(uri uri.URI) {
 			break
 		}
 	}
-}
-
-func getProjectPaths() (bp string, rp string, err error) {
-	fs := os.DirFS(baseDir)
-	bpPaths, err := doublestar.Glob(fs, core.BpGlob)
-	if err != nil {
-		return
-	}
-	if len(bpPaths) > 0 {
-		bp = filepath.Join(baseDir, bpPaths[0])
-	}
-	rpPaths, err := doublestar.Glob(fs, core.RpGlob)
-	if err != nil {
-		return
-	}
-	if len(rpPaths) > 0 {
-		rp = filepath.Join(baseDir, rpPaths[0])
-	}
-	return
-}
-
-func toURI(path string) (uri.URI, error) {
-	var result uri.URI
-	abs, err := filepath.Abs(path)
-	if err != nil {
-		return result, errors.New("Failed to resolve absolute path")
-	}
-	result, err = uri.Parse("file:///" + abs)
-	if err != nil {
-		return result, errors.New(fmt.Sprintf("Failed to parse uri: %s", abs))
-	}
-	return result, nil
 }

@@ -136,7 +136,7 @@ func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Compl
 	if err != nil {
 		return nil, err
 	}
-	handler := handlers.Find(document.URI)
+	handler := rockide.FindJsonHandler(document.URI)
 	if handler == nil {
 		return nil, nil
 	}
@@ -167,29 +167,33 @@ func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Defin
 	if err != nil {
 		return nil, err
 	}
-	handler := handlers.Find(document.URI)
+	handler := rockide.FindJsonHandler(document.URI)
 	if handler == nil {
 		return nil, nil
 	}
 	handlerParams := handlers.NewJsonHandlerParams(document, &params.Position)
 	entry := handler.FindEntry(handlerParams.Location)
-	if entry == nil || entry.Completions == nil {
+	if entry == nil || entry.Definitions == nil {
 		log.Println("Handler not found", handlerParams.Location.Path)
 		return nil, nil
 	}
-	return nil, nil
-	// result := []protocol.CompletionItem{}
-	// for _, item := range entry.Completions(handlerParams) {
-	// 	result = append(result, protocol.CompletionItem{
-	// 		Label: item.Value,
-	// 		TextEdit: &protocol.TextEdit{
-	// 			Range: protocol.Range{
-	// 				Start: document.PositionAt(handlerParams.Node.Offset + 1),
-	// 				End:   document.PositionAt(handlerParams.Node.Offset + handlerParams.Node.Length - 1),
-	// 			},
-	// 			NewText: item.Value,
-	// 		},
-	// 	})
-	// }
-	// return result, nil
+	result := []protocol.LocationLink{}
+	for _, item := range entry.Definitions(handlerParams) {
+		if item.Value != handlerParams.Node.Value {
+			continue
+		}
+		location := protocol.LocationLink{
+			OriginSelectionRange: &protocol.Range{
+				Start: document.PositionAt(handlerParams.Node.Offset + 1),
+				End:   document.PositionAt(handlerParams.Node.Offset + handlerParams.Node.Length - 1),
+			},
+			TargetURI: item.URI,
+		}
+		if item.Range != nil {
+			location.TargetRange = *item.Range
+			location.TargetSelectionRange = *item.Range
+		}
+		result = append(result, location)
+	}
+	return result, nil
 }

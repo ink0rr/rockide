@@ -1,6 +1,7 @@
 package stores
 
 import (
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -9,8 +10,18 @@ import (
 	"go.lsp.dev/uri"
 )
 
-var bpRegex = regexp.MustCompile("(?i)(behavior_pack|[^\\/]*?bp|bp_[^\\/]*?)\\/")
-var rpRegex = regexp.MustCompile("(?i)(resource_pack|[^\\/]*?rp|rp_[^\\/]*?)\\/")
+var cwd string
+
+func init() {
+	dir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	cwd = dir + string(filepath.Separator)
+}
+
+var bpRegex = regexp.MustCompile(`(?i)(behavior_pack|[^\/]*?bp|bp_[^\/]*?)[\\/]`)
+var rpRegex = regexp.MustCompile(`(?i)(resource_pack|[^\/]*?rp|rp_[^\/]*?)[\\/]`)
 
 type BehaviorStore struct {
 	pattern string
@@ -24,11 +35,12 @@ func (b *BehaviorStore) GetPattern() string {
 
 // Parse implements Store.
 func (b *BehaviorStore) Parse(uri uri.URI) error {
-	path, err := filepath.Rel(".", uri.Filename())
-	if err != nil {
-		return err
+	path, found := strings.CutPrefix(uri.Filename(), cwd)
+	path = strings.ReplaceAll(path, "\\", "/")
+	if !found {
+		panic("Failed to resolve path")
 	}
-	path = bpRegex.Split(path, -1)[2]
+	path = bpRegex.Split(path, -1)[1]
 	b.refs = append(b.refs, core.Reference{Value: path, URI: uri})
 	return nil
 
@@ -76,11 +88,12 @@ func (r *ResourceStore) GetPattern() string {
 
 // Parse implements Store.
 func (r *ResourceStore) Parse(uri uri.URI) error {
-	path, err := filepath.Rel(".", uri.Filename())
-	if err != nil {
-		return err
+	path, found := strings.CutPrefix(uri.Filename(), cwd)
+	path = strings.ReplaceAll(path, "\\", "/")
+	if !found {
+		panic("Failed to resolve path")
 	}
-	path = rpRegex.Split(path, -1)[2]
+	path = rpRegex.Split(path, -1)[1]
 	path = strings.TrimSuffix(path, filepath.Ext(path))
 	r.refs = append(r.refs, core.Reference{Value: path, URI: uri})
 	return nil

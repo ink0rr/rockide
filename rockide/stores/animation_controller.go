@@ -7,6 +7,6 @@ import (
 var AnimationController = newJsonStore(core.AnimationControllerGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
-		path: []string{"animation_controllers"},
+		Path: []string{"animation_controllers"},
 	},
 })

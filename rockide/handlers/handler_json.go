@@ -10,40 +10,44 @@ import (
 	"go.lsp.dev/uri"
 )
 
-type JsonHandler struct {
-	Pattern string
-	Entries []*JsonHandlerEntry
-}
 type JsonHandlerEntry struct {
-	path        []string
-	JsonPath    [][]string
+	Path        []string
+	jsonPath    [][]string
 	MatchType   string
 	Completions func(params *JsonHandlerParams) []core.Reference
 	Definitions func(params *JsonHandlerParams) []core.Reference
 	Rename      func(params *JsonHandlerParams) []core.Reference
 }
 
-func NewJsonHandler(pattern string, entries []*JsonHandlerEntry) *JsonHandler {
+type JsonHandler struct {
+	pattern string
+	entries []JsonHandlerEntry
+}
+
+func NewJsonHandler(pattern string, entries []JsonHandlerEntry) *JsonHandler {
 	res := JsonHandler{pattern, entries}
-	for _, entry := range entries {
-		jsonPath := []string{}
-		for _, path := range entry.path {
-			jsonPath = append(jsonPath, strings.Split(path, "/")...)
+	for i, entry := range entries {
+		for _, path := range entry.Path {
+			entry.jsonPath = append(entry.jsonPath, strings.Split(path, "/"))
 		}
-		entry.JsonPath = append(entry.JsonPath, jsonPath)
+		res.entries[i] = entry
 	}
 	return &res
 }
 
+func (j *JsonHandler) GetPattern() string {
+	return j.pattern
+}
+
 func (j *JsonHandler) FindEntry(location *jsonc.Location) *JsonHandlerEntry {
-	for _, entry := range j.Entries {
+	for _, entry := range j.entries {
 		if (entry.MatchType == "key" && !location.IsAtPropertyKey) ||
 			(entry.MatchType == "value" && location.IsAtPropertyKey) {
 			continue
 		}
-		for _, targetPath := range entry.JsonPath {
+		for _, targetPath := range entry.jsonPath {
 			if core.IsJsonPathMatch(location.Path, targetPath) {
-				return entry
+				return &entry
 			}
 		}
 	}
@@ -58,7 +62,7 @@ type JsonHandlerParams struct {
 }
 
 func NewJsonHandlerParams(document *textdocument.TextDocument, position *protocol.Position) *JsonHandlerParams {
-	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(*position))
+	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(position))
 	return &JsonHandlerParams{
 		URI:      document.URI,
 		Text:     document.GetText(),

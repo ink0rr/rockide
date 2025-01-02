@@ -7,6 +7,6 @@ import (
 var Animation = newJsonStore(core.AnimationGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
-		path: []string{"animations"},
+		Path: []string{"animations"},
 	},
 })
