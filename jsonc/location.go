@@ -129,7 +129,7 @@ func GetLocation(text string, position uint32) *Location {
 			} else if sep == "," {
 				last := segments[len(segments)-1]
 				switch last := last.(type) {
-				case uint32:
+				case int:
 					segments[len(segments)-1] = last + 1
 				default:
 					isAtPropertyKey = true

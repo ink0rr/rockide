@@ -1,6 +1,6 @@
 package jsonc
 
-type Path = []any // string | uint32
+type Path = []any // string | int
 
 type Visitor struct {
 	OnObjectBegin    func(offset, length, startLine, startCharacter uint32, pathSupplier func() Path) bool

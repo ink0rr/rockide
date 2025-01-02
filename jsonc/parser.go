@@ -94,9 +94,9 @@ func FindNodeAtLocation(root *Node, path Path) *Node {
 			if !found {
 				return nil
 			}
-		case uint32:
+		case int:
 			index := segment
-			if node.Type != NodeTypeArray || index < 0 || node.Children == nil || index >= uint32(len(node.Children)) {
+			if node.Type != NodeTypeArray || index < 0 || node.Children == nil || index >= len(node.Children) {
 				return nil
 			}
 			node = node.Children[index]
@@ -391,7 +391,7 @@ func Visit(text string, visitor *Visitor, options *ParseOptions) any {
 			} else {
 				index := len(jsonPath) - 1
 				switch value := jsonPath[index].(type) {
-				case uint32:
+				case int:
 					jsonPath[index] = value + 1
 				}
 			}
