@@ -56,7 +56,7 @@ func (j *JsonStore) GetPattern() string {
 func (j *JsonStore) Parse(uri uri.URI) error {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
-	document, err := textdocument.New(uri)
+	document, err := textdocument.Open(uri)
 	if err != nil {
 		return err
 	}

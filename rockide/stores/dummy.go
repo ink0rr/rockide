@@ -41,7 +41,7 @@ func (d *DummyStore) GetPattern() string {
 func (d *DummyStore) Parse(uri uri.URI) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	document, err := textdocument.New(uri)
+	document, err := textdocument.Open(uri)
 	if err != nil {
 		return err
 	}
@@ -59,21 +59,14 @@ func NewDummyStore(pattern string) *DummyStore {
 	}
 }
 
-// var AnimationController = NewDummyStore(core.AnimationControllerGlob)
-// var Animation = NewDummyStore(core.AnimationGlob)
 var Block = NewDummyStore(core.BlockGlob)
-
-// var Entity = NewDummyStore(core.EntityGlob)
 var FeatureRule = NewDummyStore(core.FeatureRuleGlob)
 var Feature = NewDummyStore(core.FeatureGlob)
 var Item = NewDummyStore(core.ItemGlob)
-var TradeTable = NewDummyStore(core.TradeTableGlob)
 var Attachable = NewDummyStore(core.AttachableGlob)
 var ClientAnimationControllers = NewDummyStore(core.ClientAnimationControllersGlob)
 var ClientAnimations = NewDummyStore(core.ClientAnimationsGlob)
 var ClientBlock = NewDummyStore(core.ClientBlockGlob)
-
-// var ClientEntity = NewDummyStore(core.ClientEntityGlob)
 var Geometry = NewDummyStore(core.GeometryGlob)
 var ItemTexture = NewDummyStore(core.ItemTextureGlob)
 var Particle = NewDummyStore(core.ParticleGlob)
