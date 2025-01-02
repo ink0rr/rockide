@@ -16,30 +16,31 @@ import (
 	"github.com/arexon/fsnotify"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/ink0rr/rockide/rockide/core"
+	"github.com/ink0rr/rockide/rockide/stores"
 	"go.lsp.dev/uri"
 )
 
 var baseDir = "."
-var stores = []core.Store{
-	&core.AnimationControllerStore,
-	&core.AnimationStore,
-	&core.BlockStore,
-	&core.EntityStore,
-	&core.FeatureRuleStore,
-	&core.FeatureStore,
-	&core.ItemStore,
-	&core.TradeTableStore,
-	&core.AttachableStore,
-	&core.ClientAnimationControllersStore,
-	&core.ClientAnimationsStore,
-	&core.ClientBlockStore,
-	&core.ClientEntityStore,
-	&core.GeometryStore,
-	&core.ItemTextureStore,
-	&core.ParticleStore,
-	&core.RenderControllerStore,
-	&core.SoundDefinitionStore,
-	&core.TerrainTextureStore,
+var storeList = []stores.Store{
+	stores.AnimationController,
+	stores.Animation,
+	stores.Block,
+	stores.Entity,
+	stores.FeatureRule,
+	stores.Feature,
+	stores.Item,
+	stores.TradeTable,
+	stores.Attachable,
+	stores.ClientAnimationControllers,
+	stores.ClientAnimations,
+	stores.ClientBlock,
+	stores.ClientEntity,
+	stores.Geometry,
+	stores.ItemTexture,
+	stores.Particle,
+	stores.RenderController,
+	stores.SoundDefinition,
+	stores.TerrainTexture,
 }
 
 func SetBaseDir(dir string) {
@@ -53,7 +54,7 @@ func IndexWorkspaces(ctx context.Context) error {
 	skippedFiles := atomic.Uint32{}
 
 	var wg sync.WaitGroup
-	for _, store := range stores {
+	for _, store := range storeList {
 		go func() {
 			defer wg.Done()
 			wg.Add(1)
@@ -145,7 +146,7 @@ func OnCreate(uri uri.URI) {
 	name := uri.Filename()
 	name = strings.ReplaceAll(name, "\\", "/")
 	log.Printf("create: %s", name)
-	for _, store := range stores {
+	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
 			store.Parse(uri)
 			break
@@ -157,7 +158,7 @@ func OnChange(uri uri.URI) {
 	name := uri.Filename()
 	name = strings.ReplaceAll(name, "\\", "/")
 	log.Printf("change: %s", name)
-	for _, store := range stores {
+	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
 			store.Delete(uri)
 			store.Parse(uri)
@@ -170,7 +171,7 @@ func OnDelete(uri uri.URI) {
 	name := uri.Filename()
 	name = strings.ReplaceAll(name, "\\", "/")
 	log.Printf("delete: %s", name)
-	for _, store := range stores {
+	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
 			store.Delete(uri)
 			break

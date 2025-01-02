@@ -1,26 +1,20 @@
-package core
+package stores
 
 import (
-	"github.com/rockide/protocol"
+	"github.com/ink0rr/rockide/rockide/core"
 	"go.lsp.dev/uri"
 )
 
-type Reference struct {
-	Value string
-	Uri   uri.URI
-	Range *protocol.Range
-}
-
 type Store interface {
 	Parse(uri uri.URI) error
-	Get(key string) []Reference
-	GetFrom(uri uri.URI, key Store) []Reference
+	Get(key string) []core.Reference
+	GetFrom(uri uri.URI, key string) []core.Reference
 	Delete(uri uri.URI)
 	GetPattern() string
 }
 
-func Difference(a []Reference, b []Reference) []Reference {
-	result := []Reference{}
+func Difference(a []core.Reference, b []core.Reference) []core.Reference {
+	result := []core.Reference{}
 	set := map[string]bool{}
 	for _, ref := range b {
 		set[ref.Value] = true

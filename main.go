@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ink0rr/go-jsonc"
 	"github.com/ink0rr/rockide/rockide"
+	"github.com/ink0rr/rockide/rockide/handlers"
 	"github.com/ink0rr/rockide/textdocument"
 	"github.com/rockide/protocol"
 	"github.com/sourcegraph/jsonrpc2"
@@ -49,7 +49,7 @@ func (s *server) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.
 	case "textDocument/completion":
 		var params protocol.CompletionParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			err = Completion(ctx, conn, &params)
+			res, err = Completion(ctx, conn, &params)
 		}
 	default:
 		log.Printf("Unhandled method: %s", req.Method)
@@ -119,17 +119,39 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 
 func TextDocumentDidChange(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.DidChangeTextDocumentParams) error {
 	if len(params.ContentChanges) > 0 {
+		log.Println(params.TextDocument.URI)
 		rockide.OnChange(params.TextDocument.URI)
 	}
 	return nil
 }
 
-func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.CompletionParams) error {
+func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.CompletionParams) (*protocol.CompletionList, error) {
 	document, err := textdocument.New(params.TextDocument.URI)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	location := jsonc.GetLocation(document.GetText(), int(document.OffsetAt(params.Position)))
-	_ = location
-	return nil
+	handler := handlers.Find(document.URI)
+	if handler == nil {
+		return nil, nil
+	}
+	handlerParams := handlers.NewJsonHandlerParams(document, &params.Position)
+	entry := handler.FindEntry(handlerParams.Location)
+	if entry == nil || entry.Completions == nil {
+		log.Println("Handler not found", handlerParams.Location.Path)
+		return nil, nil
+	}
+	result := []protocol.CompletionItem{}
+	for _, item := range entry.Completions(handlerParams) {
+		result = append(result, protocol.CompletionItem{
+			Label: item.Value,
+			TextEdit: &protocol.TextEdit{
+				Range: protocol.Range{
+					Start: document.PositionAt(handlerParams.Node.Offset + 1),
+					End:   document.PositionAt(handlerParams.Node.Offset + handlerParams.Node.Length - 1),
+				},
+				NewText: item.Value,
+			},
+		})
+	}
+	return &protocol.CompletionList{Items: result}, nil
 }
