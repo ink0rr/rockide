@@ -15,9 +15,7 @@ func findNodesAtPath(root *jsonc.Node, jsonPath []string) []*jsonc.Node {
 				panic(`Invalid JSON path: ${jsonPath}`)
 			}
 			if currentKey == "*" {
-				for _, child := range node.Children {
-					result = append(result, child)
-				}
+				result = append(result, node.Children...)
 				return
 			}
 			nextNode := jsonc.FindNodeAtLocation(node, jsonc.Path{currentKey})
@@ -54,4 +52,12 @@ func findNodesAtPath(root *jsonc.Node, jsonPath []string) []*jsonc.Node {
 	}
 	visitNodes(root, jsonPath)
 	return result
+}
+
+func skipKey(node *jsonc.Node) transformResult {
+	value, ok := node.Value.(string)
+	if !ok || node.Parent != nil && node.Parent.Type == jsonc.NodeTypeProperty && len(node.Parent.Children) > 0 {
+		return transformResult{Skip: true}
+	}
+	return transformResult{Value: value}
 }

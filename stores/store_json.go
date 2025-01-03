@@ -12,16 +12,15 @@ import (
 )
 
 type transformResult struct {
-	Node  *jsonc.Node
 	Value string
 	Skip  bool
 }
 
 type jsonStoreEntry struct {
-	Id             string
-	Path           []string
-	jsonPath       [][]string
-	TransformValue func(node *jsonc.Node) transformResult
+	Id        string
+	Path      []string
+	jsonPath  [][]string
+	Transform func(node *jsonc.Node) transformResult
 }
 
 type JsonStore struct {
@@ -73,8 +72,8 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 			extract = func(node *jsonc.Node) {
 				if node.Type == jsonc.NodeTypeString {
 					value := node.Value
-					if entry.TransformValue != nil {
-						result := entry.TransformValue(node)
+					if entry.Transform != nil {
+						result := entry.Transform(node)
 						if result.Skip {
 							return
 						}
@@ -89,8 +88,8 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 						}})
 				} else if node.Type == jsonc.NodeTypeProperty && node.Children != nil && index < len(node.Children) {
 					value := node.Children[index].Value
-					if entry.TransformValue != nil {
-						result := entry.TransformValue(node.Children[index])
+					if entry.Transform != nil {
+						result := entry.Transform(node.Children[index])
 						if result.Skip {
 							return
 						}
@@ -120,14 +119,6 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 	return nil
 }
 
-func jsonReference(document textdocument.TextDocument, value string, node *jsonc.Node) *core.Reference {
-	res := core.Reference{Value: value, URI: document.URI, Range: &protocol.Range{}}
-	if node != nil {
-		res.Value = node.Value.(string)
-	}
-	return &res
-}
-
 // Get implements Store.
 func (j *JsonStore) Get(key string) []core.Reference {
 	return j.store[key]
@@ -155,7 +146,7 @@ func (j *JsonStore) Delete(uri uri.URI) {
 				filtered = append(filtered, ref)
 			}
 		}
-		j.store[id] = refs
+		j.store[id] = filtered
 	}
 }
 

@@ -34,8 +34,8 @@ var storeList = []stores.Store{
 	stores.TradeTable,
 	// RP
 	stores.Attachable,
-	stores.ClientAnimationControllers,
-	stores.ClientAnimations,
+	stores.ClientAnimationController,
+	stores.ClientAnimation,
 	stores.ClientBlock,
 	stores.ClientEntity,
 	stores.Geometry,

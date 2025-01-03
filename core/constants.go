@@ -21,17 +21,19 @@ const (
 )
 
 const (
-	AttachableGlob                 = RpGlob + "/attachables/**/*.json"
-	ClientAnimationControllersGlob = RpGlob + "/animation_controllers/**/*.json"
-	ClientAnimationsGlob           = RpGlob + "/animations/**/*.json"
-	ClientBlockGlob                = RpGlob + "/blocks.json"
-	ClientEntityGlob               = RpGlob + "/entity/**/*.json"
-	GeometryGlob                   = RpGlob + "/models/**/*.json"
-	ItemTextureGlob                = RpGlob + "/textures/item_texture.json"
-	ParticleGlob                   = RpGlob + "/particles/**/*.json"
-	RenderControllerGlob           = RpGlob + "/render_controllers/**/*.json"
-	SoundDefinitionGlob            = RpGlob + "/sounds/sound_definitions.json"
-	SoundGlob                      = RpGlob + "/sounds/**/*.{fsb,ogg,wav}"
-	TerrainTextureGlob             = RpGlob + "/textures/terrain_texture.json"
-	TextureGlob                    = RpGlob + "/textures/**/*.{png,tga,fsb}"
+	AttachableGlob                = RpGlob + "/attachables/**/*.json"
+	ClientAnimationControllerGlob = RpGlob + "/animation_controllers/**/*.json"
+	ClientAnimationGlob           = RpGlob + "/animations/**/*.json"
+	ClientBlockGlob               = RpGlob + "/blocks.json"
+	ClientEntityGlob              = RpGlob + "/entity/**/*.json"
+	GeometryGlob                  = RpGlob + "/models/**/*.json"
+	ItemTextureGlob               = RpGlob + "/textures/item_texture.json"
+	ParticleGlob                  = RpGlob + "/particles/**/*.json"
+	RenderControllerGlob          = RpGlob + "/render_controllers/**/*.json"
+	SoundDefinitionGlob           = RpGlob + "/sounds/sound_definitions.json"
+	SoundGlob                     = RpGlob + "/sounds/**/*.{fsb,ogg,wav}"
+	TerrainTextureGlob            = RpGlob + "/textures/terrain_texture.json"
+	TextureGlob                   = RpGlob + "/textures/**/*.{png,tga,fsb}"
 )
+
+var PropertyDomain = []string{"bool_property", "enum_property", "float_property", "int_property"}

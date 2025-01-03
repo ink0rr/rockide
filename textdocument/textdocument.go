@@ -9,8 +9,8 @@ import (
 )
 
 var documents = make(map[protocol.URI]*TextDocument)
+var cacheEnabled = false
 var mutex sync.Mutex
-var cacheEnabled bool
 
 type TextDocument struct {
 	URI     uri.URI `json:"uri"`
