@@ -36,11 +36,11 @@ func toURI(path string) (uri.URI, error) {
 	var result uri.URI
 	abs, err := filepath.Abs(path)
 	if err != nil {
-		return result, errors.New("Failed to resolve absolute path")
+		return result, errors.New("failed to resolve absolute path")
 	}
 	result, err = uri.Parse("file:///" + abs)
 	if err != nil {
-		return result, errors.New(fmt.Sprintf("Failed to parse uri: %s", abs))
+		return result, fmt.Errorf("failed to parse uri: %s", abs)
 	}
 	return result, nil
 }

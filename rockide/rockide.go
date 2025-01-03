@@ -87,7 +87,7 @@ func IndexWorkspaces(ctx context.Context) error {
 		}()
 	}
 	wg.Wait()
-	totalTime := time.Now().Sub(startTime)
+	totalTime := time.Since(startTime)
 	log.Printf("Scanned %d files in %s", totalFiles.Load(), totalTime)
 	if count := skippedFiles.Load(); count > 0 {
 		log.Printf("Skipped %d files", count)
@@ -102,13 +102,13 @@ func WatchFiles(ctx context.Context) error {
 	}
 	bp, rp, err := getProjectPaths()
 	if err != nil {
-		return errors.Join(errors.New("Failed to get project paths"), err)
+		return errors.Join(errors.New("failed to get project paths"), err)
 	}
 	if err := watcher.Add(filepath.Join(bp, "...")); err != nil {
-		return errors.Join(errors.New("Failed to watch BP path"), err)
+		return errors.Join(errors.New("failed to watch BP path"), err)
 	}
 	if err := watcher.Add(filepath.Join(rp, "...")); err != nil {
-		return errors.Join(errors.New("Failed to watch RP path"), err)
+		return errors.Join(errors.New("failed to watch RP path"), err)
 	}
 	go func() {
 		for {
