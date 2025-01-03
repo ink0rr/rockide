@@ -1,7 +1,6 @@
 package textdocument
 
 import (
-	"math"
 	"os"
 	"sync"
 
@@ -11,6 +10,7 @@ import (
 
 var documents = make(map[protocol.URI]*TextDocument)
 var mutex sync.Mutex
+var cacheEnabled bool
 
 type TextDocument struct {
 	URI     uri.URI `json:"uri"`
@@ -18,17 +18,21 @@ type TextDocument struct {
 }
 
 func Open(uri uri.URI) (*TextDocument, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
-	if document := documents[uri]; document != nil {
-		return document, nil
+	if cacheEnabled {
+		mutex.Lock()
+		defer mutex.Unlock()
+		if document := documents[uri]; document != nil {
+			return document, nil
+		}
 	}
 	txt, err := os.ReadFile(uri.Filename())
 	if err != nil {
 		return nil, err
 	}
 	document := TextDocument{URI: uri, content: string(txt)}
-	documents[uri] = &document
+	if cacheEnabled {
+		documents[uri] = &document
+	}
 	return &document, nil
 }
 
@@ -44,6 +48,10 @@ func Close(uri protocol.URI) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	delete(documents, uri)
+}
+
+func EnableCache(flag bool) {
+	cacheEnabled = flag
 }
 
 func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 {
@@ -64,7 +72,7 @@ func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
 		return protocol.Position{Character: offset}
 	}
 	for low < high {
-		mid := int(math.Floor(float64((low + high) / 2)))
+		mid := (low + high) / 2
 		if lineOffsets[mid] > offset {
 			high = mid
 		} else {
@@ -87,9 +95,6 @@ func (d *TextDocument) OffsetAt(position *protocol.Position) uint32 {
 	contentLength := uint32(len(d.content))
 	if position.Line >= maxLine {
 		return contentLength
-	}
-	if position.Line < 0 {
-		return 0
 	}
 	lineOffset := lineOffsets[position.Line]
 	if position.Character <= 0 {
