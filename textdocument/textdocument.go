@@ -13,8 +13,9 @@ var cacheEnabled = false
 var mutex sync.Mutex
 
 type TextDocument struct {
-	URI     uri.URI `json:"uri"`
-	content string
+	URI         uri.URI `json:"uri"`
+	content     string
+	lineOffsets []uint32
 }
 
 func Open(uri uri.URI) (*TextDocument, error) {
@@ -61,11 +62,16 @@ func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 
 	return offset
 }
 
-func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
-	if length := uint32(len(d.content)); offset > length {
-		offset = length
+func (d *TextDocument) getLineOffsets() []uint32 {
+	if d.lineOffsets == nil {
+		d.lineOffsets = computeLineOffsets(d.content, true, 0)
 	}
-	lineOffsets := computeLineOffsets(d.content, true, 0)
+	return d.lineOffsets
+}
+
+func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
+	offset = min(offset, uint32(len(d.content)))
+	lineOffsets := d.getLineOffsets()
 	low := 0
 	high := len(lineOffsets)
 	if high == 0 {
@@ -90,7 +96,7 @@ func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
 }
 
 func (d *TextDocument) OffsetAt(position *protocol.Position) uint32 {
-	lineOffsets := computeLineOffsets(d.content, true, 0)
+	lineOffsets := d.getLineOffsets()
 	maxLine := uint32(len(lineOffsets))
 	contentLength := uint32(len(d.content))
 	if position.Line >= maxLine {
