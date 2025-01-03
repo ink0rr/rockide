@@ -75,7 +75,7 @@ func (s *scanner) scanHexDigits(count uint32, exact bool) (byte, error) {
 		digits++
 	}
 	if digits < count {
-		return 0, fmt.Errorf("Expected %d digits in hex number, but got %d", count, digits)
+		return 0, fmt.Errorf("expected %d digits in hex number, but got %d", count, digits)
 	}
 	return value, nil
 }
@@ -169,14 +169,13 @@ func (s *scanner) scanString() string {
 				} else {
 					result += string(ch3)
 				}
-				break
 			default:
 				s.scanError = ScanErrorInvalidEscapeCharacter
 			}
 			start = s.pos
 			continue
 		}
-		if ch >= 0 && ch <= 0x1f {
+		if ch <= 0x1f {
 			if isLineBreak(ch) {
 				result += substring(s.text, start, s.pos)
 				s.scanError = ScanErrorUnexpectedEndOfString

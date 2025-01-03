@@ -86,7 +86,7 @@ func TestScanStrings(t *testing.T) {
 	assertKinds(t, `"\r"`, jsonc.SyntaxKindStringLiteral)
 	assertKinds(t, `"\t"`, jsonc.SyntaxKindStringLiteral)
 	assertKinds(t, `"`+"\u88ff"+`"`, jsonc.SyntaxKindStringLiteral)
-	assertKinds(t, `"`+"​\u2028"+`"`, jsonc.SyntaxKindStringLiteral)
+	assertKinds(t, `"`+"\u200b\u2028"+`"`, jsonc.SyntaxKindStringLiteral)
 	assertScanError(t, `"\v"`, jsonc.ScanErrorInvalidEscapeCharacter, jsonc.SyntaxKindStringLiteral)
 
 	// unexpected end

@@ -84,7 +84,7 @@ func FindNodeAtLocation(root *Node, path Path) *Node {
 			}
 			found := false
 			for _, propertyNode := range node.Children {
-				if propertyNode.Children != nil && len(propertyNode.Children) == 2 && propertyNode.Children[0].Value == segment {
+				if len(propertyNode.Children) == 2 && propertyNode.Children[0].Value == segment {
 					node = propertyNode.Children[1]
 					found = true
 					break
