@@ -42,6 +42,7 @@ func Update(uri protocol.URI, content string) {
 	defer mutex.Unlock()
 	if document := documents[uri]; document != nil {
 		document.content = content
+		document.lineOffsets = nil
 	}
 }
 
