@@ -11,10 +11,7 @@ type Parser struct {
 }
 
 func NewParser(source string) (*Parser, error) {
-	parser := &Parser{
-		Source: source,
-		Tokens: []Token{},
-	}
+	parser := &Parser{Source: source}
 
 	current := source
 	offset := 0
