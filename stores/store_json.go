@@ -112,12 +112,13 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 		}
 		j.store[entry.Id] = data
 	}
-	_ = root
 	return nil
 }
 
 // Get implements Store.
 func (j *JsonStore) Get(key string) []core.Reference {
+	j.mutex.Lock()
+	defer j.mutex.Unlock()
 	return j.store[key]
 }
 
