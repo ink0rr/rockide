@@ -12,7 +12,7 @@ import (
 
 type JsonHandlerEntry struct {
 	Path        []string
-	jsonPath    [][]string
+	jsonPath    []jsonc.Path
 	MatchType   string
 	Completions func(params *JsonHandlerParams) []core.Reference
 	Definitions func(params *JsonHandlerParams) []core.Reference
@@ -27,8 +27,11 @@ type JsonHandler struct {
 func NewJsonHandler(pattern string, entries []JsonHandlerEntry) *JsonHandler {
 	res := JsonHandler{pattern, entries}
 	for i, entry := range entries {
-		for _, path := range entry.Path {
-			entry.jsonPath = append(entry.jsonPath, strings.Split(path, "/"))
+		entry.jsonPath = make([]jsonc.Path, len(entry.Path))
+		for i, path := range entry.Path {
+			for _, segment := range strings.Split(path, "/") {
+				entry.jsonPath[i] = append(entry.jsonPath[i], segment)
+			}
 		}
 		res.entries[i] = entry
 	}
@@ -46,7 +49,7 @@ func (j *JsonHandler) FindEntry(location *jsonc.Location) *JsonHandlerEntry {
 			continue
 		}
 		for _, targetPath := range entry.jsonPath {
-			if isJsonPathMatch(location.Path, targetPath) {
+			if jsonc.PathMatches(location.Path, targetPath) {
 				return &entry
 			}
 		}

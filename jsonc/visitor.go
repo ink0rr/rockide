@@ -5,8 +5,6 @@ import (
 	"strconv"
 )
 
-type Path = []any // string | int
-
 type Visitor struct {
 	OnObjectBegin    func(offset, length, startLine, startCharacter uint32, pathSupplier func() Path) bool
 	OnObjectProperty func(name string, offset, length, startLine, startCharacter uint32, pathSupplier func() Path)

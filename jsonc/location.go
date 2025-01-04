@@ -6,18 +6,6 @@ type Location struct {
 	IsAtPropertyKey bool
 }
 
-func (l *Location) Matches(pattern Path) bool {
-	k := 0
-	for i := 0; k < len(pattern) && i < len(l.Path); i++ {
-		if pattern[k] == l.Path[i] || pattern[k] == "*" {
-			k++
-		} else if pattern[k] != "**" {
-			return false
-		}
-	}
-	return k == len(pattern)
-}
-
 // For a given offset, evaluate the location in the JSON document. Each segment in the location path is either a property name or an array index.
 func GetLocation(text string, position uint32) *Location {
 	isError := false
