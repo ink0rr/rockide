@@ -125,7 +125,8 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 	}
 	progress := protocol.ProgressParams{
 		Token: *token,
-		Value: &protocol.WorkDoneProgressBegin{Kind: protocol.WorkDoneProgressKindBegin, Title: "Rockide: Indexing workspace"}}
+		Value: &protocol.WorkDoneProgressBegin{Kind: protocol.WorkDoneProgressKindBegin, Title: "Rockide: Indexing workspace"},
+	}
 	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
 		return err
 	}

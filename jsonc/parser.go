@@ -133,7 +133,6 @@ func FindNodeAtOffset(node *Node, offset uint32, includeRightBound bool) *Node {
 					return item
 				}
 			}
-
 		}
 		return node
 	}
