@@ -84,7 +84,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
-			TextDocumentSync: 1,
+			TextDocumentSync: protocol.TextDocumentSyncKindFull,
 			CompletionProvider: &protocol.CompletionOptions{
 				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.,'"() `, ""),
 			},
@@ -99,10 +99,24 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 }
 
 func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializedParams) error {
-	// TODO: Set baseDir from config
-	stat, err := os.Stat("packs")
-	if err == nil && stat.IsDir() {
+	configParams := protocol.ConfigurationParams{
+		Items: []protocol.ConfigurationItem{{Section: "rockide.baseDir"}},
+	}
+	configResult := []any{}
+	err := conn.Call(ctx, "workspace/configuration", &configParams, &configResult)
+	if err != nil {
+		return err
+	}
+	baseDir, ok := configResult[0].(string)
+	if ok && baseDir != "" {
+		rockide.SetBaseDir(baseDir)
+	} else if stat, err := os.Stat("packs"); err == nil && stat.IsDir() {
 		rockide.SetBaseDir("packs")
+	}
+
+	if !rockide.IsMinecraftWorkspace(ctx) {
+		log.Println("Not a Minecraft workspace, exiting...")
+		return nil
 	}
 
 	token := protocol.NewProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))

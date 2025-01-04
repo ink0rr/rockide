@@ -14,7 +14,9 @@ import (
 
 	"github.com/arexon/fsnotify"
 	"github.com/bmatcuk/doublestar/v4"
+	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/handlers"
+	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/stores"
 	"go.lsp.dev/uri"
 )
@@ -52,6 +54,31 @@ var jsonHandlers = []*handlers.JsonHandler{
 
 func SetBaseDir(dir string) {
 	baseDir = dir
+}
+
+func IsMinecraftWorkspace(ctx context.Context) bool {
+	fsys := os.DirFS(baseDir)
+	hasManifest := false
+	err := doublestar.GlobWalk(fsys, core.ProjectGlob+"/manifest.json", func(path string, d fs.DirEntry) error {
+		if d.IsDir() {
+			return nil
+		}
+		path = filepath.Join(baseDir, path)
+		log.Printf("Found manifest: %s", path)
+		txt, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		root, _ := jsonc.ParseTree(string(txt), nil)
+		formatVersion := jsonc.FindNodeAtLocation(root, jsonc.Path{"format_version"}) != nil
+		header := jsonc.FindNodeAtLocation(root, jsonc.Path{"header"}) != nil
+		modules := jsonc.FindNodeAtLocation(root, jsonc.Path{"modules"}) != nil
+		if formatVersion && header && modules {
+			hasManifest = true
+		}
+		return nil
+	})
+	return err == nil && hasManifest
 }
 
 func IndexWorkspaces(ctx context.Context) error {
