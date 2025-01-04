@@ -75,7 +75,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "event_refs",
-		Path: []string{
+		Path: flatMap([]string{
 			"minecraft:behavior.admire_item",
 			"minecraft:behavior.avoid_block",
 			"minecraft:behavior.avoid_mob_type",
@@ -137,7 +137,12 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 			"minecraft:target_nearby_sensor",
 			"minecraft:timer",
 			"minecraft:trusting",
-		},
+		}, func(value string) []string {
+			return []string{
+				fmt.Sprintf("minecraft:entity/components/%s/**/event", value),
+				fmt.Sprintf("minecraft:entity/component_groups/*/%s/**/event", value),
+			}
+		}),
 	},
 	{
 		Id: "family",
@@ -179,7 +184,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 		}, func(value string) []string {
 			return []string{
 				fmt.Sprintf("minecraft:entity/components/%s/**/event", value),
-				fmt.Sprintf("minecraft:entity/component_groups/%s/**/event", value),
+				fmt.Sprintf("minecraft:entity/component_groups/*/%s/**/event", value),
 			}
 		},
 		),
@@ -192,7 +197,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 		}, func(value string) []string {
 			return []string{
 				fmt.Sprintf("minecraft:entity/components/%s/**/event", value),
-				fmt.Sprintf("minecraft:entity/component_groups/%s/**/event", value),
+				fmt.Sprintf("minecraft:entity/component_groups/*/%s/**/event", value),
 			}
 		}),
 	},
