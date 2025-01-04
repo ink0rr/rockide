@@ -9,12 +9,12 @@ var ClientBlock = newJsonStore(core.ClientBlockGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"*"},
-		Transform: func(node *jsonc.Node) transformResult {
+		Transform: func(node *jsonc.Node) *string {
 			nodeValue, ok := node.Value.(string)
 			if !ok || node.Value == "format_version" {
-				return transformResult{Skip: true}
+				return nil
 			}
-			return transformResult{Value: nodeValue}
+			return &nodeValue
 		},
 	},
 	{

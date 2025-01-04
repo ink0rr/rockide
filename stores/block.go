@@ -15,14 +15,14 @@ var Block = newJsonStore(core.BlockGlob, []jsonStoreEntry{
 	{
 		Id:   "tag",
 		Path: []string{"minecraft:block/components", "minecraft:block/permutations/*/components"},
-		Transform: func(node *jsonc.Node) transformResult {
+		Transform: func(node *jsonc.Node) *string {
 			value, ok := node.Value.(string)
 			if ok {
 				if after, found := strings.CutPrefix(value, "tag:"); found {
-					return transformResult{Value: after}
+					return &after
 				}
 			}
-			return transformResult{Skip: true}
+			return nil
 		},
 	},
 })

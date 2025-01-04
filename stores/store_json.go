@@ -11,16 +11,11 @@ import (
 	"go.lsp.dev/uri"
 )
 
-type transformResult struct {
-	Value string
-	Skip  bool
-}
-
 type jsonStoreEntry struct {
 	Id        string
 	Path      []string
 	jsonPath  [][]string
-	Transform func(node *jsonc.Node) transformResult
+	Transform func(node *jsonc.Node) *string
 }
 
 type JsonStore struct {
@@ -74,10 +69,10 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 					value := node.Value
 					if entry.Transform != nil {
 						result := entry.Transform(node)
-						if result.Skip {
+						if result == nil {
 							return
 						}
-						value = result.Value
+						value = *result
 					}
 					data = append(data, core.Reference{
 						Value: value.(string),
@@ -85,15 +80,16 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 						Range: &protocol.Range{
 							Start: document.PositionAt(node.Offset),
 							End:   document.PositionAt(node.Offset + node.Length),
-						}})
+						},
+					})
 				} else if node.Type == jsonc.NodeTypeProperty && node.Children != nil && index < len(node.Children) {
 					value := node.Children[index].Value
 					if entry.Transform != nil {
 						result := entry.Transform(node.Children[index])
-						if result.Skip {
+						if result == nil {
 							return
 						}
-						value = result.Value
+						value = *result
 					}
 					targetNode := node.Children[index]
 					data = append(data, core.Reference{
@@ -102,7 +98,8 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 						Range: &protocol.Range{
 							Start: document.PositionAt(targetNode.Offset),
 							End:   document.PositionAt(targetNode.Offset + targetNode.Length),
-						}})
+						},
+					})
 				} else if node.Children != nil {
 					for _, child := range node.Children {
 						extract(child)

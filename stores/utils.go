@@ -54,12 +54,13 @@ func findNodesAtPath(root *jsonc.Node, jsonPath []string) []*jsonc.Node {
 	return result
 }
 
-func skipKey(node *jsonc.Node) transformResult {
+// Skip the keys when an entry might match both keys and values
+func skipKey(node *jsonc.Node) *string {
 	value, ok := node.Value.(string)
 	if !ok || node.Parent != nil && node.Parent.Type == jsonc.NodeTypeProperty && len(node.Parent.Children) > 0 {
-		return transformResult{Skip: true}
+		return nil
 	}
-	return transformResult{Value: value}
+	return &value
 }
 
 func flatMap[T any](arr []T, callback func(value T) []T) []T {

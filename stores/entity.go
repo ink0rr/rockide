@@ -39,21 +39,21 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 			"minecraft:entity/components/**/filters/**/domain",
 			"minecraft:entity/component_groups/**/filters/**/domain",
 		},
-		Transform: func(node *jsonc.Node) transformResult {
+		Transform: func(node *jsonc.Node) *string {
 			nodeValue, ok := node.Value.(string)
 			if !ok || node.Parent == nil {
-				return transformResult{Skip: true}
+				return nil
 			}
 			parent := node.Parent.Parent
 			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
 			if test == nil {
-				return transformResult{Skip: true}
+				return nil
 			}
 			testValue, ok := test.Value.(string)
 			if !ok || slices.Index(core.PropertyDomain, testValue) == -1 {
-				return transformResult{Skip: true}
+				return nil
 			}
-			return transformResult{Value: nodeValue}
+			return &nodeValue
 		},
 	},
 	{
@@ -154,21 +154,21 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	{
 		Id:   "family_refs",
 		Path: []string{"minecraft:entity/components/**/filters/**/value", "minecraft:entity/component_groups/**/filters/**/value"},
-		Transform: func(node *jsonc.Node) transformResult {
+		Transform: func(node *jsonc.Node) *string {
 			nodeValue, ok := node.Value.(string)
 			if !ok || node.Parent == nil {
-				return transformResult{Skip: true}
+				return nil
 			}
 			parent := node.Parent.Parent
 			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
 			if test == nil {
-				return transformResult{Skip: true}
+				return nil
 			}
 			testValue, ok := test.Value.(string)
 			if !ok || testValue != "is_family" {
-				return transformResult{Skip: true}
+				return nil
 			}
-			return transformResult{Value: nodeValue}
+			return &nodeValue
 		},
 	},
 	{
