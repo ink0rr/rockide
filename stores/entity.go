@@ -1,6 +1,7 @@
 package stores
 
 import (
+	"fmt"
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
@@ -167,18 +168,33 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "loot_table_path",
-		Path: []string{
-			"minecraft:loot/table",
-			"minecraft:behavior.sneeze/loot_table",
-			"minecraft:barter/barter_table",
-			"minecraft:interact/interactions/add_items/table",
-			"minecraft:interact/interactions/*/add_items/table",
-			"minecraft:interact/interactions/spawn_items/table",
-			"minecraft:interact/interactions/*/spawn_items/table",
-		},
+		Path: flatMap(
+			[]string{
+				"minecraft:loot/table",
+				"minecraft:behavior.sneeze/loot_table",
+				"minecraft:barter/barter_table",
+				"minecraft:interact/interactions/add_items/table",
+				"minecraft:interact/interactions/*/add_items/table",
+				"minecraft:interact/interactions/spawn_items/table",
+				"minecraft:interact/interactions/*/spawn_items/table"},
+			func(value string) []string {
+				return []string{
+					fmt.Sprintf("minecraft:entity/components/%s/**/event", value),
+					fmt.Sprintf("minecraft:entity/component_groups/%s/**/event", value),
+				}
+			},
+		),
 	},
 	{
-		Id:   "trade_table_path",
-		Path: []string{"minecraft:trade_table/table", "minecraft:economy_trade_table/table"},
+		Id: "trade_table_path",
+		Path: flatMap([]string{
+			"minecraft:trade_table/table",
+			"minecraft:economy_trade_table/table",
+		}, func(value string) []string {
+			return []string{
+				fmt.Sprintf("minecraft:entity/components/%s/**/event", value),
+				fmt.Sprintf("minecraft:entity/component_groups/%s/**/event", value),
+			}
+		}),
 	},
 })
