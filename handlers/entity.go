@@ -7,44 +7,41 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Entity = NewJsonHandler(core.EntityGlob, []JsonHandlerEntry{
+var Entity = JsonHandler{pattern: core.EntityGlob, entries: []JsonHandlerEntry{
 	{
-		Path: []string{"minecraft:entity/description/identifier"},
-		Completions: func(params *JsonHandlerParams) []core.Reference {
-			return stores.Difference(stores.ClientEntity.Get("id"), stores.Entity.Get("id"))
+		Path:    []string{"minecraft:entity/description/identifier"},
+		Actions: Completions | Definitions | Rename,
+		Source: func(params *JsonParams) []core.Reference {
+			return stores.ClientEntity.Get("id")
+		},
+		References: func(params *JsonParams) []core.Reference {
+			return stores.Entity.Get("id")
 		},
 	},
 	{
-		Path: []string{"minecraft:entity/description/animations/*"},
-		Completions: func(params *JsonHandlerParams) []core.Reference {
-			if params.IsAtPropertyKeyOrArray() {
-				return stores.Difference(
-					stores.Entity.GetFrom(params.URI, "animate"),
-					stores.Entity.GetFrom(params.URI, "animation"),
-				)
-			}
-			return slices.Concat(stores.AnimationController.Get("id"), stores.Animation.Get("id"))
-		},
-		Definitions: func(params *JsonHandlerParams) []core.Reference {
-			if params.IsAtPropertyKeyOrArray() {
+		Path:    []string{"minecraft:entity/description/animations/*"},
+		Actions: Completions | Definitions | Rename,
+		Source: func(params *JsonParams) []core.Reference {
+			if params.Location.IsAtPropertyKey {
 				return stores.Entity.GetFrom(params.URI, "animate")
 			}
 			return slices.Concat(stores.AnimationController.Get("id"), stores.Animation.Get("id"))
 		},
-		Rename: func(params *JsonHandlerParams) []core.Reference {
-			return slices.Concat(stores.AnimationController.Get("id"), stores.Animation.Get("id"))
+		References: func(params *JsonParams) []core.Reference {
+			if params.Location.IsAtPropertyKey {
+				return stores.Entity.GetFrom(params.URI, "animation")
+			}
+			return nil
 		},
 	},
 	{
-		Path: []string{
-			"minecraft:entity/components/minecraft:loot/table",
-			"minecraft:entity/component_groups/*/minecraft:loot/table",
+		Path:    []string{"minecraft:entity/description/scripts/animate/*"},
+		Actions: Completions | Definitions | Rename,
+		Source: func(params *JsonParams) []core.Reference {
+			return stores.Entity.GetFrom(params.URI, "animation")
 		},
-		Completions: func(params *JsonHandlerParams) []core.Reference {
-			return stores.LootTable.Get("")
-		},
-		Definitions: func(params *JsonHandlerParams) []core.Reference {
-			return stores.LootTable.Get("")
+		References: func(params *JsonParams) []core.Reference {
+			return stores.Entity.GetFrom(params.URI, "animate")
 		},
 	},
-})
+}}

@@ -8,9 +8,11 @@ import (
 	"go.lsp.dev/uri"
 )
 
-var documents = make(map[protocol.URI]*TextDocument)
-var cacheEnabled = false
-var mutex sync.Mutex
+var (
+	documents    = make(map[string]*TextDocument)
+	cacheEnabled = false
+	mutex        sync.Mutex
+)
 
 type TextDocument struct {
 	URI         uri.URI `json:"uri"`
@@ -22,7 +24,7 @@ func Open(uri uri.URI) (*TextDocument, error) {
 	if cacheEnabled {
 		mutex.Lock()
 		defer mutex.Unlock()
-		if document := documents[uri]; document != nil {
+		if document := documents[uri.Filename()]; document != nil {
 			return document, nil
 		}
 	}
@@ -32,24 +34,34 @@ func Open(uri uri.URI) (*TextDocument, error) {
 	}
 	document := TextDocument{URI: uri, content: string(txt)}
 	if cacheEnabled {
-		documents[uri] = &document
+		documents[uri.Filename()] = &document
 	}
 	return &document, nil
 }
 
-func Update(uri protocol.URI, content string) {
+func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChangeEvent) error {
+	if len(contentChanges) == 0 {
+		return nil
+	}
 	mutex.Lock()
 	defer mutex.Unlock()
-	if document := documents[uri]; document != nil {
-		document.content = content
+	document := documents[uri.Filename()]
+	if document == nil {
+		return nil
+	}
+	for _, change := range contentChanges {
+		startOffset := document.OffsetAt(&change.Range.Start)
+		endOffset := document.OffsetAt(&change.Range.End)
+		document.content = document.content[:startOffset] + change.Text + document.content[endOffset:]
 		document.lineOffsets = nil
 	}
+	return nil
 }
 
 func Close(uri protocol.URI) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	delete(documents, uri)
+	delete(documents, uri.Filename())
 }
 
 func EnableCache(flag bool) {

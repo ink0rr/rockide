@@ -2,7 +2,6 @@ package rockide
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -38,14 +37,11 @@ func toURI(path string) (uri.URI, error) {
 	if err != nil {
 		return result, errors.New("failed to resolve absolute path")
 	}
-	result, err = uri.Parse("file:///" + abs)
-	if err != nil {
-		return result, fmt.Errorf("failed to parse uri: %s", abs)
-	}
+	result = uri.File(abs)
 	return result, nil
 }
 
-func FindJsonHandler(uri uri.URI) *handlers.JsonHandler {
+func FindHandler(uri uri.URI) handlers.Handler {
 	name := uri.Filename()
 	name = strings.ReplaceAll(name, "\\", "/")
 	for _, handler := range jsonHandlers {

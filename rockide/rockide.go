@@ -48,8 +48,8 @@ var storeList = []stores.Store{
 	stores.TerrainTexture,
 }
 
-var jsonHandlers = []*handlers.JsonHandler{
-	handlers.Entity,
+var jsonHandlers = []handlers.Handler{
+	&handlers.Entity,
 }
 
 func SetBaseDir(dir string) {
@@ -81,17 +81,17 @@ func IsMinecraftWorkspace(ctx context.Context) bool {
 	return err == nil && hasManifest
 }
 
-func IndexWorkspaces(ctx context.Context) error {
+func IndexWorkspaces(ctx context.Context) {
 	startTime := time.Now()
 	fsys := os.DirFS(baseDir)
 	totalFiles := atomic.Uint32{}
 	skippedFiles := atomic.Uint32{}
 
 	var wg sync.WaitGroup
+	wg.Add(len(storeList))
 	for _, store := range storeList {
 		go func() {
 			defer wg.Done()
-			wg.Add(1)
 			doublestar.GlobWalk(fsys, store.GetPattern(), func(path string, d fs.DirEntry) error {
 				if d.IsDir() {
 					return nil
@@ -114,12 +114,12 @@ func IndexWorkspaces(ctx context.Context) error {
 		}()
 	}
 	wg.Wait()
+
 	totalTime := time.Since(startTime)
 	log.Printf("Scanned %d files in %s", totalFiles.Load(), totalTime)
 	if count := skippedFiles.Load(); count > 0 {
 		log.Printf("Skipped %d files", count)
 	}
-	return nil
 }
 
 func WatchFiles(ctx context.Context) error {

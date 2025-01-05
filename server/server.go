@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/rockide"
 	"github.com/ink0rr/rockide/textdocument"
 	"github.com/rockide/protocol"
@@ -46,6 +45,11 @@ func (s *Server) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			res, err = Definition(ctx, conn, &params)
 		}
+	case "textDocument/rename":
+		var params protocol.RenameParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			res, err = Rename(ctx, conn, &params)
+		}
 	// TextDocumentSync events
 	case "textDocument/didOpen":
 		var params protocol.DidOpenTextDocumentParams
@@ -55,10 +59,8 @@ func (s *Server) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.
 	case "textDocument/didChange":
 		var params protocol.DidChangeTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			if len(params.ContentChanges) > 0 {
-				textdocument.Update(params.TextDocument.URI, params.ContentChanges[0].Text)
-				rockide.OnChange(params.TextDocument.URI)
-			}
+			err = textdocument.Update(params.TextDocument.URI, params.ContentChanges)
+			rockide.OnChange(params.TextDocument.URI)
 		}
 	case "textDocument/didClose":
 		var params protocol.DidCloseTextDocumentParams
@@ -84,7 +86,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
-			TextDocumentSync: protocol.TextDocumentSyncKindFull,
+			TextDocumentSync: protocol.TextDocumentSyncKindIncremental,
 			CompletionProvider: &protocol.CompletionOptions{
 				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.,'"() `, ""),
 			},
@@ -131,9 +133,7 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 		return err
 	}
 
-	if err := rockide.IndexWorkspaces(ctx); err != nil {
-		return err
-	}
+	rockide.IndexWorkspaces(ctx)
 	textdocument.EnableCache(true)
 
 	progress.Value = &protocol.WorkDoneProgressEnd{Kind: protocol.WorkDoneProgressKindEnd}
@@ -152,30 +152,15 @@ func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Compl
 	if err != nil {
 		return nil, err
 	}
-	handler := rockide.FindJsonHandler(document.URI)
+	handler := rockide.FindHandler(document.URI)
 	if handler == nil {
 		return nil, nil
 	}
-	handlerParams := handlers.NewJsonHandlerParams(document, &params.Position)
-	entry := handler.FindEntry(handlerParams.Location)
-	if entry == nil || entry.Completions == nil {
-		log.Println("Handler not found", handlerParams.Location.Path)
+	actions := handler.GetActions(document, &params.Position)
+	if actions == nil || actions.Completions == nil {
 		return nil, nil
 	}
-	result := []protocol.CompletionItem{}
-	for _, item := range entry.Completions(handlerParams) {
-		result = append(result, protocol.CompletionItem{
-			Label: item.Value,
-			TextEdit: &protocol.TextEdit{
-				Range: protocol.Range{
-					Start: document.PositionAt(handlerParams.Node.Offset + 1),
-					End:   document.PositionAt(handlerParams.Node.Offset + handlerParams.Node.Length - 1),
-				},
-				NewText: item.Value,
-			},
-		})
-	}
-	return result, nil
+	return actions.Completions(), nil
 }
 
 func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.DefinitionParams) ([]protocol.LocationLink, error) {
@@ -183,33 +168,29 @@ func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Defin
 	if err != nil {
 		return nil, err
 	}
-	handler := rockide.FindJsonHandler(document.URI)
+	handler := rockide.FindHandler(document.URI)
 	if handler == nil {
 		return nil, nil
 	}
-	handlerParams := handlers.NewJsonHandlerParams(document, &params.Position)
-	entry := handler.FindEntry(handlerParams.Location)
-	if entry == nil || entry.Definitions == nil {
-		log.Println("Handler not found", handlerParams.Location.Path)
+	actions := handler.GetActions(document, &params.Position)
+	if actions == nil || actions.Definitions == nil {
 		return nil, nil
 	}
-	result := []protocol.LocationLink{}
-	for _, item := range entry.Definitions(handlerParams) {
-		if item.Value != handlerParams.Node.Value {
-			continue
-		}
-		location := protocol.LocationLink{
-			OriginSelectionRange: &protocol.Range{
-				Start: document.PositionAt(handlerParams.Node.Offset + 1),
-				End:   document.PositionAt(handlerParams.Node.Offset + handlerParams.Node.Length - 1),
-			},
-			TargetURI: item.URI,
-		}
-		if item.Range != nil {
-			location.TargetRange = *item.Range
-			location.TargetSelectionRange = *item.Range
-		}
-		result = append(result, location)
+	return actions.Definitions(), nil
+}
+
+func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenameParams) ([]protocol.WorkspaceEdit, error) {
+	document, err := textdocument.Open(params.TextDocument.URI)
+	if err != nil {
+		return nil, err
 	}
-	return result, nil
+	handler := rockide.FindHandler(document.URI)
+	if handler == nil {
+		return nil, nil
+	}
+	actions := handler.GetActions(document, &params.Position)
+	if actions == nil || actions.Definitions == nil {
+		return nil, nil
+	}
+	return actions.Rename(), nil
 }

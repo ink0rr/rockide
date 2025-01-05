@@ -126,7 +126,7 @@ func (j *JsonStore) Get(key string) []core.Reference {
 func (j *JsonStore) GetFrom(uri uri.URI, key string) []core.Reference {
 	res := []core.Reference{}
 	for _, ref := range j.Get(key) {
-		if uri == ref.URI {
+		if ref.URI.Filename() == uri.Filename() {
 			res = append(res, ref)
 		}
 	}
@@ -140,7 +140,7 @@ func (j *JsonStore) Delete(uri uri.URI) {
 	for id, refs := range j.store {
 		filtered := []core.Reference{}
 		for _, ref := range refs {
-			if ref.URI != uri {
+			if ref.URI.Filename() != uri.Filename() {
 				filtered = append(filtered, ref)
 			}
 		}
