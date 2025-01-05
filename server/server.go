@@ -59,8 +59,9 @@ func (s *Server) Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.
 	case "textDocument/didChange":
 		var params protocol.DidChangeTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			err = textdocument.Update(params.TextDocument.URI, params.ContentChanges)
-			rockide.OnChange(params.TextDocument.URI)
+			if err = textdocument.Update(params.TextDocument.URI, params.ContentChanges); err == nil {
+				rockide.OnChange(params.TextDocument.URI)
+			}
 		}
 	case "textDocument/didClose":
 		var params protocol.DidCloseTextDocumentParams
