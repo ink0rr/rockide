@@ -13,6 +13,7 @@ type Store interface {
 	GetPattern() string
 }
 
+// Returns a slice containing elements only if they're present in A but not in B.
 func Difference(a []core.Reference, b []core.Reference) []core.Reference {
 	result := []core.Reference{}
 	set := map[string]bool{}
