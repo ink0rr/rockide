@@ -57,8 +57,8 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 	for _, entry := range j.entries {
 		data := j.store[entry.Id]
 		for _, path := range entry.jsonPath {
-			// If the last path is "*", we want to grab the values instead of keys
-			// The only exception is when the path is a single "*"
+			// If the last path segment is "*", we want to grab the values instead of keys
+			// The only exception is when the path is just a single "*"
 			index := 0
 			if len(path) > 1 && path[len(path)-1] == "*" {
 				index = 1
