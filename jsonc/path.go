@@ -3,7 +3,7 @@ package jsonc
 type Path = []any // string | int
 
 // Matches path against a pattern consisting of strings (for properties) and numbers (for array indices). '*' will match a single segment of any property name or index. '**' will match a sequence of segments of any property name or index, or no segment.
-func PathMatches(path, pattern Path) bool {
+func PathMatches(path Path, pattern []string) bool {
 	pathIndex := 0
 	patternIndex := 0
 

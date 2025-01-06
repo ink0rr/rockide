@@ -12,56 +12,54 @@ import (
 	"github.com/rockide/protocol"
 )
 
-type JsonHandlerActions int
+type jsonHandlerActions int
 
 const (
-	Completions JsonHandlerActions = 1 << iota
-	Definitions
-	Rename
+	completions jsonHandlerActions = 1 << iota
+	definitions
+	rename
 )
 
-func (a JsonHandlerActions) Has(action JsonHandlerActions) bool {
+func (a jsonHandlerActions) Has(action jsonHandlerActions) bool {
 	return a&action != 0
 }
 
-type JsonParams struct {
+type jsonParams struct {
 	URI      protocol.URI
 	Node     *jsonc.Node
 	Location *jsonc.Location
 }
 
-type JsonHandlerEntry struct {
-	Path []string
-	// Used to cache path splitted by '/'
-	jsonPath   []jsonc.Path
+type jsonHandlerEntry struct {
+	Path       []string
 	MatchType  string
-	Actions    JsonHandlerActions
-	Source     func(params *JsonParams) []core.Reference
-	References func(params *JsonParams) []core.Reference
+	Actions    jsonHandlerActions
+	Source     func(params *jsonParams) []core.Reference
+	References func(params *jsonParams) []core.Reference
+
+	// Used to cache Path splitted by '/'
+	jsonPath [][]string
 }
 
-func (j *JsonHandlerEntry) getJsonPath() []jsonc.Path {
+func (j *jsonHandlerEntry) getJsonPath() [][]string {
 	if j.jsonPath == nil {
-		j.jsonPath = make([]jsonc.Path, len(j.Path))
-		for i, path := range j.Path {
-			for _, segment := range strings.Split(path, "/") {
-				j.jsonPath[i] = append(j.jsonPath[i], segment)
-			}
+		for _, path := range j.Path {
+			j.jsonPath = append(j.jsonPath, strings.Split(path, "/"))
 		}
 	}
 	return j.jsonPath
 }
 
-type JsonHandler struct {
+type jsonHandler struct {
 	pattern string
-	entries []JsonHandlerEntry
+	entries []jsonHandlerEntry
 }
 
-func (j *JsonHandler) GetPattern() string {
+func (j *jsonHandler) GetPattern() string {
 	return j.pattern
 }
 
-func (j *JsonHandler) GetActions(document *textdocument.TextDocument, position *protocol.Position) *HandlerActions {
+func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *protocol.Position) *HandlerActions {
 	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(position))
 	if location.PreviousNode == nil {
 		log.Println("cannot find parent node", location.Path)
@@ -74,14 +72,14 @@ func (j *JsonHandler) GetActions(document *textdocument.TextDocument, position *
 		return nil
 	}
 
-	params := JsonParams{
+	params := jsonParams{
 		URI:      document.URI,
 		Node:     location.PreviousNode,
 		Location: location,
 	}
 	actions := HandlerActions{}
 
-	if entry.Actions.Has(Completions) {
+	if entry.Actions.Has(completions) {
 		actions.Completions = func() []protocol.CompletionItem {
 			res := []protocol.CompletionItem{}
 			set := make(map[string]bool)
@@ -107,7 +105,7 @@ func (j *JsonHandler) GetActions(document *textdocument.TextDocument, position *
 		}
 	}
 
-	if entry.Actions.Has(Definitions) {
+	if entry.Actions.Has(definitions) {
 		actions.Definitions = func() (res []protocol.LocationLink) {
 			for _, item := range entry.Source(&params) {
 				if item.Value != params.Node.Value {
@@ -130,7 +128,7 @@ func (j *JsonHandler) GetActions(document *textdocument.TextDocument, position *
 		}
 	}
 
-	if entry.Actions.Has(Rename) {
+	if entry.Actions.Has(rename) {
 		actions.Rename = func() (res []protocol.WorkspaceEdit) {
 			for _, item := range slices.Concat(entry.Source(&params), entry.References(&params)) {
 				if item.Value != params.Node.Value {
@@ -144,7 +142,7 @@ func (j *JsonHandler) GetActions(document *textdocument.TextDocument, position *
 	return &actions
 }
 
-func (j *JsonHandler) findEntry(location *jsonc.Location) *JsonHandlerEntry {
+func (j *jsonHandler) findEntry(location *jsonc.Location) *jsonHandlerEntry {
 	for _, entry := range j.entries {
 		if (entry.MatchType == "key" && !location.IsAtPropertyKey) ||
 			(entry.MatchType == "value" && location.IsAtPropertyKey) {

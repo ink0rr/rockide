@@ -14,39 +14,43 @@ import (
 type jsonStoreEntry struct {
 	Id        string
 	Path      []string
-	jsonPath  [][]string
 	Transform func(node *jsonc.Node) *string
+
+	// Used to cache Path splitted by '/'
+	jsonPath [][]string
 }
 
-type JsonStore struct {
+func (j *jsonStoreEntry) getJsonPath() [][]string {
+	if j.jsonPath == nil {
+		for _, path := range j.Path {
+			j.jsonPath = append(j.jsonPath, strings.Split(path, "/"))
+		}
+	}
+	return j.jsonPath
+}
+
+type jsonStore struct {
 	pattern string
 	entries []jsonStoreEntry
 	store   map[string][]core.Reference
 	mutex   sync.Mutex
 }
 
-func newJsonStore(pattern string, entries []jsonStoreEntry) *JsonStore {
-	res := JsonStore{
+func newJsonStore(pattern string, entries []jsonStoreEntry) *jsonStore {
+	return &jsonStore{
 		pattern: pattern,
 		entries: entries,
 		store:   make(map[string][]core.Reference),
 	}
-	for i, entry := range entries {
-		for _, path := range entry.Path {
-			entry.jsonPath = append(entry.jsonPath, strings.Split(path, "/"))
-		}
-		res.entries[i] = entry
-	}
-	return &res
 }
 
 // GetPattern implements Store.
-func (j *JsonStore) GetPattern() string {
+func (j *jsonStore) GetPattern() string {
 	return j.pattern
 }
 
 // Parse implements Store.
-func (j *JsonStore) Parse(uri uri.URI) error {
+func (j *jsonStore) Parse(uri uri.URI) error {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	document, err := textdocument.Open(uri)
@@ -56,7 +60,7 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
 	for _, entry := range j.entries {
 		data := j.store[entry.Id]
-		for _, path := range entry.jsonPath {
+		for _, path := range entry.getJsonPath() {
 			// If the last path segment is "*", we want to grab the values instead of keys
 			// The only exception is when the path is just a single "*"
 			index := 0
@@ -116,14 +120,14 @@ func (j *JsonStore) Parse(uri uri.URI) error {
 }
 
 // Get implements Store.
-func (j *JsonStore) Get(key string) []core.Reference {
+func (j *jsonStore) Get(key string) []core.Reference {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	return j.store[key]
 }
 
 // GetFrom implements Store.
-func (j *JsonStore) GetFrom(uri uri.URI, key string) []core.Reference {
+func (j *jsonStore) GetFrom(uri uri.URI, key string) []core.Reference {
 	res := []core.Reference{}
 	for _, ref := range j.Get(key) {
 		if ref.URI.Filename() == uri.Filename() {
@@ -134,7 +138,7 @@ func (j *JsonStore) GetFrom(uri uri.URI, key string) []core.Reference {
 }
 
 // Delete implements Store.
-func (j *JsonStore) Delete(uri uri.URI) {
+func (j *jsonStore) Delete(uri uri.URI) {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	for id, refs := range j.store {
@@ -147,5 +151,3 @@ func (j *JsonStore) Delete(uri uri.URI) {
 		j.store[id] = filtered
 	}
 }
-
-var _ Store = (*JsonStore)(nil)

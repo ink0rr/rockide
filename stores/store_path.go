@@ -20,8 +20,10 @@ func init() {
 	cwd = dir + string(filepath.Separator)
 }
 
-var bpRegex = regexp.MustCompile(`(?i)(behavior_pack|[^\/]*?bp|bp_[^\/]*?)[\\/]`)
-var rpRegex = regexp.MustCompile(`(?i)(resource_pack|[^\/]*?rp|rp_[^\/]*?)[\\/]`)
+var (
+	bpRegex = regexp.MustCompile(`(?i)(behavior_pack|[^\/]*?bp|bp_[^\/]*?)[\\/]`)
+	rpRegex = regexp.MustCompile(`(?i)(resource_pack|[^\/]*?rp|rp_[^\/]*?)[\\/]`)
+)
 
 type BehaviorStore struct {
 	pattern string
@@ -43,7 +45,6 @@ func (b *BehaviorStore) Parse(uri uri.URI) error {
 	path = bpRegex.Split(path, -1)[1]
 	b.refs = append(b.refs, core.Reference{Value: path, URI: uri})
 	return nil
-
 }
 
 // Get implements Store.
@@ -60,7 +61,6 @@ func (b *BehaviorStore) GetFrom(uri uri.URI, key string) []core.Reference {
 		}
 	}
 	return filtered
-
 }
 
 // Delete implements Store.
@@ -73,8 +73,6 @@ func (b *BehaviorStore) Delete(uri uri.URI) {
 	}
 	b.refs = filtered
 }
-
-var _ Store = (*BehaviorStore)(nil)
 
 type ResourceStore struct {
 	pattern string
@@ -125,5 +123,3 @@ func (r *ResourceStore) Delete(uri uri.URI) {
 	}
 	r.refs = filtered
 }
-
-var _ Store = (*ResourceStore)(nil)
