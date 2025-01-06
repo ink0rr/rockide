@@ -91,7 +91,8 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 			CompletionProvider: &protocol.CompletionOptions{
 				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.,'"() `, ""),
 			},
-			DefinitionProvider: &protocol.DefinitionOptions{},
+			DefinitionProvider: true,
+			RenameProvider:     true,
 		},
 		ServerInfo: &protocol.ServerInfo{
 			Name:    "rockide",
@@ -180,7 +181,7 @@ func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Defin
 	return actions.Definitions(), nil
 }
 
-func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenameParams) ([]protocol.WorkspaceEdit, error) {
+func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
 	document, err := textdocument.Open(params.TextDocument.URI)
 	if err != nil {
 		return nil, err
@@ -193,5 +194,5 @@ func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenamePar
 	if actions == nil || actions.Definitions == nil {
 		return nil, nil
 	}
-	return actions.Rename(), nil
+	return actions.Rename(params.NewName), nil
 }

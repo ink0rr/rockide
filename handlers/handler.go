@@ -13,5 +13,5 @@ type Handler interface {
 type HandlerActions struct {
 	Completions func() []protocol.CompletionItem
 	Definitions func() []protocol.LocationLink
-	Rename      func() []protocol.WorkspaceEdit
+	Rename      func(newName string) *protocol.WorkspaceEdit
 }

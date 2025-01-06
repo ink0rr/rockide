@@ -106,7 +106,8 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 	}
 
 	if entry.Actions.Has(definitions) {
-		actions.Definitions = func() (res []protocol.LocationLink) {
+		actions.Definitions = func() []protocol.LocationLink {
+			res := []protocol.LocationLink{}
 			for _, item := range entry.Source(&params) {
 				if item.Value != params.Node.Value {
 					continue
@@ -124,19 +125,28 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 				}
 				res = append(res, location)
 			}
-			return
+			return res
 		}
 	}
 
 	if entry.Actions.Has(rename) {
-		actions.Rename = func() (res []protocol.WorkspaceEdit) {
+		actions.Rename = func(newName string) *protocol.WorkspaceEdit {
+			changes := make(map[protocol.URI][]protocol.TextEdit)
 			for _, item := range slices.Concat(entry.Source(&params), entry.References(&params)) {
 				if item.Value != params.Node.Value {
 					continue
 				}
-				// TODO
+				edit := protocol.TextEdit{
+					NewText: newName,
+					Range:   *item.Range,
+				}
+				// Exclude quotation marks
+				edit.Range.Start.Character++
+				edit.Range.End.Character--
+
+				changes[item.URI] = append(changes[item.URI], edit)
 			}
-			return
+			return &protocol.WorkspaceEdit{Changes: changes}
 		}
 	}
 	return &actions
