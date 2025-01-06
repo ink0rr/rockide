@@ -31,7 +31,7 @@ var Entity = jsonHandler{pattern: core.EntityGlob, entries: []jsonHandlerEntry{
 			if params.Location.IsAtPropertyKey {
 				return stores.Entity.GetFrom(params.URI, "animation")
 			}
-			return nil
+			return stores.Entity.Get("animation_id")
 		},
 	},
 	{
