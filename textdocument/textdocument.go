@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	documents    = make(map[string]*TextDocument)
+	documents    = make(map[uri.URI]*TextDocument)
 	cacheEnabled = false
 	mutex        sync.Mutex
 )
@@ -24,7 +24,7 @@ func Open(uri uri.URI) (*TextDocument, error) {
 	if cacheEnabled {
 		mutex.Lock()
 		defer mutex.Unlock()
-		if document := documents[uri.Filename()]; document != nil {
+		if document := documents[uri]; document != nil {
 			return document, nil
 		}
 	}
@@ -34,7 +34,7 @@ func Open(uri uri.URI) (*TextDocument, error) {
 	}
 	document := TextDocument{URI: uri, content: string(txt)}
 	if cacheEnabled {
-		documents[uri.Filename()] = &document
+		documents[uri] = &document
 	}
 	return &document, nil
 }
@@ -45,7 +45,7 @@ func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChang
 	}
 	mutex.Lock()
 	defer mutex.Unlock()
-	document := documents[uri.Filename()]
+	document := documents[uri]
 	if document == nil {
 		return false
 	}
@@ -61,7 +61,7 @@ func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChang
 func UpdateFull(uri protocol.URI, text string) bool {
 	mutex.Lock()
 	defer mutex.Unlock()
-	document := documents[uri.Filename()]
+	document := documents[uri]
 	if document == nil || document.content == text {
 		return false
 	}
@@ -73,7 +73,7 @@ func UpdateFull(uri protocol.URI, text string) bool {
 func Close(uri protocol.URI) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	delete(documents, uri.Filename())
+	delete(documents, uri)
 }
 
 func EnableCache(flag bool) {

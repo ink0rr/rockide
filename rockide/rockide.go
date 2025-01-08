@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -173,11 +172,9 @@ func WatchFiles(ctx context.Context) error {
 }
 
 func OnCreate(uri uri.URI) {
-	name := uri.Filename()
-	name = strings.ReplaceAll(name, "\\", "/")
-	log.Printf("create: %s", name)
+	log.Printf("change: %s", uri)
 	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
 			store.Parse(uri)
 			break
 		}
@@ -185,11 +182,9 @@ func OnCreate(uri uri.URI) {
 }
 
 func OnChange(uri uri.URI) {
-	name := uri.Filename()
-	name = strings.ReplaceAll(name, "\\", "/")
-	log.Printf("change: %s", name)
+	log.Printf("change: %s", uri)
 	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
 			store.Delete(uri)
 			store.Parse(uri)
 			break
@@ -198,11 +193,9 @@ func OnChange(uri uri.URI) {
 }
 
 func OnDelete(uri uri.URI) {
-	name := uri.Filename()
-	name = strings.ReplaceAll(name, "\\", "/")
-	log.Printf("delete: %s", name)
+	log.Printf("delete: %s", uri)
 	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), name) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
 			store.Delete(uri)
 			break
 		}
