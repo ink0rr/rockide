@@ -129,13 +129,13 @@ func WatchFiles(ctx context.Context) error {
 	}
 	bp, rp, err := getProjectPaths()
 	if err != nil {
-		return errors.Join(errors.New("failed to get project paths"), err)
+		return errors.Join(err, errors.New("failed to get project paths"))
 	}
 	if err := watcher.Add(filepath.Join(bp, "...")); err != nil {
-		return errors.Join(errors.New("failed to watch BP path"), err)
+		return errors.Join(err, errors.New("failed to watch BP path"))
 	}
 	if err := watcher.Add(filepath.Join(rp, "...")); err != nil {
-		return errors.Join(errors.New("failed to watch RP path"), err)
+		return errors.Join(err, errors.New("failed to watch RP path"))
 	}
 	go func() {
 		for {
@@ -153,17 +153,13 @@ func WatchFiles(ctx context.Context) error {
 					log.Println(err)
 					continue
 				}
-				if event.Op.Has(fsnotify.Create) {
+				switch {
+				case event.Op.Has(fsnotify.Create):
 					OnCreate(uri)
-					continue
-				}
-				if event.Op.Has(fsnotify.Write) {
+				case event.Op.Has(fsnotify.Write):
 					OnChange(uri)
-					continue
-				}
-				if event.Op.Has(fsnotify.Remove | fsnotify.Rename) {
+				case event.Op.Has(fsnotify.Remove | fsnotify.Rename):
 					OnDelete(uri)
-					continue
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
