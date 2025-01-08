@@ -204,11 +204,5 @@ func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenamePar
 }
 
 func Hover(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.HoverParams) (*protocol.Hover, error) {
-	hover := protocol.Hover{
-		Contents: protocol.MarkupContent{
-			Kind:  protocol.Markdown,
-			Value: "loremlorem",
-		},
-	}
-	return &hover, nil
+	return nil, nil
 }
