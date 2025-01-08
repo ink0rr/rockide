@@ -39,15 +39,15 @@ func Open(uri uri.URI) (*TextDocument, error) {
 	return &document, nil
 }
 
-func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChangeEvent) error {
+func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChangeEvent) bool {
 	if len(contentChanges) == 0 {
-		return nil
+		return false
 	}
 	mutex.Lock()
 	defer mutex.Unlock()
 	document := documents[uri.Filename()]
 	if document == nil {
-		return nil
+		return false
 	}
 	for _, change := range contentChanges {
 		startOffset := document.OffsetAt(&change.Range.Start)
@@ -55,7 +55,19 @@ func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChang
 		document.content = document.content[:startOffset] + change.Text + document.content[endOffset:]
 		document.lineOffsets = nil
 	}
-	return nil
+	return true
+}
+
+func UpdateFull(uri protocol.URI, text string) bool {
+	mutex.Lock()
+	defer mutex.Unlock()
+	document := documents[uri.Filename()]
+	if document == nil || document.content == text {
+		return false
+	}
+	document.content = text
+	document.lineOffsets = nil
+	return true
 }
 
 func Close(uri protocol.URI) {
