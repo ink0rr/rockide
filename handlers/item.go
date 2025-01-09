@@ -7,7 +7,7 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Item = jsonHandler{pattern: core.ItemGlob, entries: []jsonHandlerEntry{
+var Item = newJsonHandler(core.ItemGlob, []jsonHandlerEntry{
 	{
 		Path:       []string{"minecraft:item/description/identifier"},
 		Actions:    completions | definitions | rename,
@@ -45,4 +45,4 @@ var Item = jsonHandler{pattern: core.ItemGlob, entries: []jsonHandlerEntry{
 			return stores.Item.Get("item_id")
 		},
 	},
-}}
+})

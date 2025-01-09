@@ -5,7 +5,7 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Block = jsonHandler{pattern: core.BlockGlob, entries: []jsonHandlerEntry{
+var Block = newJsonHandler(core.BlockGlob, []jsonHandlerEntry{
 	{
 		Path:       []string{"minecraft:block/description/identifier"},
 		MatchType:  "value",
@@ -18,4 +18,4 @@ var Block = jsonHandler{pattern: core.BlockGlob, entries: []jsonHandlerEntry{
 			return stores.Block.Get("id")
 		},
 	},
-}}
+})

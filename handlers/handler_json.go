@@ -59,6 +59,10 @@ type jsonHandler struct {
 	entries []jsonHandlerEntry
 }
 
+func newJsonHandler(pattern string, entries []jsonHandlerEntry) *jsonHandler {
+	return &jsonHandler{pattern, entries}
+}
+
 func (j *jsonHandler) GetPattern() string {
 	return j.pattern
 }

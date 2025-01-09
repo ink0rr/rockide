@@ -7,7 +7,7 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Entity = jsonHandler{pattern: core.EntityGlob, entries: []jsonHandlerEntry{
+var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 	{
 		Path:    []string{"minecraft:entity/description/identifier"},
 		Actions: completions | definitions | rename,
@@ -51,4 +51,4 @@ var Entity = jsonHandler{pattern: core.EntityGlob, entries: []jsonHandlerEntry{
 			return stores.Entity.GetFrom(params.URI, "animate")
 		},
 	},
-}}
+})

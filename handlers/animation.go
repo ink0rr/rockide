@@ -7,7 +7,7 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Animation = jsonHandler{pattern: core.AnimationGlob, entries: []jsonHandlerEntry{
+var Animation = newJsonHandler(core.AnimationGlob, []jsonHandlerEntry{
 	{
 		Path:       []string{"animations/*"},
 		MatchType:  "key",
@@ -26,4 +26,4 @@ var Animation = jsonHandler{pattern: core.AnimationGlob, entries: []jsonHandlerE
 			return stores.Animation.Get("id")
 		},
 	},
-}}
+})
