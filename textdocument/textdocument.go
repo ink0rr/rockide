@@ -62,7 +62,7 @@ func UpdateFull(uri protocol.URI, text string) bool {
 	mutex.Lock()
 	defer mutex.Unlock()
 	document := documents[uri]
-	if document == nil || document.content == text {
+	if document == nil || document.content == text || text == "" {
 		return false
 	}
 	document.content = text

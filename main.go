@@ -90,6 +90,7 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
 	log.Printf("Process ID: %d", params.ProcessID)
 	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
+
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
 			TextDocumentSync: protocol.TextDocumentSyncKindIncremental,
@@ -130,7 +131,7 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 	}
 
 	token := protocol.NewProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))
-	if err = conn.Call(ctx, "window/workDoneProgress/create", &protocol.WorkDoneProgressCreateParams{Token: *token}, nil); err != nil {
+	if err := conn.Call(ctx, "window/workDoneProgress/create", &protocol.WorkDoneProgressCreateParams{Token: *token}, nil); err != nil {
 		return err
 	}
 	progress := protocol.ProgressParams{
