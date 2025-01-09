@@ -48,11 +48,15 @@ var storeList = []stores.Store{
 }
 
 var jsonHandlers = []handlers.Handler{
+	// BP
 	handlers.AnimationController,
 	handlers.Animation,
 	handlers.Block,
 	handlers.Entity,
 	handlers.Item,
+	// RP
+	handlers.ClientAnimationController,
+	handlers.ClientAnimation,
 }
 
 func SetBaseDir(dir string) {
