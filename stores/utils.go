@@ -28,7 +28,10 @@ func findNodesAtPath(root *jsonc.Node, jsonPath []string) []*jsonc.Node {
 		if currentKey == "*" {
 			for _, child := range node.Children {
 				if child.Type == jsonc.NodeTypeProperty {
-					visitNodes(child.Children[1], remainingKeys)
+					// Make sure it's a valid property
+					if len(child.Children) == 2 {
+						visitNodes(child.Children[1], remainingKeys)
+					}
 				} else {
 					visitNodes(child, remainingKeys)
 				}
