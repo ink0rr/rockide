@@ -147,13 +147,16 @@ func WatchFiles(ctx context.Context) error {
 				if !ok {
 					return
 				}
-				stat, err := os.Stat(event.Name)
-				if err != nil || stat.IsDir() {
-					continue
-				}
 				uri, err := toURI(event.Name)
 				if err != nil {
 					log.Println(err)
+					continue
+				}
+				if event.Op.Has(fsnotify.Remove | fsnotify.Rename) {
+					OnDelete(uri)
+					continue
+				}
+				if stat, err := os.Stat(event.Name); err != nil || stat.IsDir() {
 					continue
 				}
 				switch {
@@ -161,8 +164,6 @@ func WatchFiles(ctx context.Context) error {
 					OnCreate(uri)
 				case event.Op.Has(fsnotify.Write):
 					OnChange(uri)
-				case event.Op.Has(fsnotify.Remove | fsnotify.Rename):
-					OnDelete(uri)
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
@@ -176,7 +177,7 @@ func WatchFiles(ctx context.Context) error {
 }
 
 func OnCreate(uri uri.URI) {
-	log.Printf("change: %s", uri)
+	log.Printf("create: %s", uri)
 	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
 			store.Parse(uri)
