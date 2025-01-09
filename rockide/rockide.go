@@ -48,6 +48,8 @@ var storeList = []stores.Store{
 }
 
 var jsonHandlers = []handlers.Handler{
+	&handlers.AnimationController,
+	&handlers.Animation,
 	&handlers.Entity,
 }
 
