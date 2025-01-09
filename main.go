@@ -169,8 +169,6 @@ func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Compl
 	if actions == nil || actions.Completions == nil {
 		return nil, nil
 	}
-	s, _ := json.MarshalIndent(actions.Completions(), "", "  ")
-	log.Println(string(s))
 	return actions.Completions(), nil
 }
 
