@@ -1,18 +1,22 @@
 package stores
 
-import "github.com/ink0rr/rockide/jsonc"
+import (
+	"fmt"
+
+	"github.com/ink0rr/rockide/jsonc"
+)
 
 func findNodesAtPath(root *jsonc.Node, jsonPath []string) []*jsonc.Node {
 	result := []*jsonc.Node{}
 	var visitNodes func(node *jsonc.Node, keys []string)
 	visitNodes = func(node *jsonc.Node, keys []string) {
 		if len(keys) == 0 {
-			panic(`Unhandled empty keys: ${jsonPath}`)
+			panic(fmt.Sprintf("unhandled empty keys: %s", jsonPath))
 		}
 		currentKey, remainingKeys := keys[0], keys[1:]
 		if len(remainingKeys) == 0 {
 			if currentKey == "**" {
-				panic(`Invalid JSON path: ${jsonPath}`)
+				panic(fmt.Sprintf("invalid path: %s", jsonPath))
 			}
 			if currentKey == "*" {
 				result = append(result, node.Children...)
