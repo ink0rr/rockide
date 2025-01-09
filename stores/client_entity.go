@@ -10,7 +10,7 @@ var ClientEntity = newJsonStore(core.ClientEntityGlob, []jsonStoreEntry{
 		Path: []string{"minecraft:client_entity/description/identifier"},
 	},
 	{
-		Id:   "animation",
+		Id:   "animate",
 		Path: []string{"minecraft:client_entity/description/animations"},
 	},
 	{
@@ -18,7 +18,7 @@ var ClientEntity = newJsonStore(core.ClientEntityGlob, []jsonStoreEntry{
 		Path: []string{"minecraft:client_entity/description/animations/*"},
 	},
 	{
-		Id:   "animate",
+		Id:   "animate_refs",
 		Path: []string{"minecraft:client_entity/description/scripts/animate"},
 	},
 	{

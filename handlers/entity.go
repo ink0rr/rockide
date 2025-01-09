@@ -24,10 +24,10 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		MatchType:  "key",
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "animate")
+			return stores.Entity.GetFrom(params.URI, "animate_refs")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "animation")
+			return stores.Entity.GetFrom(params.URI, "animate")
 		},
 	},
 	{
@@ -45,10 +45,10 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		Path:    []string{"minecraft:entity/description/scripts/animate/*"},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "animation")
+			return stores.Entity.GetFrom(params.URI, "animate")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "animate")
+			return stores.Entity.GetFrom(params.URI, "animate_refs")
 		},
 	},
 })

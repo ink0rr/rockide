@@ -10,7 +10,7 @@ var Attachable = newJsonStore(core.AttachableGlob, []jsonStoreEntry{
 		Path: []string{"minecraft:attachable/description/identifier"},
 	},
 	{
-		Id:   "animation",
+		Id:   "animate",
 		Path: []string{"minecraft:attachable/description/animations"},
 	},
 	{
@@ -18,7 +18,7 @@ var Attachable = newJsonStore(core.AttachableGlob, []jsonStoreEntry{
 		Path: []string{"minecraft:attachable/description/animations/*"},
 	},
 	{
-		Id:   "animate",
+		Id:   "animate_refs",
 		Path: []string{"minecraft:attachable/description/scripts/animate"},
 	},
 	{
