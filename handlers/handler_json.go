@@ -65,11 +65,6 @@ func (j *jsonHandler) GetPattern() string {
 
 func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *protocol.Position) *HandlerActions {
 	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(position))
-	if location.PreviousNode == nil {
-		log.Println("cannot find parent node", location.Path)
-		return nil
-	}
-
 	entry := j.findEntry(location)
 	if entry == nil {
 		log.Println("entry not found:", location.Path)
@@ -98,24 +93,27 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 					continue
 				}
 				set[item.Value] = true
-				res = append(res, protocol.CompletionItem{
-					Label: item.Value,
-					TextEdit: &protocol.TextEdit{
-						Range: protocol.Range{
-							Start: document.PositionAt(params.Node.Offset + 1),
-							End:   document.PositionAt(params.Node.Offset + params.Node.Length - 1),
-						},
-						NewText: item.Value,
-					},
+				value := `"` + item.Value + `"`
+				completion := protocol.CompletionItem{
+					Label:            value,
 					InsertTextFormat: protocol.InsertTextFormatPlainText,
-					InsertTextMode:   protocol.InsertTextModeAdjustIndentation,
-				})
+				}
+				if params.Node != nil {
+					completion.TextEdit = &protocol.TextEdit{
+						Range: protocol.Range{
+							Start: document.PositionAt(params.Node.Offset),
+							End:   document.PositionAt(params.Node.Offset + params.Node.Length),
+						},
+						NewText: value,
+					}
+				}
+				res = append(res, completion)
 			}
 			return res
 		}
 	}
 
-	if entry.Actions.Has(definitions) {
+	if params.Node != nil && entry.Actions.Has(definitions) {
 		actions.Definitions = func() []protocol.LocationLink {
 			res := []protocol.LocationLink{}
 			for _, item := range entry.Source(&params) {
@@ -139,7 +137,7 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 		}
 	}
 
-	if entry.Actions.Has(rename) {
+	if params.Node != nil && entry.Actions.Has(rename) {
 		actions.Rename = func(newName string) *protocol.WorkspaceEdit {
 			changes := make(map[protocol.URI][]protocol.TextEdit)
 			for _, item := range slices.Concat(entry.Source(&params), entry.References(&params)) {

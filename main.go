@@ -95,7 +95,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 		Capabilities: protocol.ServerCapabilities{
 			TextDocumentSync: protocol.TextDocumentSyncKindIncremental,
 			CompletionProvider: &protocol.CompletionOptions{
-				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.,'"() `, ""),
+				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.'"() `, ""),
 			},
 			DefinitionProvider: true,
 			RenameProvider:     true,
@@ -169,6 +169,8 @@ func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Compl
 	if actions == nil || actions.Completions == nil {
 		return nil, nil
 	}
+	s, _ := json.MarshalIndent(actions.Completions(), "", "  ")
+	log.Println(string(s))
 	return actions.Completions(), nil
 }
 
