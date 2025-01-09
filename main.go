@@ -71,6 +71,11 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			res, err = Definition(ctx, conn, &params)
 		}
+	case "textDocument/prepareRename":
+		var params protocol.PrepareRenameParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			res, err = PrepareRename(ctx, conn, &params)
+		}
 	case "textDocument/rename":
 		var params protocol.RenameParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
@@ -98,8 +103,10 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.'"() `, ""),
 			},
 			DefinitionProvider: true,
-			RenameProvider:     true,
-			HoverProvider:      true,
+			RenameProvider: &protocol.RenameOptions{
+				PrepareProvider: true,
+			},
+			HoverProvider: true,
 		},
 		ServerInfo: &protocol.ServerInfo{
 			Name:    "rockide",
@@ -188,6 +195,26 @@ func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Defin
 	return actions.Definitions(), nil
 }
 
+type PrepareRenameResult struct {
+	DefaultBehavior bool `json:"defaultBehavior"`
+}
+
+func PrepareRename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.PrepareRenameParams) (*PrepareRenameResult, error) {
+	document, err := textdocument.Open(params.TextDocument.URI)
+	if err != nil {
+		return nil, err
+	}
+	handler := rockide.FindHandler(document.URI)
+	if handler == nil {
+		return nil, nil
+	}
+	actions := handler.GetActions(document, &params.Position)
+	if actions == nil || actions.Rename == nil {
+		return nil, nil
+	}
+	return &PrepareRenameResult{DefaultBehavior: true}, nil
+}
+
 func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
 	document, err := textdocument.Open(params.TextDocument.URI)
 	if err != nil {
@@ -198,7 +225,7 @@ func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenamePar
 		return nil, nil
 	}
 	actions := handler.GetActions(document, &params.Position)
-	if actions == nil || actions.Definitions == nil {
+	if actions == nil || actions.Rename == nil {
 		return nil, nil
 	}
 	return actions.Rename(params.NewName), nil
