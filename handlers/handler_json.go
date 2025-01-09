@@ -31,10 +31,14 @@ type jsonParams struct {
 }
 
 type jsonHandlerEntry struct {
-	Path       []string
-	MatchType  string
-	Actions    jsonHandlerActions
-	Source     func(params *jsonParams) []core.Reference
+	Path      []string
+	MatchType string
+	Actions   jsonHandlerActions
+	// Filter completions to only show undeclared reference
+	FilterDiff bool
+	// Source for completions and definitions
+	Source func(params *jsonParams) []core.Reference
+	// References that uses the same source
 	References func(params *jsonParams) []core.Reference
 
 	// Used to cache Path splitted by '/'
@@ -83,7 +87,13 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 		actions.Completions = func() []protocol.CompletionItem {
 			res := []protocol.CompletionItem{}
 			set := make(map[string]bool)
-			for _, item := range stores.Difference(entry.Source(&params), entry.References(&params)) {
+			var items []core.Reference
+			if entry.FilterDiff {
+				items = stores.Difference(entry.Source(&params), entry.References(&params))
+			} else {
+				items = entry.Source(&params)
+			}
+			for _, item := range items {
 				if set[item.Value] {
 					continue
 				}

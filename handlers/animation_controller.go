@@ -9,9 +9,10 @@ import (
 
 var AnimationController = jsonHandler{pattern: core.AnimationControllerGlob, entries: []jsonHandlerEntry{
 	{
-		Path:      []string{"animation_controllers/*"},
-		MatchType: "key",
-		Actions:   completions | definitions | rename,
+		Path:       []string{"animation_controllers/*"},
+		MatchType:  "key",
+		Actions:    completions | definitions | rename,
+		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
 			filtered := []core.Reference{}
 			for _, ref := range stores.Entity.Get("animation_id") {
