@@ -52,6 +52,7 @@ var jsonHandlers = []handlers.Handler{
 	&handlers.Animation,
 	&handlers.Block,
 	&handlers.Entity,
+	&handlers.Item,
 }
 
 func SetBaseDir(dir string) {

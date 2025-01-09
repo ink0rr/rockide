@@ -20,4 +20,8 @@ var Item = newJsonStore(core.ItemGlob, []jsonStoreEntry{
 		Id:   "tag",
 		Path: []string{"minecraft:item/components/minecraft:tags/tags"},
 	},
+	{
+		Id:   "item_id",
+		Path: []string{"minecraft:item/components/minecraft:repairable/repair_items/*/items"},
+	},
 })
