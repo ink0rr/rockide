@@ -9,4 +9,8 @@ var ClientAnimationController = newJsonStore(core.ClientAnimationControllerGlob,
 		Id:   "id",
 		Path: []string{"animation_controllers"},
 	},
+	{
+		Id:   "animate_refs",
+		Path: []string{"animation_controllers/*/states/*/animations"},
+	},
 })

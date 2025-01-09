@@ -27,4 +27,45 @@ var ClientAnimationController = newJsonHandler(core.ClientAnimationControllerGlo
 			return stores.ClientAnimationController.Get("id")
 		},
 	},
+	{
+		Path: []string{
+			"animation_controllers/*/states/*/animations/*",
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			id, ok := params.Location.Path[1].(string)
+			if !ok {
+				return nil
+			}
+			return animationControllerSources(id, stores.Attachable, stores.ClientEntity)
+		},
+		References: func(params *jsonParams) []core.Reference {
+			id, ok := params.Location.Path[1].(string)
+			if !ok {
+				return nil
+			}
+			return animationControllerReferences(id, stores.ClientAnimationController, stores.Attachable, stores.ClientEntity)
+		},
+	},
+	{
+		Path: []string{
+			"animation_controllers/*/states/*/animations/*/*",
+		},
+		MatchType: "key",
+		Actions:   completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			id, ok := params.Location.Path[1].(string)
+			if !ok {
+				return nil
+			}
+			return animationControllerSources(id, stores.Attachable, stores.ClientEntity)
+		},
+		References: func(params *jsonParams) []core.Reference {
+			id, ok := params.Location.Path[1].(string)
+			if !ok {
+				return nil
+			}
+			return animationControllerReferences(id, stores.ClientAnimationController, stores.Attachable, stores.ClientEntity)
+		},
+	},
 })
