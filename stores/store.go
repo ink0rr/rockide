@@ -2,14 +2,14 @@ package stores
 
 import (
 	"github.com/ink0rr/rockide/core"
-	"go.lsp.dev/uri"
+	"github.com/ink0rr/rockide/internal/protocol"
 )
 
 type Store interface {
-	Parse(uri uri.URI) error
+	Parse(uri protocol.DocumentURI) error
 	Get(key string) []core.Reference
-	GetFrom(uri uri.URI, key string) []core.Reference
-	Delete(uri uri.URI)
+	GetFrom(uri protocol.DocumentURI, key string) []core.Reference
+	Delete(uri protocol.DocumentURI)
 	GetPattern() string
 }
 

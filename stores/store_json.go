@@ -5,10 +5,9 @@ import (
 	"sync"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/textdocument"
-	"github.com/rockide/protocol"
-	"go.lsp.dev/uri"
 )
 
 type jsonStoreEntry struct {
@@ -50,7 +49,7 @@ func (j *jsonStore) GetPattern() string {
 }
 
 // Parse implements Store.
-func (j *jsonStore) Parse(uri uri.URI) error {
+func (j *jsonStore) Parse(uri protocol.DocumentURI) error {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	document, err := textdocument.Open(uri)
@@ -127,7 +126,7 @@ func (j *jsonStore) Get(key string) []core.Reference {
 }
 
 // GetFrom implements Store.
-func (j *jsonStore) GetFrom(uri uri.URI, key string) []core.Reference {
+func (j *jsonStore) GetFrom(uri protocol.DocumentURI, key string) []core.Reference {
 	res := []core.Reference{}
 	for _, ref := range j.Get(key) {
 		if ref.URI == uri {
@@ -138,7 +137,7 @@ func (j *jsonStore) GetFrom(uri uri.URI, key string) []core.Reference {
 }
 
 // Delete implements Store.
-func (j *jsonStore) Delete(uri uri.URI) {
+func (j *jsonStore) Delete(uri protocol.DocumentURI) {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	for id, refs := range j.store {

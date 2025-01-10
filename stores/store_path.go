@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
-	"go.lsp.dev/uri"
+	"github.com/ink0rr/rockide/internal/protocol"
 )
 
 var cwd string
@@ -36,12 +36,12 @@ func (b *BehaviorStore) GetPattern() string {
 }
 
 // Parse implements Store.
-func (b *BehaviorStore) Parse(uri uri.URI) error {
-	path, found := strings.CutPrefix(uri.Filename(), cwd)
-	path = strings.ReplaceAll(path, "\\", "/")
-	if !found {
-		panic("Failed to resolve path")
+func (b *BehaviorStore) Parse(uri protocol.DocumentURI) error {
+	path, err := filepath.Rel(cwd, uri.Path())
+	if err != nil {
+		panic(err)
 	}
+	path = strings.ReplaceAll(path, "\\", "/")
 	path = bpRegex.Split(path, -1)[1]
 	b.refs = append(b.refs, core.Reference{Value: path, URI: uri})
 	return nil
@@ -53,7 +53,7 @@ func (b *BehaviorStore) Get(key string) []core.Reference {
 }
 
 // GetFrom implements Store.
-func (b *BehaviorStore) GetFrom(uri uri.URI, key string) []core.Reference {
+func (b *BehaviorStore) GetFrom(uri protocol.DocumentURI, key string) []core.Reference {
 	filtered := []core.Reference{}
 	for _, ref := range b.refs {
 		if ref.URI == uri {
@@ -64,7 +64,7 @@ func (b *BehaviorStore) GetFrom(uri uri.URI, key string) []core.Reference {
 }
 
 // Delete implements Store.
-func (b *BehaviorStore) Delete(uri uri.URI) {
+func (b *BehaviorStore) Delete(uri protocol.DocumentURI) {
 	filtered := []core.Reference{}
 	for _, ref := range b.refs {
 		if ref.URI != uri {
@@ -85,12 +85,12 @@ func (r *ResourceStore) GetPattern() string {
 }
 
 // Parse implements Store.
-func (r *ResourceStore) Parse(uri uri.URI) error {
-	path, found := strings.CutPrefix(uri.Filename(), cwd)
-	path = strings.ReplaceAll(path, "\\", "/")
-	if !found {
-		panic("Failed to resolve path")
+func (r *ResourceStore) Parse(uri protocol.DocumentURI) error {
+	path, err := filepath.Rel(cwd, uri.Path())
+	if err != nil {
+		panic(err)
 	}
+	path = strings.ReplaceAll(path, "\\", "/")
 	path = rpRegex.Split(path, -1)[1]
 	path = strings.TrimSuffix(path, filepath.Ext(path))
 	r.refs = append(r.refs, core.Reference{Value: path, URI: uri})
@@ -103,7 +103,7 @@ func (r *ResourceStore) Get(key string) []core.Reference {
 }
 
 // GetFrom implements Store.
-func (r *ResourceStore) GetFrom(uri uri.URI, key string) []core.Reference {
+func (r *ResourceStore) GetFrom(uri protocol.DocumentURI, key string) []core.Reference {
 	filtered := []core.Reference{}
 	for _, ref := range r.refs {
 		if ref.URI == uri {
@@ -114,7 +114,7 @@ func (r *ResourceStore) GetFrom(uri uri.URI, key string) []core.Reference {
 }
 
 // Delete implements Store.
-func (r *ResourceStore) Delete(uri uri.URI) {
+func (r *ResourceStore) Delete(uri protocol.DocumentURI) {
 	filtered := []core.Reference{}
 	for _, ref := range r.refs {
 		if ref.URI != uri {

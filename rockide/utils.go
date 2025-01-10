@@ -1,15 +1,13 @@
 package rockide
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/handlers"
-	"go.lsp.dev/uri"
+	"github.com/ink0rr/rockide/internal/protocol"
 )
 
 func getProjectPaths() (bp string, rp string, err error) {
@@ -31,21 +29,9 @@ func getProjectPaths() (bp string, rp string, err error) {
 	return
 }
 
-func toURI(path string) (uri.URI, error) {
-	var result uri.URI
-	abs, err := filepath.Abs(path)
-	if err != nil {
-		return result, errors.New("failed to resolve absolute path")
-	}
-	result = uri.File(abs)
-	return result, nil
-}
-
-func FindHandler(uri uri.URI) handlers.Handler {
-	name := uri.Filename()
-	name = strings.ReplaceAll(name, "\\", "/")
+func FindHandler(uri protocol.DocumentURI) handlers.Handler {
 	for _, handler := range jsonHandlers {
-		if doublestar.MatchUnvalidated("**/"+handler.GetPattern(), name) {
+		if doublestar.MatchUnvalidated("**/"+handler.GetPattern(), string(uri)) {
 			return handler
 		}
 	}

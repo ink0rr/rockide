@@ -4,15 +4,15 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/stores"
 	"github.com/ink0rr/rockide/textdocument"
-	"go.lsp.dev/uri"
 )
 
 func animationControllerSources(id string, stores ...stores.Store) []core.Reference {
 	res := []core.Reference{}
-	matchedURIs := make(map[uri.URI]bool)
+	matchedURIs := make(map[protocol.DocumentURI]bool)
 	for _, store := range stores {
 		for _, ref := range store.Get("animation_id") {
 			if matchedURIs[ref.URI] || ref.Value != id {
@@ -27,7 +27,7 @@ func animationControllerSources(id string, stores ...stores.Store) []core.Refere
 
 func animationControllerReferences(id string, source stores.Store, stores ...stores.Store) []core.Reference {
 	res := []core.Reference{}
-	referenceGroup := make(map[uri.URI][]core.Reference)
+	referenceGroup := make(map[protocol.DocumentURI][]core.Reference)
 	for _, store := range stores {
 		for _, ref := range store.Get("animation_id") {
 			referenceGroup[ref.URI] = append(referenceGroup[ref.URI], ref)

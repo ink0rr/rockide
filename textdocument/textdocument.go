@@ -4,23 +4,22 @@ import (
 	"os"
 	"sync"
 
-	"github.com/rockide/protocol"
-	"go.lsp.dev/uri"
+	"github.com/ink0rr/rockide/internal/protocol"
 )
 
 var (
-	documents    = make(map[uri.URI]*TextDocument)
+	documents    = make(map[protocol.DocumentURI]*TextDocument)
 	cacheEnabled = false
 	mutex        sync.Mutex
 )
 
 type TextDocument struct {
-	URI         uri.URI `json:"uri"`
+	URI         protocol.DocumentURI `json:"uri"`
 	content     string
 	lineOffsets []uint32
 }
 
-func Open(uri uri.URI) (*TextDocument, error) {
+func Open(uri protocol.DocumentURI) (*TextDocument, error) {
 	if cacheEnabled {
 		mutex.Lock()
 		defer mutex.Unlock()
@@ -28,7 +27,7 @@ func Open(uri uri.URI) (*TextDocument, error) {
 			return document, nil
 		}
 	}
-	txt, err := os.ReadFile(uri.Filename())
+	txt, err := os.ReadFile(uri.Path())
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +38,7 @@ func Open(uri uri.URI) (*TextDocument, error) {
 	return &document, nil
 }
 
-func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChangeEvent) bool {
+func Update(uri protocol.DocumentURI, contentChanges []protocol.TextDocumentContentChangeEvent) bool {
 	if len(contentChanges) == 0 {
 		return false
 	}
@@ -58,19 +57,22 @@ func Update(uri protocol.URI, contentChanges []protocol.TextDocumentContentChang
 	return true
 }
 
-func UpdateFull(uri protocol.URI, text string) bool {
+func UpdateFull(uri protocol.DocumentURI, text *string) bool {
+	if text == nil {
+		return false
+	}
 	mutex.Lock()
 	defer mutex.Unlock()
 	document := documents[uri]
-	if document == nil || document.content == text || text == "" {
+	if document == nil || document.content == *text {
 		return false
 	}
-	document.content = text
+	document.content = *text
 	document.lineOffsets = nil
 	return true
 }
 
-func Close(uri protocol.URI) {
+func Close(uri protocol.DocumentURI) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	delete(documents, uri)

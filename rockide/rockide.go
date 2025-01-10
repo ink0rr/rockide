@@ -15,9 +15,9 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/handlers"
+	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/stores"
-	"go.lsp.dev/uri"
 )
 
 var baseDir = "."
@@ -103,13 +103,8 @@ func IndexWorkspaces(ctx context.Context) {
 				if d.IsDir() {
 					return nil
 				}
-				uri, err := toURI(filepath.Join(baseDir, path))
-				if err != nil {
-					log.Printf("Error parsing URI: %s\n\t%s", err, path)
-					skippedFiles.Add(1)
-					return nil
-				}
-				err = store.Parse(uri)
+				uri := protocol.URIFromPath(filepath.Join(baseDir, path))
+				err := store.Parse(uri)
 				if err != nil {
 					log.Printf("Error parsing file: %s\n\t%s", path, err)
 					skippedFiles.Add(1)
@@ -151,11 +146,7 @@ func WatchFiles(ctx context.Context) error {
 				if !ok {
 					return
 				}
-				uri, err := toURI(event.Name)
-				if err != nil {
-					log.Println(err)
-					continue
-				}
+				uri := protocol.URIFromPath(event.Name)
 				if event.Op.Has(fsnotify.Remove | fsnotify.Rename) {
 					OnDelete(uri)
 					continue
@@ -180,7 +171,7 @@ func WatchFiles(ctx context.Context) error {
 	return nil
 }
 
-func OnCreate(uri uri.URI) {
+func OnCreate(uri protocol.DocumentURI) {
 	log.Printf("create: %s", uri)
 	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
@@ -190,7 +181,7 @@ func OnCreate(uri uri.URI) {
 	}
 }
 
-func OnChange(uri uri.URI) {
+func OnChange(uri protocol.DocumentURI) {
 	log.Printf("change: %s", uri)
 	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
@@ -201,7 +192,7 @@ func OnChange(uri uri.URI) {
 	}
 }
 
-func OnDelete(uri uri.URI) {
+func OnDelete(uri protocol.DocumentURI) {
 	log.Printf("delete: %s", uri)
 	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {

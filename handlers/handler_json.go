@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/stores"
 	"github.com/ink0rr/rockide/textdocument"
-	"github.com/rockide/protocol"
 )
 
 type jsonHandlerActions int
@@ -25,7 +25,7 @@ func (a jsonHandlerActions) Has(action jsonHandlerActions) bool {
 }
 
 type jsonParams struct {
-	URI      protocol.URI
+	URI      protocol.DocumentURI
 	Node     *jsonc.Node
 	Location *jsonc.Location
 }
@@ -99,16 +99,17 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 				set[item.Value] = true
 				value := `"` + item.Value + `"`
 				completion := protocol.CompletionItem{
-					Label:            value,
-					InsertTextFormat: protocol.InsertTextFormatPlainText,
+					Label: value,
 				}
 				if params.Node != nil {
-					completion.TextEdit = &protocol.TextEdit{
-						Range: protocol.Range{
-							Start: document.PositionAt(params.Node.Offset),
-							End:   document.PositionAt(params.Node.Offset + params.Node.Length),
+					completion.TextEdit = &protocol.Or_CompletionItem_textEdit{
+						Value: protocol.TextEdit{
+							Range: protocol.Range{
+								Start: document.PositionAt(params.Node.Offset),
+								End:   document.PositionAt(params.Node.Offset + params.Node.Length),
+							},
+							NewText: value,
 						},
-						NewText: value,
 					}
 				}
 				res = append(res, completion)
@@ -143,7 +144,7 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 
 	if params.Node != nil && entry.Actions.Has(rename) {
 		actions.Rename = func(newName string) *protocol.WorkspaceEdit {
-			changes := make(map[protocol.URI][]protocol.TextEdit)
+			changes := make(map[protocol.DocumentURI][]protocol.TextEdit)
 			for _, item := range slices.Concat(entry.Source(&params), entry.References(&params)) {
 				if item.Value != params.Node.Value {
 					continue

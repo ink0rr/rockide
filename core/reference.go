@@ -1,12 +1,9 @@
 package core
 
-import (
-	"github.com/rockide/protocol"
-	"go.lsp.dev/uri"
-)
+import "github.com/ink0rr/rockide/internal/protocol"
 
 type Reference struct {
 	Value string
-	URI   uri.URI
+	URI   protocol.DocumentURI
 	Range *protocol.Range
 }

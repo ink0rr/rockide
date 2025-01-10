@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/rockide"
 	"github.com/ink0rr/rockide/textdocument"
-	"github.com/rockide/protocol"
 	"github.com/sourcegraph/jsonrpc2"
 )
 
@@ -98,15 +98,15 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 
 	result := protocol.InitializeResult{
 		Capabilities: protocol.ServerCapabilities{
-			TextDocumentSync: protocol.TextDocumentSyncKindIncremental,
+			TextDocumentSync: protocol.Incremental,
 			CompletionProvider: &protocol.CompletionOptions{
 				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.'"() `, ""),
 			},
-			DefinitionProvider: true,
+			DefinitionProvider: &protocol.Or_ServerCapabilities_definitionProvider{Value: true},
 			RenameProvider: &protocol.RenameOptions{
 				PrepareProvider: true,
 			},
-			HoverProvider: true,
+			HoverProvider: &protocol.Or_ServerCapabilities_hoverProvider{Value: true},
 		},
 		ServerInfo: &protocol.ServerInfo{
 			Name:    "rockide",
@@ -137,13 +137,13 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 		return nil
 	}
 
-	token := protocol.NewProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))
-	if err := conn.Call(ctx, "window/workDoneProgress/create", &protocol.WorkDoneProgressCreateParams{Token: *token}, nil); err != nil {
+	token := protocol.ProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))
+	if err := conn.Call(ctx, "window/workDoneProgress/create", &protocol.WorkDoneProgressCreateParams{Token: token}, nil); err != nil {
 		return err
 	}
 	progress := protocol.ProgressParams{
-		Token: *token,
-		Value: &protocol.WorkDoneProgressBegin{Kind: protocol.WorkDoneProgressKindBegin, Title: "Rockide: Indexing workspace"},
+		Token: token,
+		Value: &protocol.WorkDoneProgressBegin{Kind: "begin", Title: "Rockide: Indexing workspace"},
 	}
 	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
 		return err
@@ -152,7 +152,7 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 	rockide.IndexWorkspaces(ctx)
 	textdocument.EnableCache(true)
 
-	progress.Value = &protocol.WorkDoneProgressEnd{Kind: protocol.WorkDoneProgressKindEnd}
+	progress.Value = &protocol.WorkDoneProgressEnd{Kind: "end"}
 	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
 		return err
 	}
