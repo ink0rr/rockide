@@ -201,3 +201,12 @@ func OnDelete(uri protocol.DocumentURI) {
 		}
 	}
 }
+
+func FindActions(document *textdocument.TextDocument, position *protocol.Position) *handlers.HandlerActions {
+	for _, handler := range jsonHandlers {
+		if doublestar.MatchUnvalidated("**/"+handler.GetPattern(&project), string(document.URI)) {
+			return handler.GetActions(document, position)
+		}
+	}
+	return nil
+}

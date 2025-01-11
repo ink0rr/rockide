@@ -168,11 +168,7 @@ func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Compl
 	if err != nil {
 		return nil, err
 	}
-	handler := rockide.FindHandler(document.URI)
-	if handler == nil {
-		return nil, nil
-	}
-	actions := handler.GetActions(document, &params.Position)
+	actions := rockide.FindActions(document, &params.Position)
 	if actions == nil || actions.Completions == nil {
 		return nil, nil
 	}
@@ -184,11 +180,7 @@ func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Defin
 	if err != nil {
 		return nil, err
 	}
-	handler := rockide.FindHandler(document.URI)
-	if handler == nil {
-		return nil, nil
-	}
-	actions := handler.GetActions(document, &params.Position)
+	actions := rockide.FindActions(document, &params.Position)
 	if actions == nil || actions.Definitions == nil {
 		return nil, nil
 	}
@@ -204,11 +196,7 @@ func PrepareRename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Pr
 	if err != nil {
 		return nil, err
 	}
-	handler := rockide.FindHandler(document.URI)
-	if handler == nil {
-		return nil, nil
-	}
-	actions := handler.GetActions(document, &params.Position)
+	actions := rockide.FindActions(document, &params.Position)
 	if actions == nil || actions.Rename == nil {
 		return nil, nil
 	}
@@ -220,11 +208,7 @@ func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenamePar
 	if err != nil {
 		return nil, err
 	}
-	handler := rockide.FindHandler(document.URI)
-	if handler == nil {
-		return nil, nil
-	}
-	actions := handler.GetActions(document, &params.Position)
+	actions := rockide.FindActions(document, &params.Position)
 	if actions == nil || actions.Rename == nil {
 		return nil, nil
 	}
