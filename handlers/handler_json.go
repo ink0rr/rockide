@@ -30,6 +30,16 @@ type jsonParams struct {
 	Location *jsonc.Location
 }
 
+func (j *jsonParams) getParentNode() *jsonc.Node {
+	document, err := textdocument.Open(j.URI)
+	if err != nil {
+		return nil
+	}
+	root, _ := jsonc.ParseTree(document.GetText(), nil)
+	path := j.Location.Path
+	return jsonc.FindNodeAtLocation(root, path[:len(path)-1])
+}
+
 type jsonHandlerEntry struct {
 	Path      []string
 	MatchType string
