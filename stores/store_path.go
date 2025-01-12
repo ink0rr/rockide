@@ -41,7 +41,7 @@ func (b *BehaviorStore) Parse(uri protocol.DocumentURI) error {
 	if err != nil {
 		panic(err)
 	}
-	path = strings.ReplaceAll(path, "\\", "/")
+	path = filepath.ToSlash(path)
 	path = bpRegex.Split(path, -1)[1]
 	b.refs = append(b.refs, core.Reference{Value: path, URI: uri})
 	return nil
@@ -90,7 +90,7 @@ func (r *ResourceStore) Parse(uri protocol.DocumentURI) error {
 	if err != nil {
 		panic(err)
 	}
-	path = strings.ReplaceAll(path, "\\", "/")
+	path = filepath.ToSlash(path)
 	path = rpRegex.Split(path, -1)[1]
 	path = strings.TrimSuffix(path, filepath.Ext(path))
 	r.refs = append(r.refs, core.Reference{Value: path, URI: uri})

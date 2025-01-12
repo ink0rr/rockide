@@ -67,15 +67,18 @@ func SetBaseDir(dir string) error {
 	if bpPaths == nil || err != nil {
 		return errors.New("not a minecraft project")
 	}
-	project.BP = dir + "/" + bpPaths[0]
-	log.Printf("Behavior pack: %s", project.BP)
+	bp := dir + "/" + bpPaths[0]
+	log.Printf("Behavior pack: %s", bp)
 
 	rpPaths, err := doublestar.Glob(fsys, core.RpGlob, doublestar.WithFailOnIOErrors())
 	if rpPaths == nil || err != nil {
 		return errors.New("not a minecraft project")
 	}
-	project.RP = dir + "/" + rpPaths[0]
-	log.Printf("Resource pack: %s", project.RP)
+	rp := dir + "/" + rpPaths[0]
+	log.Printf("Resource pack: %s", rp)
+
+	project.BP = filepath.ToSlash(filepath.Clean(bp))
+	project.RP = filepath.ToSlash(filepath.Clean(rp))
 
 	return nil
 }
