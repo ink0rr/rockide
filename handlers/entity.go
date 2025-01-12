@@ -106,10 +106,10 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "component_group")
+			return stores.Entity.GetFrom(params.URI, "component_group_refs")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "component_group_refs")
+			return stores.Entity.GetFrom(params.URI, "component_group")
 		},
 	},
 	{
@@ -118,10 +118,10 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "event")
+			return stores.Entity.GetFrom(params.URI, "event_refs")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.Entity.GetFrom(params.URI, "event_refs")
+			return stores.Entity.GetFrom(params.URI, "event")
 		},
 	},
 	{
