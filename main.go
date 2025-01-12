@@ -125,16 +125,17 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 	if err != nil {
 		return err
 	}
-	baseDir, ok := configResult[0].(string)
-	if ok && baseDir != "" {
-		rockide.SetBaseDir(baseDir)
-	} else if stat, err := os.Stat("packs"); err == nil && stat.IsDir() {
-		rockide.SetBaseDir("packs")
-	}
 
-	if !rockide.IsMinecraftWorkspace(ctx) {
-		log.Println("Not a Minecraft workspace, exiting...")
-		return nil
+	baseDir, ok := configResult[0].(string)
+	if baseDir == "" || !ok {
+		baseDir = "."
+		if stat, err := os.Stat("packs"); err == nil && stat.IsDir() {
+			baseDir = "packs"
+		}
+	}
+	err = rockide.SetBaseDir(baseDir)
+	if err != nil {
+		return err
 	}
 
 	token := protocol.ProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))

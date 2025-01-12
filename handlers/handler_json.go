@@ -55,16 +55,16 @@ func (j *jsonHandlerEntry) getJsonPath() [][]string {
 }
 
 type jsonHandler struct {
-	pattern string
+	pattern core.Pattern
 	entries []jsonHandlerEntry
 }
 
-func newJsonHandler(pattern string, entries []jsonHandlerEntry) *jsonHandler {
+func newJsonHandler(pattern core.Pattern, entries []jsonHandlerEntry) *jsonHandler {
 	return &jsonHandler{pattern, entries}
 }
 
-func (j *jsonHandler) GetPattern() string {
-	return j.pattern
+func (j *jsonHandler) GetPattern(project *core.Project) string {
+	return j.pattern.Resolve(project)
 }
 
 func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *protocol.Position) *HandlerActions {

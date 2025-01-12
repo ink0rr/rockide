@@ -16,11 +16,11 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/internal/protocol"
-	"github.com/ink0rr/rockide/jsonc"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/textdocument"
 )
 
-var baseDir = "."
+var project core.Project
 
 var storeList = []stores.Store{
 	// BP
@@ -59,38 +59,30 @@ var jsonHandlers = []handlers.Handler{
 	handlers.ClientAnimation,
 }
 
-func SetBaseDir(dir string) {
-	baseDir = dir
-}
+func SetBaseDir(dir string) error {
+	project = core.Project{}
+	fsys := os.DirFS(dir)
 
-func IsMinecraftWorkspace(ctx context.Context) bool {
-	fsys := os.DirFS(baseDir)
-	hasManifest := false
-	err := doublestar.GlobWalk(fsys, core.ProjectGlob+"/manifest.json", func(path string, d fs.DirEntry) error {
-		if d.IsDir() {
-			return nil
-		}
-		path = filepath.Join(baseDir, path)
-		log.Printf("Found manifest: %s", path)
-		txt, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-		root, _ := jsonc.ParseTree(string(txt), nil)
-		formatVersion := jsonc.FindNodeAtLocation(root, jsonc.Path{"format_version"}) != nil
-		header := jsonc.FindNodeAtLocation(root, jsonc.Path{"header"}) != nil
-		modules := jsonc.FindNodeAtLocation(root, jsonc.Path{"modules"}) != nil
-		if formatVersion && header && modules {
-			hasManifest = true
-		}
-		return nil
-	})
-	return err == nil && hasManifest
+	bpPaths, err := doublestar.Glob(fsys, core.BpGlob, doublestar.WithFailOnIOErrors())
+	if bpPaths == nil || err != nil {
+		return errors.New("not a minecraft project")
+	}
+	project.BP = dir + "/" + bpPaths[0]
+	log.Printf("Behavior pack: %s", project.BP)
+
+	rpPaths, err := doublestar.Glob(fsys, core.RpGlob, doublestar.WithFailOnIOErrors())
+	if rpPaths == nil || err != nil {
+		return errors.New("not a minecraft project")
+	}
+	project.RP = dir + "/" + rpPaths[0]
+	log.Printf("Resource pack: %s", project.RP)
+
+	return nil
 }
 
 func IndexWorkspaces(ctx context.Context) {
 	startTime := time.Now()
-	fsys := os.DirFS(baseDir)
+	fsys := os.DirFS(".")
 	totalFiles := atomic.Uint32{}
 	skippedFiles := atomic.Uint32{}
 
@@ -99,11 +91,11 @@ func IndexWorkspaces(ctx context.Context) {
 	for _, store := range storeList {
 		go func() {
 			defer wg.Done()
-			doublestar.GlobWalk(fsys, store.GetPattern(), func(path string, d fs.DirEntry) error {
+			doublestar.GlobWalk(fsys, store.GetPattern(&project), func(path string, d fs.DirEntry) error {
 				if d.IsDir() {
 					return nil
 				}
-				uri := protocol.URIFromPath(filepath.Join(baseDir, path))
+				uri := protocol.URIFromPath(path)
 				err := store.Parse(uri)
 				if err != nil {
 					log.Printf("Error parsing file: %s\n\t%s", path, err)
@@ -129,14 +121,10 @@ func WatchFiles(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	bp, rp, err := getProjectPaths()
-	if err != nil {
-		return errors.Join(err, errors.New("failed to get project paths"))
-	}
-	if err := watcher.Add(filepath.Join(bp, "...")); err != nil {
+	if err := watcher.Add(filepath.Join(project.BP, "...")); err != nil {
 		return errors.Join(err, errors.New("failed to watch BP path"))
 	}
-	if err := watcher.Add(filepath.Join(rp, "...")); err != nil {
+	if err := watcher.Add(filepath.Join(project.RP, "...")); err != nil {
 		return errors.Join(err, errors.New("failed to watch RP path"))
 	}
 	go func() {
@@ -174,7 +162,7 @@ func WatchFiles(ctx context.Context) error {
 func OnCreate(uri protocol.DocumentURI) {
 	log.Printf("create: %s", uri)
 	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(&project), string(uri)) {
 			store.Parse(uri)
 			break
 		}
@@ -184,7 +172,7 @@ func OnCreate(uri protocol.DocumentURI) {
 func OnChange(uri protocol.DocumentURI) {
 	log.Printf("change: %s", uri)
 	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(&project), string(uri)) {
 			store.Delete(uri)
 			store.Parse(uri)
 			break
@@ -195,7 +183,7 @@ func OnChange(uri protocol.DocumentURI) {
 func OnDelete(uri protocol.DocumentURI) {
 	log.Printf("delete: %s", uri)
 	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(&project), string(uri)) {
 			store.Delete(uri)
 			break
 		}

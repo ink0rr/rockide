@@ -1,41 +1,62 @@
 package core
 
 const (
-	BpGlob      = "{behavior_pack,*BP,BP_*,*bp,bp_*}"
-	RpGlob      = "{resource_pack,*RP,RP_*,*rp,rp_*}"
-	ProjectGlob = "{behavior_pack,*BP,BP_*,*bp,bp_*,resource_pack,*RP,RP_*,*rp,rp_*}"
+	BpGlob = "{behavior_pack,*BP,BP_*,*bp,bp_*}"
+	RpGlob = "{resource_pack,*RP,RP_*,*rp,rp_*}"
 )
 
-const (
-	AnimationControllerGlob = BpGlob + "/animation_controllers/**/*.json"
-	AnimationGlob           = BpGlob + "/animations/**/*.json"
-	BlockGlob               = BpGlob + "/blocks/**/*.json"
-	EntityGlob              = BpGlob + "/entities/**/*.json"
-	FeatureRuleGlob         = BpGlob + "/feature_rules/**/*.json"
-	FeatureGlob             = BpGlob + "/features/**/*.json"
-	FunctionGlob            = BpGlob + "/functions/**/*.mcfunction"
-	ItemGlob                = BpGlob + "/items/**/*.json"
-	LootTableGlob           = BpGlob + "/loot_tables/**/*.json"
-	RecipeGlob              = BpGlob + "/recipes/**/*.json"
-	SpawnRuleGlob           = BpGlob + "/spawn_rules/**/*.json"
-	StructureGlob           = BpGlob + "/structures/**/*.mcstructure"
-	TradeTableGlob          = BpGlob + "/trading/**/*.json"
+type Pattern string
+
+func (p Pattern) Resolve(project *Project) string {
+	pattern := string(p[1:])
+	switch p[0] {
+	case 'b':
+		return project.BP + pattern
+	case 'r':
+		return project.RP + pattern
+	default:
+		panic("invalid pattern")
+	}
+}
+
+func behaviorPattern(pattern string) Pattern {
+	return Pattern("b" + pattern)
+}
+
+func resourcePattern(pattern string) Pattern {
+	return Pattern("r" + pattern)
+}
+
+var (
+	AnimationControllerGlob = behaviorPattern("/animation_controllers/**/*.json")
+	AnimationGlob           = behaviorPattern("/animations/**/*.json")
+	BlockGlob               = behaviorPattern("/blocks/**/*.json")
+	EntityGlob              = behaviorPattern("/entities/**/*.json")
+	FeatureRuleGlob         = behaviorPattern("/feature_rules/**/*.json")
+	FeatureGlob             = behaviorPattern("/features/**/*.json")
+	FunctionGlob            = behaviorPattern("/functions/**/*.mcfunction")
+	ItemGlob                = behaviorPattern("/items/**/*.json")
+	LootTableGlob           = behaviorPattern("/loot_tables/**/*.json")
+	RecipeGlob              = behaviorPattern("/recipes/**/*.json")
+	SpawnRuleGlob           = behaviorPattern("/spawn_rules/**/*.json")
+	StructureGlob           = behaviorPattern("/structures/**/*.mcstructure")
+	TradeTableGlob          = behaviorPattern("/trading/**/*.json")
 )
 
-const (
-	AttachableGlob                = RpGlob + "/attachables/**/*.json"
-	ClientAnimationControllerGlob = RpGlob + "/animation_controllers/**/*.json"
-	ClientAnimationGlob           = RpGlob + "/animations/**/*.json"
-	ClientBlockGlob               = RpGlob + "/blocks.json"
-	ClientEntityGlob              = RpGlob + "/entity/**/*.json"
-	GeometryGlob                  = RpGlob + "/models/**/*.json"
-	ItemTextureGlob               = RpGlob + "/textures/item_texture.json"
-	ParticleGlob                  = RpGlob + "/particles/**/*.json"
-	RenderControllerGlob          = RpGlob + "/render_controllers/**/*.json"
-	SoundDefinitionGlob           = RpGlob + "/sounds/sound_definitions.json"
-	SoundGlob                     = RpGlob + "/sounds/**/*.{fsb,ogg,wav}"
-	TerrainTextureGlob            = RpGlob + "/textures/terrain_texture.json"
-	TextureGlob                   = RpGlob + "/textures/**/*.{png,tga,fsb}"
+var (
+	AttachableGlob                = resourcePattern("/attachables/**/*.json")
+	ClientAnimationControllerGlob = resourcePattern("/animation_controllers/**/*.json")
+	ClientAnimationGlob           = resourcePattern("/animations/**/*.json")
+	ClientBlockGlob               = resourcePattern("/blocks.json")
+	ClientEntityGlob              = resourcePattern("/entity/**/*.json")
+	GeometryGlob                  = resourcePattern("/models/**/*.json")
+	ItemTextureGlob               = resourcePattern("/textures/item_texture.json")
+	ParticleGlob                  = resourcePattern("/particles/**/*.json")
+	RenderControllerGlob          = resourcePattern("/render_controllers/**/*.json")
+	SoundDefinitionGlob           = resourcePattern("/sounds/sound_definitions.json")
+	SoundGlob                     = resourcePattern("/sounds/**/*.{fsb,ogg,wav}")
+	TerrainTextureGlob            = resourcePattern("/textures/terrain_texture.json")
+	TextureGlob                   = resourcePattern("/textures/**/*.{png,tga,fsb}")
 )
 
 var PropertyDomain = []string{"bool_property", "enum_property", "float_property", "int_property"}

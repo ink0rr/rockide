@@ -29,13 +29,13 @@ func (j *jsonStoreEntry) getJsonPath() [][]string {
 }
 
 type jsonStore struct {
-	pattern string
+	pattern core.Pattern
 	entries []jsonStoreEntry
 	store   map[string][]core.Reference
 	mutex   sync.Mutex
 }
 
-func newJsonStore(pattern string, entries []jsonStoreEntry) *jsonStore {
+func newJsonStore(pattern core.Pattern, entries []jsonStoreEntry) *jsonStore {
 	return &jsonStore{
 		pattern: pattern,
 		entries: entries,
@@ -44,8 +44,8 @@ func newJsonStore(pattern string, entries []jsonStoreEntry) *jsonStore {
 }
 
 // GetPattern implements Store.
-func (j *jsonStore) GetPattern() string {
-	return j.pattern
+func (j *jsonStore) GetPattern(project *core.Project) string {
+	return j.pattern.Resolve(project)
 }
 
 // Parse implements Store.

@@ -26,13 +26,13 @@ var (
 )
 
 type BehaviorStore struct {
-	pattern string
+	pattern core.Pattern
 	refs    []core.Reference
 }
 
 // GetPattern implements Store.
-func (b *BehaviorStore) GetPattern() string {
-	return b.pattern
+func (b *BehaviorStore) GetPattern(project *core.Project) string {
+	return b.pattern.Resolve(project)
 }
 
 // Parse implements Store.
@@ -75,13 +75,13 @@ func (b *BehaviorStore) Delete(uri protocol.DocumentURI) {
 }
 
 type ResourceStore struct {
-	pattern string
+	pattern core.Pattern
 	refs    []core.Reference
 }
 
 // GetPattern implements Store.
-func (r *ResourceStore) GetPattern() string {
-	return r.pattern
+func (r *ResourceStore) GetPattern(project *core.Project) string {
+	return r.pattern.Resolve(project)
 }
 
 // Parse implements Store.
