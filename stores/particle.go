@@ -8,7 +8,7 @@ var Particle = newJsonStore(core.ParticleGlob, []jsonStoreEntry{
 		Path: []string{"particle_effect/description/identifier"},
 	},
 	{
-		Id:   "identifier_refs",
+		Id:   "id_refs",
 		Path: []string{"particle_effect/events/**/particle_effect/effect"},
 	},
 	{

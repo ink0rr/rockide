@@ -32,6 +32,7 @@ var storeList = []stores.Store{
 	stores.Feature,
 	stores.Item,
 	stores.LootTable,
+	stores.Recipe,
 	stores.TradeTable,
 	// RP
 	stores.Attachable,
@@ -44,7 +45,9 @@ var storeList = []stores.Store{
 	stores.Particle,
 	stores.RenderController,
 	stores.SoundDefinition,
+	stores.Sound,
 	stores.TerrainTexture,
+	stores.Texture,
 }
 
 var jsonHandlers = []handlers.Handler{
@@ -57,6 +60,7 @@ var jsonHandlers = []handlers.Handler{
 	// RP
 	handlers.ClientAnimationController,
 	handlers.ClientAnimation,
+	handlers.ClientEntity,
 }
 
 func SetBaseDir(dir string) error {
