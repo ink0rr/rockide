@@ -31,7 +31,8 @@ var ClientAnimationController = newJsonHandler(core.ClientAnimationControllerGlo
 		Path: []string{
 			"animation_controllers/*/states/*/animations/*",
 		},
-		Actions: completions | definitions | rename,
+		MatchType: "value",
+		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			id, ok := params.Location.Path[1].(string)
 			if !ok {

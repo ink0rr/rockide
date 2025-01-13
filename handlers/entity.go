@@ -10,8 +10,10 @@ import (
 
 var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 	{
-		Path:    []string{"minecraft:entity/description/identifier"},
-		Actions: completions | definitions | rename,
+		Path:       []string{"minecraft:entity/description/identifier"},
+		MatchType:  "value",
+		Actions:    completions | definitions | rename,
+		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.ClientEntity.Get("id")
 		},
@@ -21,8 +23,8 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 	},
 	{
 		Path:       []string{"minecraft:entity/description/animations/*"},
-		Actions:    completions | definitions | rename,
 		MatchType:  "key",
+		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Entity.GetFrom(params.URI, "animate_refs")
@@ -33,8 +35,8 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 	},
 	{
 		Path:      []string{"minecraft:entity/description/animations/*"},
-		Actions:   completions | definitions | rename,
 		MatchType: "value",
+		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.AnimationController.Get("id"), stores.Animation.Get("id"))
 		},
@@ -43,8 +45,20 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []string{"minecraft:entity/description/scripts/animate/*"},
-		Actions: completions | definitions | rename,
+		Path:      []string{"minecraft:entity/description/scripts/animate/*/*"},
+		MatchType: "key",
+		Actions:   completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.Entity.GetFrom(params.URI, "animate")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return stores.Entity.GetFrom(params.URI, "animate_refs")
+		},
+	},
+	{
+		Path:      []string{"minecraft:entity/description/scripts/animate/*"},
+		MatchType: "value",
+		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Entity.GetFrom(params.URI, "animate")
 		},
@@ -80,7 +94,8 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 			"minecraft:entity/components/**/filters/**/domain",
 			"minecraft:entity/component_groups/**/filters/**/domain",
 		},
-		Actions: completions | definitions | rename,
+		MatchType: "value",
+		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			parent := params.getParentNode()
 			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
@@ -154,7 +169,8 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 			"minecraft:entity/components/minecraft:type_family/family/*",
 			"minecraft:entity/component_groups/*/minecraft:type_family/family/*",
 		},
-		Actions: completions | definitions | rename,
+		MatchType: "value",
+		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Entity.Get("family"), stores.Entity.Get("family_refs"))
 		},
@@ -167,7 +183,8 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 			"minecraft:entity/components/**/filters/**/value",
 			"minecraft:entity/component_groups/**/filters/**/value",
 		},
-		Actions: completions | definitions | rename,
+		MatchType: "value",
+		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			parent := params.getParentNode()
 			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
@@ -185,7 +202,8 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 			"minecraft:entity/components/minecraft:loot/table",
 			"minecraft:entity/component_groups/*/minecraft:loot/table",
 		},
-		Actions: completions | definitions,
+		MatchType: "value",
+		Actions:   completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.LootTable.Get("path")
 		},
@@ -200,7 +218,8 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 			"minecraft:entity/component_groups/*/minecraft:trade_table/table",
 			"minecraft:entity/component_groups/*/minecraft:economy_trade_table/table",
 		},
-		Actions: completions | definitions,
+		MatchType: "value",
+		Actions:   completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.TradeTable.Get("path")
 		},
