@@ -44,16 +44,12 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 	case "textDocument/didChange":
 		var params protocol.DidChangeTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			if textdocument.Update(params.TextDocument.URI, params.ContentChanges) {
-				rockide.OnChange(params.TextDocument.URI)
-			}
+			textdocument.Update(params.TextDocument.URI, params.ContentChanges)
 		}
 	case "textDocument/didSave":
 		var params protocol.DidSaveTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			if textdocument.UpdateFull(params.TextDocument.URI, params.Text) {
-				rockide.OnChange(params.TextDocument.URI)
-			}
+			textdocument.UpdateFull(params.TextDocument.URI, params.Text)
 		}
 	case "textDocument/didClose":
 		var params protocol.DidCloseTextDocumentParams

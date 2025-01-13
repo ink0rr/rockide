@@ -134,6 +134,11 @@ func WatchFiles(ctx context.Context) error {
 	if err := watcher.Add(filepath.Join(project.RP, "...")); err != nil {
 		return errors.Join(err, errors.New("failed to watch RP path"))
 	}
+
+	var mutex sync.Mutex
+	debounceTimers := make(map[protocol.DocumentURI]*time.Timer)
+	debounceDuration := 5 * time.Millisecond
+
 	go func() {
 		for {
 			select {
@@ -149,12 +154,24 @@ func WatchFiles(ctx context.Context) error {
 				if stat, err := os.Stat(event.Name); err != nil || stat.IsDir() {
 					continue
 				}
-				switch {
-				case event.Op.Has(fsnotify.Create):
+				if event.Op.Has(fsnotify.Create) {
 					OnCreate(uri)
-				case event.Op.Has(fsnotify.Write):
-					OnChange(uri)
+					continue
 				}
+				if !event.Op.Has(fsnotify.Write) {
+					continue
+				}
+				mutex.Lock()
+				if timer := debounceTimers[uri]; timer != nil {
+					timer.Stop()
+				}
+				debounceTimers[uri] = time.AfterFunc(debounceDuration, func() {
+					mutex.Lock()
+					delete(debounceTimers, uri)
+					mutex.Unlock()
+					OnChange(uri)
+				})
+				mutex.Unlock()
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					return
@@ -167,30 +184,34 @@ func WatchFiles(ctx context.Context) error {
 }
 
 func OnCreate(uri protocol.DocumentURI) {
-	log.Printf("create: %s", uri)
 	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(&project), string(uri)) {
-			store.Parse(uri)
+			log.Printf("create: %s", uri)
+			if err := store.Parse(uri); err != nil {
+				log.Println(err)
+			}
 			break
 		}
 	}
 }
 
 func OnChange(uri protocol.DocumentURI) {
-	log.Printf("change: %s", uri)
 	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(&project), string(uri)) {
+			log.Printf("change: %s", uri)
 			store.Delete(uri)
-			store.Parse(uri)
+			if err := store.Parse(uri); err != nil {
+				log.Println(err)
+			}
 			break
 		}
 	}
 }
 
 func OnDelete(uri protocol.DocumentURI) {
-	log.Printf("delete: %s", uri)
 	for _, store := range storeList {
 		if doublestar.MatchUnvalidated("**/"+store.GetPattern(&project), string(uri)) {
+			log.Printf("delete: %s", uri)
 			store.Delete(uri)
 			break
 		}
