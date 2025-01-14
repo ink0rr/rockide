@@ -12,6 +12,19 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
+type jsonPath struct {
+	isKey bool
+	path  []string
+}
+
+func matchKey(path string) jsonPath {
+	return jsonPath{isKey: true, path: strings.Split(path, "/")}
+}
+
+func matchValue(path string) jsonPath {
+	return jsonPath{isKey: false, path: strings.Split(path, "/")}
+}
+
 type jsonHandlerActions int
 
 const (
@@ -40,27 +53,14 @@ func (j *jsonParams) getParentNode() *jsonc.Node {
 }
 
 type jsonHandlerEntry struct {
-	Path      []string
-	MatchType string
-	Actions   jsonHandlerActions
+	Matcher []jsonPath
+	Actions jsonHandlerActions
 	// Filter completions to only show undeclared reference
 	FilterDiff bool
 	// Source for completions and definitions
 	Source func(params *jsonParams) []core.Reference
 	// References that uses the same source
 	References func(params *jsonParams) []core.Reference
-
-	// Used to cache Path splitted by '/'
-	jsonPath [][]string
-}
-
-func (j *jsonHandlerEntry) getJsonPath() [][]string {
-	if j.jsonPath == nil {
-		for _, path := range j.Path {
-			j.jsonPath = append(j.jsonPath, strings.Split(path, "/"))
-		}
-	}
-	return j.jsonPath
 }
 
 type jsonHandler struct {
@@ -176,12 +176,8 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 
 func (j *jsonHandler) findEntry(location *jsonc.Location) *jsonHandlerEntry {
 	for _, entry := range j.entries {
-		if (entry.MatchType == "key" && !location.IsAtPropertyKey) ||
-			(entry.MatchType == "value" && location.IsAtPropertyKey) {
-			continue
-		}
-		for _, targetPath := range entry.getJsonPath() {
-			if location.Path.Matches(targetPath) {
+		for _, matcher := range entry.Matcher {
+			if matcher.isKey == location.IsAtPropertyKey && location.Path.Matches(matcher.path) {
 				return &entry
 			}
 		}

@@ -9,8 +9,7 @@ import (
 
 var Animation = newJsonHandler(core.AnimationGlob, []jsonHandlerEntry{
 	{
-		Path:       []string{"animations/*"},
-		MatchType:  "key",
+		Matcher:    []jsonPath{matchKey("animations/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {

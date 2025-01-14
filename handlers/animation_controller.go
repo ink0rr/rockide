@@ -9,8 +9,7 @@ import (
 
 var AnimationController = newJsonHandler(core.AnimationControllerGlob, []jsonHandlerEntry{
 	{
-		Path:       []string{"animation_controllers/*"},
-		MatchType:  "key",
+		Matcher:    []jsonPath{matchKey("animation_controllers/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -27,11 +26,8 @@ var AnimationController = newJsonHandler(core.AnimationControllerGlob, []jsonHan
 		},
 	},
 	{
-		Path: []string{
-			"animation_controllers/*/states/*/animations/*",
-		},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
+		Matcher: []jsonPath{matchValue("animation_controllers/*/states/*/animations/*")},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			id, ok := params.Location.Path[1].(string)
 			if !ok {
@@ -48,11 +44,8 @@ var AnimationController = newJsonHandler(core.AnimationControllerGlob, []jsonHan
 		},
 	},
 	{
-		Path: []string{
-			"animation_controllers/*/states/*/animations/*/*",
-		},
-		MatchType: "key",
-		Actions:   completions | definitions | rename,
+		Matcher: []jsonPath{matchKey("animation_controllers/*/states/*/animations/*/*")},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			id, ok := params.Location.Path[1].(string)
 			if !ok {

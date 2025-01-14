@@ -9,7 +9,7 @@ import (
 
 var Item = newJsonHandler(core.ItemGlob, []jsonHandlerEntry{
 	{
-		Path:       []string{"minecraft:item/description/identifier"},
+		Matcher:    []jsonPath{matchValue("minecraft:item/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -20,13 +20,12 @@ var Item = newJsonHandler(core.ItemGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []string{
-			"minecraft:item/components/minecraft:icon",
-			"minecraft:item/components/minecraft:icon/texture",
-			"minecraft:item/components/minecraft:icon/textures/*",
+		Matcher: []jsonPath{
+			matchValue("minecraft:item/components/minecraft:icon"),
+			matchValue("minecraft:item/components/minecraft:icon/texture"),
+			matchValue("minecraft:item/components/minecraft:icon/textures/*"),
 		},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.ItemTexture.Get("id")
 		},
@@ -35,9 +34,8 @@ var Item = newJsonHandler(core.ItemGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:item/components/minecraft:repairable/repair_items/*/items/*"},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
+		Matcher: []jsonPath{matchValue("minecraft:item/components/minecraft:repairable/repair_items/*/items/*")},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Item.Get("id")
 		},

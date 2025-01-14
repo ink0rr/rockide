@@ -7,8 +7,7 @@ import (
 
 var Block = newJsonHandler(core.BlockGlob, []jsonHandlerEntry{
 	{
-		Path:       []string{"minecraft:block/description/identifier"},
-		MatchType:  "value",
+		Matcher:    []jsonPath{matchValue("minecraft:block/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {

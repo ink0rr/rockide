@@ -9,8 +9,7 @@ import (
 
 var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 	{
-		Path:       []string{"minecraft:client_entity/description/identifier"},
-		MatchType:  "value",
+		Matcher:    []jsonPath{matchValue("minecraft:client_entity/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -21,9 +20,8 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:       []string{"minecraft:client_entity/description/animations/*"},
+		Matcher:    []jsonPath{matchKey("minecraft:client_entity/description/animations/*")},
 		Actions:    completions | definitions | rename,
-		MatchType:  "key",
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.ClientEntity.GetFrom(params.URI, "animate_refs")
@@ -33,9 +31,8 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/animations/*"},
-		Actions:   completions | definitions | rename,
-		MatchType: "value",
+		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/animations/*")},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.ClientAnimationController.Get("id"), stores.ClientAnimation.Get("id"))
 		},
@@ -44,9 +41,11 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/scripts/animate/*/*"},
-		MatchType: "key",
-		Actions:   completions | definitions | rename,
+		Matcher: []jsonPath{
+			matchKey("minecraft:client_entity/description/scripts/animate/*/*"),
+			matchValue("minecraft:client_entity/description/scripts/animate/*"),
+		},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.ClientEntity.GetFrom(params.URI, "animate")
 		},
@@ -55,20 +54,8 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/scripts/animate/*"},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate")
-		},
-		References: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate_refs")
-		},
-	},
-	{
-		Path:      []string{"minecraft:client_entity/description/textures/*"},
-		MatchType: "value",
-		Actions:   completions | definitions,
+		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/textures/*")},
+		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Texture.Get("path")
 		},
@@ -77,9 +64,8 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/geometry/*"},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
+		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/geometry/*")},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Geometry.Get("id")
 		},
@@ -88,11 +74,11 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []string{
-			"minecraft:client_entity/description/render_controllers/*/*",
+		Matcher: []jsonPath{
+			matchKey("minecraft:client_entity/description/render_controllers/*/*"),
+			matchValue("minecraft:client_entity/description/render_controllers/*"),
 		},
-		MatchType: "key",
-		Actions:   completions | definitions | rename,
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.RenderController.Get("id")
 		},
@@ -101,22 +87,8 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []string{
-			"minecraft:client_entity/description/render_controllers/*",
-		},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
-			return stores.RenderController.Get("id")
-		},
-		References: func(params *jsonParams) []core.Reference {
-			return slices.Concat(stores.Attachable.Get("render_controller_id"), stores.ClientEntity.Get("render_controller_id"))
-		},
-	},
-	{
-		Path:      []string{"minecraft:client_entity/description/spawn_egg/texture"},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
+		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/spawn_egg/texture")},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.ItemTexture.Get("id")
 		},
@@ -125,12 +97,11 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []string{
-			"minecraft:client_entity/description/particle_effects/*",
-			"minecraft:client_entity/description/particle_emitters/*",
+		Matcher: []jsonPath{
+			matchValue("minecraft:client_entity/description/particle_effects/*"),
+			matchValue("minecraft:client_entity/description/particle_emitters/*"),
 		},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Particle.Get("id")
 		},
@@ -139,9 +110,8 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/sound_effects/*"},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
+		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/sound_effects/*")},
+		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.SoundDefinition.Get("id")
 		},
