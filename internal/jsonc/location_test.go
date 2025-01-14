@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/rockide/internal/jsonc"
 )
 
 func assertLocation(t *testing.T, input string, expectedSegments jsonc.Path, expectedNodeType jsonc.NodeType, expectedCompleteProperty bool) {

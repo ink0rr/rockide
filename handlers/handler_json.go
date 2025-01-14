@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/protocol"
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/rockide/internal/textdocument"
 	"github.com/ink0rr/rockide/stores"
-	"github.com/ink0rr/rockide/textdocument"
 )
 
 type jsonHandlerActions int

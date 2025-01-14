@@ -3,7 +3,7 @@ package jsonc_test
 import (
 	"testing"
 
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/rockide/internal/jsonc"
 )
 
 func assertKinds(t *testing.T, text string, kinds ...jsonc.SyntaxKind) {

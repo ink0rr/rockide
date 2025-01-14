@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/protocol"
-	"github.com/ink0rr/rockide/jsonc"
-	"github.com/ink0rr/rockide/textdocument"
+	"github.com/ink0rr/rockide/internal/textdocument"
 )
 
 type jsonStoreEntry struct {

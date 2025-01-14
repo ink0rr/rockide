@@ -3,7 +3,7 @@ package stores
 import (
 	"fmt"
 
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/rockide/internal/jsonc"
 )
 
 func findNodesAtPath(root *jsonc.Node, jsonPath []string) []*jsonc.Node {

@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/protocol"
-	"github.com/ink0rr/rockide/textdocument"
+	"github.com/ink0rr/rockide/internal/textdocument"
 )
 
 type Handler interface {

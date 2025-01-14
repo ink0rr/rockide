@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/rockide/internal/jsonc"
 )
 
 func stringify(value any) string {

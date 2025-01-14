@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/ink0rr/rockide/internal/textdocument"
 	"github.com/ink0rr/rockide/rockide"
-	"github.com/ink0rr/rockide/textdocument"
 	"github.com/sourcegraph/jsonrpc2"
 )
 

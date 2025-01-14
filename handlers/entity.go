@@ -4,7 +4,7 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/stores"
 )
 

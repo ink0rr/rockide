@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
-	"github.com/ink0rr/rockide/jsonc"
+	"github.com/ink0rr/rockide/internal/jsonc"
 )
 
 var Block = newJsonStore(core.BlockGlob, []jsonStoreEntry{

@@ -16,8 +16,8 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/ink0rr/rockide/internal/textdocument"
 	"github.com/ink0rr/rockide/stores"
-	"github.com/ink0rr/rockide/textdocument"
 )
 
 var project core.Project
