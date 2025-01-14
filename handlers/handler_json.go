@@ -26,7 +26,6 @@ func (a jsonHandlerActions) Has(action jsonHandlerActions) bool {
 
 type jsonParams struct {
 	URI      protocol.DocumentURI
-	Node     *jsonc.Node
 	Location *jsonc.Location
 }
 
@@ -85,9 +84,9 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 		return nil
 	}
 
+	node := location.PreviousNode
 	params := jsonParams{
 		URI:      document.URI,
-		Node:     location.PreviousNode,
 		Location: location,
 	}
 	actions := HandlerActions{}
@@ -111,12 +110,12 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 				completion := protocol.CompletionItem{
 					Label: value,
 				}
-				if params.Node != nil {
+				if node != nil {
 					completion.TextEdit = &protocol.Or_CompletionItem_textEdit{
 						Value: protocol.TextEdit{
 							Range: protocol.Range{
-								Start: document.PositionAt(params.Node.Offset),
-								End:   document.PositionAt(params.Node.Offset + params.Node.Length),
+								Start: document.PositionAt(node.Offset),
+								End:   document.PositionAt(node.Offset + node.Length),
 							},
 							NewText: value,
 						},
@@ -128,17 +127,17 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 		}
 	}
 
-	if params.Node != nil && entry.Actions.Has(definitions) {
+	if node != nil && entry.Actions.Has(definitions) {
 		actions.Definitions = func() []protocol.LocationLink {
 			res := []protocol.LocationLink{}
 			for _, item := range entry.Source(&params) {
-				if item.Value != params.Node.Value {
+				if item.Value != node.Value {
 					continue
 				}
 				location := protocol.LocationLink{
 					OriginSelectionRange: &protocol.Range{
-						Start: document.PositionAt(params.Node.Offset + 1),
-						End:   document.PositionAt(params.Node.Offset + params.Node.Length - 1),
+						Start: document.PositionAt(node.Offset + 1),
+						End:   document.PositionAt(node.Offset + node.Length - 1),
 					},
 					TargetURI: item.URI,
 				}
@@ -152,11 +151,11 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *
 		}
 	}
 
-	if params.Node != nil && entry.Actions.Has(rename) {
+	if node != nil && entry.Actions.Has(rename) {
 		actions.Rename = func(newName string) *protocol.WorkspaceEdit {
 			changes := make(map[protocol.DocumentURI][]protocol.TextEdit)
 			for _, item := range slices.Concat(entry.Source(&params), entry.References(&params)) {
-				if item.Value != params.Node.Value {
+				if item.Value != node.Value {
 					continue
 				}
 				edit := protocol.TextEdit{
