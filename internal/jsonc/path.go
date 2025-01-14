@@ -1,10 +1,10 @@
 package jsonc
 
-type Path = []any // string | int
+type Path []any // string | int
 
 // PathMatches checks if path matches the given pattern.
 // The pattern may contain wildcards "*" and "**" (match any segment and any number of segments, respectively).
-func PathMatches(path Path, pattern []string) bool {
+func (path Path) Matches(pattern []string) bool {
 	pathIndex := 0
 	patternIndex := 0
 

@@ -182,7 +182,7 @@ func (j *jsonHandler) findEntry(location *jsonc.Location) *jsonHandlerEntry {
 			continue
 		}
 		for _, targetPath := range entry.getJsonPath() {
-			if jsonc.PathMatches(location.Path, targetPath) {
+			if location.Path.Matches(targetPath) {
 				return &entry
 			}
 		}

@@ -7,7 +7,7 @@ import (
 )
 
 func assertPath(t *testing.T, path jsonc.Path, pattern []string, shouldMatch bool) {
-	if shouldMatch != jsonc.PathMatches(path, pattern) {
+	if shouldMatch != path.Matches(pattern) {
 		t.Errorf("Failed to match path. Path: %s, Pattern: %s, Should Match: %v", path, pattern, shouldMatch)
 	}
 }
