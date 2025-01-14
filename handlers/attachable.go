@@ -7,33 +7,33 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
+var Attachable = newJsonHandler(core.AttachableGlob, []jsonHandlerEntry{
 	{
-		Path:       []string{"minecraft:client_entity/description/identifier"},
+		Path:       []string{"minecraft:attachable/description/identifier"},
 		MatchType:  "value",
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Entity.Get("id")
+			return stores.Item.Get("id")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.Get("id")
+			return stores.Attachable.Get("id")
 		},
 	},
 	{
-		Path:       []string{"minecraft:client_entity/description/animations/*"},
+		Path:       []string{"minecraft:attachable/description/animations/*"},
 		Actions:    completions | definitions | rename,
 		MatchType:  "key",
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate_refs")
+			return stores.Attachable.GetFrom(params.URI, "animate_refs")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate")
+			return stores.Attachable.GetFrom(params.URI, "animate")
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/animations/*"},
+		Path:      []string{"minecraft:attachable/description/animations/*"},
 		Actions:   completions | definitions | rename,
 		MatchType: "value",
 		Source: func(params *jsonParams) []core.Reference {
@@ -44,29 +44,29 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/scripts/animate/*/*"},
+		Path:      []string{"minecraft:attachable/description/scripts/animate/*/*"},
 		MatchType: "key",
 		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate")
+			return stores.Attachable.GetFrom(params.URI, "animate")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate_refs")
+			return stores.Attachable.GetFrom(params.URI, "animate_refs")
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/scripts/animate/*"},
+		Path:      []string{"minecraft:attachable/description/scripts/animate/*"},
 		MatchType: "value",
 		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate")
+			return stores.Attachable.GetFrom(params.URI, "animate")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.GetFrom(params.URI, "animate_refs")
+			return stores.Attachable.GetFrom(params.URI, "animate_refs")
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/textures/*"},
+		Path:      []string{"minecraft:attachable/description/textures/*"},
 		MatchType: "value",
 		Actions:   completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
@@ -77,7 +77,7 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/geometry/*"},
+		Path:      []string{"minecraft:attachable/description/geometry/*"},
 		MatchType: "value",
 		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
@@ -89,7 +89,7 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 	},
 	{
 		Path: []string{
-			"minecraft:client_entity/description/render_controllers/*/*",
+			"minecraft:attachable/description/render_controllers/*/*",
 		},
 		MatchType: "key",
 		Actions:   completions | definitions | rename,
@@ -102,7 +102,7 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 	},
 	{
 		Path: []string{
-			"minecraft:client_entity/description/render_controllers/*",
+			"minecraft:attachable/description/render_controllers/*",
 		},
 		MatchType: "value",
 		Actions:   completions | definitions | rename,
@@ -114,20 +114,9 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/spawn_egg/texture"},
-		MatchType: "value",
-		Actions:   completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
-			return stores.ItemTexture.Get("id")
-		},
-		References: func(params *jsonParams) []core.Reference {
-			return slices.Concat(stores.ClientEntity.Get("spawn_egg"), stores.Item.Get("icon"))
-		},
-	},
-	{
 		Path: []string{
-			"minecraft:client_entity/description/particle_effects/*",
-			"minecraft:client_entity/description/particle_emitters/*",
+			"minecraft:attachable/description/particle_effects/*",
+			"minecraft:attachable/description/particle_emitters/*",
 		},
 		MatchType: "value",
 		Actions:   completions | definitions | rename,
@@ -139,7 +128,7 @@ var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:      []string{"minecraft:client_entity/description/sound_effects/*"},
+		Path:      []string{"minecraft:attachable/description/sound_effects/*"},
 		MatchType: "value",
 		Actions:   completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
