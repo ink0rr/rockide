@@ -25,7 +25,7 @@ func matchValue(path string) jsonPath {
 	return jsonPath{isKey: false, path: strings.Split(path, "/")}
 }
 
-type jsonHandlerActions int
+type jsonHandlerActions uint16
 
 const (
 	completions jsonHandlerActions = 1 << iota
@@ -43,7 +43,7 @@ type jsonParams struct {
 }
 
 func (j *jsonParams) getParentNode() *jsonc.Node {
-	document, err := textdocument.Open(j.URI)
+	document, err := textdocument.Get(j.URI)
 	if err != nil {
 		return nil
 	}

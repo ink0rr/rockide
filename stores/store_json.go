@@ -52,7 +52,7 @@ func (j *jsonStore) GetPattern(project *core.Project) string {
 func (j *jsonStore) Parse(uri protocol.DocumentURI) error {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
-	document, err := textdocument.Open(uri)
+	document, err := textdocument.Get(uri)
 	if err != nil {
 		return err
 	}

@@ -39,17 +39,17 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 	case "textDocument/didOpen":
 		var params protocol.DidOpenTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			_, err = textdocument.Open(params.TextDocument.URI)
+			textdocument.Open(params.TextDocument.URI, params.TextDocument.Text)
 		}
 	case "textDocument/didChange":
 		var params protocol.DidChangeTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			textdocument.Update(params.TextDocument.URI, params.ContentChanges)
+			textdocument.SyncIncremental(params.TextDocument.URI, params.ContentChanges)
 		}
 	case "textDocument/didSave":
 		var params protocol.DidSaveTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			textdocument.UpdateFull(params.TextDocument.URI, params.Text)
+			textdocument.Sync(params.TextDocument.URI, params.Text)
 		}
 	case "textDocument/didClose":
 		var params protocol.DidCloseTextDocumentParams
@@ -147,7 +147,6 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 	}
 
 	rockide.IndexWorkspace(ctx)
-	textdocument.EnableCache(true)
 
 	progress.Value = &protocol.WorkDoneProgressEnd{Kind: "end"}
 	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
@@ -161,7 +160,7 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 }
 
 func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.CompletionParams) ([]protocol.CompletionItem, error) {
-	document, err := textdocument.Open(params.TextDocument.URI)
+	document, err := textdocument.Get(params.TextDocument.URI)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +172,7 @@ func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Compl
 }
 
 func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.DefinitionParams) ([]protocol.LocationLink, error) {
-	document, err := textdocument.Open(params.TextDocument.URI)
+	document, err := textdocument.Get(params.TextDocument.URI)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +188,7 @@ type PrepareRenameResult struct {
 }
 
 func PrepareRename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.PrepareRenameParams) (*PrepareRenameResult, error) {
-	document, err := textdocument.Open(params.TextDocument.URI)
+	document, err := textdocument.Get(params.TextDocument.URI)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +200,7 @@ func PrepareRename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Pr
 }
 
 func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
-	document, err := textdocument.Open(params.TextDocument.URI)
+	document, err := textdocument.Get(params.TextDocument.URI)
 	if err != nil {
 		return nil, err
 	}

@@ -7,77 +7,10 @@ import (
 	"github.com/ink0rr/rockide/internal/protocol"
 )
 
-var (
-	documents    = make(map[protocol.DocumentURI]*TextDocument)
-	cacheEnabled = false
-	mutex        sync.Mutex
-)
-
 type TextDocument struct {
 	URI         protocol.DocumentURI `json:"uri"`
 	content     string
 	lineOffsets []uint32
-}
-
-func Open(uri protocol.DocumentURI) (*TextDocument, error) {
-	if cacheEnabled {
-		mutex.Lock()
-		defer mutex.Unlock()
-		if document := documents[uri]; document != nil {
-			return document, nil
-		}
-	}
-	txt, err := os.ReadFile(uri.Path())
-	if err != nil {
-		return nil, err
-	}
-	document := TextDocument{URI: uri, content: string(txt)}
-	if cacheEnabled {
-		documents[uri] = &document
-	}
-	return &document, nil
-}
-
-func Update(uri protocol.DocumentURI, contentChanges []protocol.TextDocumentContentChangeEvent) {
-	if len(contentChanges) == 0 {
-		return
-	}
-	mutex.Lock()
-	defer mutex.Unlock()
-	document := documents[uri]
-	if document == nil {
-		return
-	}
-	for _, change := range contentChanges {
-		startOffset := document.OffsetAt(change.Range.Start)
-		endOffset := document.OffsetAt(change.Range.End)
-		document.content = document.content[:startOffset] + change.Text + document.content[endOffset:]
-		document.lineOffsets = nil
-	}
-}
-
-func UpdateFull(uri protocol.DocumentURI, text *string) {
-	if text == nil {
-		return
-	}
-	mutex.Lock()
-	defer mutex.Unlock()
-	document := documents[uri]
-	if document == nil || document.content == *text {
-		return
-	}
-	document.content = *text
-	document.lineOffsets = nil
-}
-
-func Close(uri protocol.DocumentURI) {
-	mutex.Lock()
-	defer mutex.Unlock()
-	delete(documents, uri)
-}
-
-func EnableCache(flag bool) {
-	cacheEnabled = flag
 }
 
 func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 {
@@ -143,4 +76,72 @@ func (d *TextDocument) OffsetAt(position protocol.Position) uint32 {
 
 func (d *TextDocument) GetText() string {
 	return d.content
+}
+
+var (
+	documents = make(map[protocol.DocumentURI]*TextDocument)
+	mu        sync.RWMutex
+)
+
+func getDocument(uri protocol.DocumentURI) *TextDocument {
+	mu.RLock()
+	defer mu.RUnlock()
+	return documents[uri]
+}
+
+func setDocument(uri protocol.DocumentURI, document *TextDocument) {
+	mu.Lock()
+	defer mu.Unlock()
+	documents[uri] = document
+}
+
+func Get(uri protocol.DocumentURI) (*TextDocument, error) {
+	if document := getDocument(uri); document != nil {
+		return document, nil
+	}
+	txt, err := os.ReadFile(uri.Path())
+	if err != nil {
+		return nil, err
+	}
+	document := TextDocument{URI: uri, content: string(txt)}
+	return &document, nil
+}
+
+func Open(uri protocol.DocumentURI, txt string) {
+	document := TextDocument{URI: uri, content: string(txt)}
+	setDocument(uri, &document)
+}
+
+func SyncIncremental(uri protocol.DocumentURI, contentChanges []protocol.TextDocumentContentChangeEvent) {
+	if len(contentChanges) == 0 {
+		return
+	}
+	document := getDocument(uri)
+	if document == nil {
+		return
+	}
+	for _, change := range contentChanges {
+		startOffset := document.OffsetAt(change.Range.Start)
+		endOffset := document.OffsetAt(change.Range.End)
+		document.content = document.content[:startOffset] + change.Text + document.content[endOffset:]
+		document.lineOffsets = nil
+	}
+}
+
+func Sync(uri protocol.DocumentURI, txt *string) {
+	if txt == nil {
+		return
+	}
+	document := getDocument(uri)
+	if document == nil || document.content == *txt {
+		return
+	}
+	document.content = *txt
+	document.lineOffsets = nil
+}
+
+func Close(uri protocol.DocumentURI) {
+	mu.Lock()
+	defer mu.Unlock()
+	delete(documents, uri)
 }
