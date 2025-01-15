@@ -87,7 +87,7 @@ func SetBaseDir(dir string) error {
 	return nil
 }
 
-func IndexWorkspaces(ctx context.Context) {
+func IndexWorkspace(ctx context.Context) {
 	startTime := time.Now()
 	fsys := os.DirFS(".")
 	totalFiles := atomic.Uint32{}

@@ -146,7 +146,7 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 		return err
 	}
 
-	rockide.IndexWorkspaces(ctx)
+	rockide.IndexWorkspace(ctx)
 	textdocument.EnableCache(true)
 
 	progress.Value = &protocol.WorkDoneProgressEnd{Kind: "end"}
