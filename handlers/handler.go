@@ -8,7 +8,7 @@ import (
 
 type Handler interface {
 	GetPattern(project *core.Project) string
-	GetActions(document *textdocument.TextDocument, position *protocol.Position) *HandlerActions
+	GetActions(document *textdocument.TextDocument, position protocol.Position) *HandlerActions
 }
 
 type HandlerActions struct {

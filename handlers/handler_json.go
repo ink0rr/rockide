@@ -76,7 +76,7 @@ func (j *jsonHandler) GetPattern(project *core.Project) string {
 	return j.pattern.Resolve(project)
 }
 
-func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position *protocol.Position) *HandlerActions {
+func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position protocol.Position) *HandlerActions {
 	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(position))
 	entry := j.findEntry(location)
 	if entry == nil {

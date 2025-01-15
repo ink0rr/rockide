@@ -49,8 +49,8 @@ func Update(uri protocol.DocumentURI, contentChanges []protocol.TextDocumentCont
 		return
 	}
 	for _, change := range contentChanges {
-		startOffset := document.OffsetAt(&change.Range.Start)
-		endOffset := document.OffsetAt(&change.Range.End)
+		startOffset := document.OffsetAt(change.Range.Start)
+		endOffset := document.OffsetAt(change.Range.End)
 		document.content = document.content[:startOffset] + change.Text + document.content[endOffset:]
 		document.lineOffsets = nil
 	}
@@ -120,7 +120,7 @@ func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
 	return protocol.Position{Line: uint32(line), Character: offset - lineOffsets[line]}
 }
 
-func (d *TextDocument) OffsetAt(position *protocol.Position) uint32 {
+func (d *TextDocument) OffsetAt(position protocol.Position) uint32 {
 	lineOffsets := d.getLineOffsets()
 	maxLine := uint32(len(lineOffsets))
 	contentLength := uint32(len(d.content))
