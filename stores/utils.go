@@ -69,11 +69,3 @@ func skipKey(node *jsonc.Node) *string {
 	}
 	return &value
 }
-
-func flatMap[T any](arr []T, callback func(value T) []T) []T {
-	var res []T
-	for _, item := range arr {
-		res = append(res, callback(item)...)
-	}
-	return res
-}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
+	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/stores"
 )
 
@@ -76,10 +77,9 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
-			matchValue("minecraft:entity/components/**/filters/**/domain"),
-			matchValue("minecraft:entity/component_groups/**/filters/**/domain"),
-		},
+		Matcher: sliceutil.Map(core.FilterPaths, func(path string) jsonPath {
+			return matchValue(path + "/domain")
+		}),
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			parent := params.getParentNode()
@@ -159,10 +159,9 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
-			matchValue("minecraft:entity/components/**/filters/**/value"),
-			matchValue("minecraft:entity/component_groups/**/filters/**/value"),
-		},
+		Matcher: sliceutil.Map(core.FilterPaths, func(path string) jsonPath {
+			return matchValue(path + "/value")
+		}),
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			parent := params.getParentNode()

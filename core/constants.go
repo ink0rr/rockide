@@ -1,5 +1,9 @@
 package core
 
+import (
+	"github.com/ink0rr/rockide/internal/sliceutil"
+)
+
 const (
 	BpGlob = "{behavior_pack,*BP,BP_*,*bp,bp_*}"
 	RpGlob = "{resource_pack,*RP,RP_*,*rp,rp_*}"
@@ -60,3 +64,30 @@ var (
 )
 
 var PropertyDomain = []string{"bool_property", "enum_property", "float_property", "int_property"}
+
+var FilterPaths = sliceutil.FlatMap([]string{
+	"**/filters",
+	"minecraft:ageable/interact_filters",
+	"minecraft:anger_level/nuisance_filter",
+	"minecraft:angry/broadcast_filters",
+	"minecraft:area_attack/entity_filter",
+	"minecraft:behavior.knockback_roar/damage_filters",
+	"minecraft:behavior.knockback_roar/knockback_filters",
+	"minecraft:behavior.move_to_block/target_block_filters",
+	"minecraft:behavior.nap/can_nap_filters",
+	"minecraft:behavior.nap/wake_mob_exceptions",
+	"minecraft:behavior.stalk_and_pounce_on_target/stuck_blocks",
+	"minecraft:block_sensor/sources",
+	"minecraft:breedable/love_filters",
+	"minecraft:celebrate_hunt/celebration_targets",
+	"minecraft:conditional_bandwidth_optimization/conditional_values",
+	"minecraft:entity_sensor/event_filters",
+	"minecraft:entity_sensor/subsensors/*/event_filters",
+	"minecraft:mob_effect/entity_filter",
+	"minecraft:trail/spawn_filter",
+}, func(path string) []string {
+	return []string{
+		"minecraft:entity/components/" + path + "/**",
+		"minecraft:entity/component_groups/*/" + path + "/**",
+	}
+})

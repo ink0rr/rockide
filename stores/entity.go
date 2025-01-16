@@ -6,6 +6,7 @@ import (
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
+	"github.com/ink0rr/rockide/internal/sliceutil"
 )
 
 var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
@@ -35,10 +36,9 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "property_refs",
-		Path: []string{
-			"minecraft:entity/components/**/filters/**/domain",
-			"minecraft:entity/component_groups/**/filters/**/domain",
-		},
+		Path: sliceutil.Map(core.FilterPaths, func(path string) string {
+			return path + "/domain"
+		}),
 		Transform: func(node *jsonc.Node) *string {
 			nodeValue, ok := node.Value.(string)
 			if !ok || node.Parent == nil {
@@ -75,7 +75,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "event_refs",
-		Path: flatMap([]string{
+		Path: sliceutil.FlatMap([]string{
 			"minecraft:behavior.admire_item",
 			"minecraft:behavior.avoid_block",
 			"minecraft:behavior.avoid_mob_type",
@@ -152,8 +152,10 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 		},
 	},
 	{
-		Id:   "family_refs",
-		Path: []string{"minecraft:entity/components/**/filters/**/value", "minecraft:entity/component_groups/**/filters/**/value"},
+		Id: "family_refs",
+		Path: sliceutil.Map(core.FilterPaths, func(path string) string {
+			return path + "/value"
+		}),
 		Transform: func(node *jsonc.Node) *string {
 			nodeValue, ok := node.Value.(string)
 			if !ok || node.Parent == nil {
@@ -173,7 +175,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "loot_table_path",
-		Path: flatMap([]string{
+		Path: sliceutil.FlatMap([]string{
 			"minecraft:loot/table",
 			"minecraft:behavior.sneeze/loot_table",
 			"minecraft:barter/barter_table",
@@ -191,7 +193,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "trade_table_path",
-		Path: flatMap([]string{
+		Path: sliceutil.FlatMap([]string{
 			"minecraft:trade_table/table",
 			"minecraft:economy_trade_table/table",
 		}, func(value string) []string {
