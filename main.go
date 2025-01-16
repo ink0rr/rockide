@@ -160,10 +160,7 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 }
 
 func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.CompletionParams) ([]protocol.CompletionItem, error) {
-	document, err := textdocument.Get(params.TextDocument.URI)
-	if err != nil {
-		return nil, err
-	}
+	document := textdocument.Get(params.TextDocument.URI)
 	actions := rockide.FindActions(document, params.Position)
 	if actions == nil || actions.Completions == nil {
 		return nil, nil
@@ -172,10 +169,7 @@ func Completion(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Compl
 }
 
 func Definition(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.DefinitionParams) ([]protocol.LocationLink, error) {
-	document, err := textdocument.Get(params.TextDocument.URI)
-	if err != nil {
-		return nil, err
-	}
+	document := textdocument.Get(params.TextDocument.URI)
 	actions := rockide.FindActions(document, params.Position)
 	if actions == nil || actions.Definitions == nil {
 		return nil, nil
@@ -188,10 +182,7 @@ type PrepareRenameResult struct {
 }
 
 func PrepareRename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.PrepareRenameParams) (*PrepareRenameResult, error) {
-	document, err := textdocument.Get(params.TextDocument.URI)
-	if err != nil {
-		return nil, err
-	}
+	document := textdocument.Get(params.TextDocument.URI)
 	actions := rockide.FindActions(document, params.Position)
 	if actions == nil || actions.Rename == nil {
 		return nil, nil
@@ -200,10 +191,7 @@ func PrepareRename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Pr
 }
 
 func Rename(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
-	document, err := textdocument.Get(params.TextDocument.URI)
-	if err != nil {
-		return nil, err
-	}
+	document := textdocument.Get(params.TextDocument.URI)
 	actions := rockide.FindActions(document, params.Position)
 	if actions == nil || actions.Rename == nil {
 		return nil, nil

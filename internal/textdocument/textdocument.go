@@ -83,40 +83,30 @@ var (
 	mu        sync.RWMutex
 )
 
-func getDocument(uri protocol.DocumentURI) *TextDocument {
+func Get(uri protocol.DocumentURI) *TextDocument {
 	mu.RLock()
 	defer mu.RUnlock()
 	return documents[uri]
 }
 
-func setDocument(uri protocol.DocumentURI, document *TextDocument) {
+func Open(uri protocol.DocumentURI, txt string) {
 	mu.Lock()
 	defer mu.Unlock()
-	documents[uri] = document
+	document := TextDocument{URI: uri, content: string(txt)}
+	documents[uri] = &document
 }
 
-func Get(uri protocol.DocumentURI) (*TextDocument, error) {
-	if document := getDocument(uri); document != nil {
-		return document, nil
-	}
-	txt, err := os.ReadFile(uri.Path())
-	if err != nil {
-		return nil, err
-	}
-	document := TextDocument{URI: uri, content: string(txt)}
-	return &document, nil
-}
-
-func Open(uri protocol.DocumentURI, txt string) {
-	document := TextDocument{URI: uri, content: string(txt)}
-	setDocument(uri, &document)
+func Close(uri protocol.DocumentURI) {
+	mu.Lock()
+	defer mu.Unlock()
+	delete(documents, uri)
 }
 
 func SyncIncremental(uri protocol.DocumentURI, contentChanges []protocol.TextDocumentContentChangeEvent) {
 	if len(contentChanges) == 0 {
 		return
 	}
-	document := getDocument(uri)
+	document := Get(uri)
 	if document == nil {
 		return
 	}
@@ -132,7 +122,7 @@ func Sync(uri protocol.DocumentURI, txt *string) {
 	if txt == nil {
 		return
 	}
-	document := getDocument(uri)
+	document := Get(uri)
 	if document == nil || document.content == *txt {
 		return
 	}
@@ -140,8 +130,11 @@ func Sync(uri protocol.DocumentURI, txt *string) {
 	document.lineOffsets = nil
 }
 
-func Close(uri protocol.DocumentURI) {
-	mu.Lock()
-	defer mu.Unlock()
-	delete(documents, uri)
+func ReadFile(uri protocol.DocumentURI) (*TextDocument, error) {
+	txt, err := os.ReadFile(uri.Path())
+	if err != nil {
+		return nil, err
+	}
+	document := TextDocument{URI: uri, content: string(txt)}
+	return &document, nil
 }

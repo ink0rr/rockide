@@ -45,7 +45,7 @@ func animationControllerReferences(id string, source stores.Store, stores ...sto
 		}
 	}
 	for _, ref := range source.Get("animate_refs") {
-		document, _ := textdocument.Get(ref.URI)
+		document, _ := textdocument.ReadFile(ref.URI)
 		location := jsonc.GetLocation(document.GetText(), document.OffsetAt(ref.Range.Start))
 		if id, ok := location.Path[1].(string); ok && slices.Contains(animationIds, id) {
 			res = append(res, ref)
