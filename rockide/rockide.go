@@ -135,10 +135,6 @@ func WatchFiles(ctx context.Context) error {
 		return errors.Join(err, errors.New("failed to watch RP path"))
 	}
 
-	var mutex sync.Mutex
-	debounceTimers := make(map[protocol.DocumentURI]*time.Timer)
-	debounceDuration := 5 * time.Millisecond
-
 	go func() {
 		for {
 			select {
@@ -154,24 +150,12 @@ func WatchFiles(ctx context.Context) error {
 				if stat, err := os.Stat(event.Name); err != nil || stat.IsDir() {
 					continue
 				}
-				if event.Op.Has(fsnotify.Create) {
+				switch {
+				case event.Op.Has(fsnotify.Create):
 					OnCreate(uri)
-					continue
-				}
-				if !event.Op.Has(fsnotify.Write) {
-					continue
-				}
-				mutex.Lock()
-				if timer := debounceTimers[uri]; timer != nil {
-					timer.Stop()
-				}
-				debounceTimers[uri] = time.AfterFunc(debounceDuration, func() {
-					mutex.Lock()
-					delete(debounceTimers, uri)
-					mutex.Unlock()
+				case event.Op.Has(fsnotify.Write):
 					OnChange(uri)
-				})
-				mutex.Unlock()
+				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					return
