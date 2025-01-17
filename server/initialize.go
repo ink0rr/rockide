@@ -1,0 +1,84 @@
+package server
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/sourcegraph/jsonrpc2"
+)
+
+func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
+	log.Printf("Process ID: %d", params.ProcessID)
+	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
+
+	result := protocol.InitializeResult{
+		ServerInfo: &protocol.ServerInfo{
+			Name:    "rockide",
+			Version: "0.0.0",
+		},
+		Capabilities: protocol.ServerCapabilities{
+			TextDocumentSync: protocol.Incremental,
+			CompletionProvider: &protocol.CompletionOptions{
+				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.'"() `, ""),
+			},
+			DefinitionProvider: &protocol.Or_ServerCapabilities_definitionProvider{Value: true},
+			RenameProvider: &protocol.RenameOptions{
+				PrepareProvider: true,
+			},
+			HoverProvider: &protocol.Or_ServerCapabilities_hoverProvider{Value: true},
+		},
+	}
+	return &result, nil
+}
+
+func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializedParams) error {
+	configParams := protocol.ConfigurationParams{
+		Items: []protocol.ConfigurationItem{{Section: "rockide.baseDir"}},
+	}
+	configResult := []any{}
+	err := conn.Call(ctx, "workspace/configuration", &configParams, &configResult)
+	if err != nil {
+		return err
+	}
+
+	baseDir, ok := configResult[0].(string)
+	if baseDir == "" || !ok {
+		baseDir = "."
+		if stat, err := os.Stat("packs"); err == nil && stat.IsDir() {
+			baseDir = "packs"
+		}
+	}
+	err = setBaseDir(baseDir)
+	if err != nil {
+		return err
+	}
+
+	token := protocol.ProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))
+	if err := conn.Call(ctx, "window/workDoneProgress/create", &protocol.WorkDoneProgressCreateParams{Token: token}, nil); err != nil {
+		return err
+	}
+	progress := protocol.ProgressParams{
+		Token: token,
+		Value: &protocol.WorkDoneProgressBegin{Kind: "begin", Title: "Rockide: Indexing workspace"},
+	}
+	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
+		return err
+	}
+
+	indexWorkspace()
+
+	progress.Value = &protocol.WorkDoneProgressEnd{Kind: "end"}
+	if err := conn.Notify(ctx, "$/progress", &progress); err != nil {
+		return err
+	}
+
+	if err := watchFiles(); err != nil {
+		return err
+	}
+	return nil
+}
