@@ -49,7 +49,7 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 	case "textDocument/didSave":
 		var params protocol.DidSaveTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
-			textdocument.Sync(params.TextDocument.URI, params.Text)
+			textdocument.SyncFull(params.TextDocument.URI, params.Text)
 		}
 	case "textDocument/didClose":
 		var params protocol.DidCloseTextDocumentParams

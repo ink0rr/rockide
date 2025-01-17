@@ -118,7 +118,7 @@ func SyncIncremental(uri protocol.DocumentURI, contentChanges []protocol.TextDoc
 	}
 }
 
-func Sync(uri protocol.DocumentURI, txt *string) {
+func SyncFull(uri protocol.DocumentURI, txt *string) {
 	if txt == nil {
 		return
 	}
