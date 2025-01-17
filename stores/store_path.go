@@ -8,6 +8,7 @@ import (
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/ink0rr/rockide/shared"
 )
 
 var cwd string
@@ -26,7 +27,7 @@ var (
 )
 
 type BehaviorStore struct {
-	pattern core.Pattern
+	pattern shared.Pattern
 	refs    []core.Reference
 }
 
@@ -75,7 +76,7 @@ func (b *BehaviorStore) Delete(uri protocol.DocumentURI) {
 }
 
 type ResourceStore struct {
-	pattern core.Pattern
+	pattern shared.Pattern
 	refs    []core.Reference
 }
 

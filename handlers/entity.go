@@ -6,10 +6,11 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/sliceutil"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
+var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 	{
 		Matcher:    []jsonPath{matchValue("minecraft:entity/description/identifier")},
 		Actions:    completions | definitions | rename,
@@ -77,7 +78,7 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.Map(core.FilterPaths, func(path string) jsonPath {
+		Matcher: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
 			return matchValue(path + "/domain")
 		}),
 		Actions: completions | definitions | rename,
@@ -87,7 +88,7 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 			if test == nil {
 				return nil
 			}
-			if value, ok := test.Value.(string); !ok || !slices.Contains(core.PropertyDomain, value) {
+			if value, ok := test.Value.(string); !ok || !slices.Contains(shared.PropertyDomain, value) {
 				return nil
 			}
 			subject := jsonc.FindNodeAtLocation(parent, jsonc.Path{"subject"})
@@ -159,7 +160,7 @@ var Entity = newJsonHandler(core.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.Map(core.FilterPaths, func(path string) jsonPath {
+		Matcher: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
 			return matchValue(path + "/value")
 		}),
 		Actions: completions | definitions | rename,

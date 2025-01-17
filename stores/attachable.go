@@ -1,10 +1,10 @@
 package stores
 
 import (
-	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 )
 
-var Attachable = newJsonStore(core.AttachableGlob, []jsonStoreEntry{
+var Attachable = newJsonStore(shared.AttachableGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"minecraft:attachable/description/identifier"},

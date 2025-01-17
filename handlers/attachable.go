@@ -4,10 +4,11 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Attachable = newJsonHandler(core.AttachableGlob, []jsonHandlerEntry{
+var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 	{
 		Matcher:    []jsonPath{matchValue("minecraft:attachable/description/identifier")},
 		Actions:    completions | definitions | rename,

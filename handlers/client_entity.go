@@ -4,10 +4,11 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
-var ClientEntity = newJsonHandler(core.ClientEntityGlob, []jsonHandlerEntry{
+var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 	{
 		Matcher:    []jsonPath{matchValue("minecraft:client_entity/description/identifier")},
 		Actions:    completions | definitions | rename,

@@ -1,6 +1,7 @@
-package core
+package shared
 
 import (
+	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 )
 
@@ -11,7 +12,7 @@ const (
 
 type Pattern string
 
-func (p Pattern) Resolve(project *Project) string {
+func (p Pattern) Resolve(project *core.Project) string {
 	pattern := string(p[1:])
 	switch p[0] {
 	case 'b':

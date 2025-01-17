@@ -1,8 +1,8 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var Particle = newJsonStore(core.ParticleGlob, []jsonStoreEntry{
+var Particle = newJsonStore(shared.ParticleGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"particle_effect/description/identifier"},

@@ -3,11 +3,11 @@ package stores
 import (
 	"strings"
 
-	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
+	"github.com/ink0rr/rockide/shared"
 )
 
-var Block = newJsonStore(core.BlockGlob, []jsonStoreEntry{
+var Block = newJsonStore(shared.BlockGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"minecraft:block/description/identifier"},

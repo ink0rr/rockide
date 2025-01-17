@@ -1,5 +1,5 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var TradeTable = &BehaviorStore{pattern: core.TradeTableGlob}
+var TradeTable = &BehaviorStore{pattern: shared.TradeTableGlob}

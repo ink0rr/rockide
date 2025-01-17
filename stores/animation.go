@@ -1,10 +1,10 @@
 package stores
 
 import (
-	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 )
 
-var Animation = newJsonStore(core.AnimationGlob, []jsonStoreEntry{
+var Animation = newJsonStore(shared.AnimationGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"animations"},

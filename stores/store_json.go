@@ -8,6 +8,7 @@ import (
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
+	"github.com/ink0rr/rockide/shared"
 )
 
 type jsonStoreEntry struct {
@@ -29,13 +30,13 @@ func (j *jsonStoreEntry) getJsonPath() [][]string {
 }
 
 type jsonStore struct {
-	pattern core.Pattern
+	pattern shared.Pattern
 	entries []jsonStoreEntry
 	store   map[string][]core.Reference
 	mutex   sync.Mutex
 }
 
-func newJsonStore(pattern core.Pattern, entries []jsonStoreEntry) *jsonStore {
+func newJsonStore(pattern shared.Pattern, entries []jsonStoreEntry) *jsonStore {
 	return &jsonStore{
 		pattern: pattern,
 		entries: entries,

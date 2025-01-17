@@ -1,8 +1,8 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var FeatureRule = newJsonStore(core.FeatureRuleGlob, []jsonStoreEntry{
+var FeatureRule = newJsonStore(shared.FeatureRuleGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"minecraft:feature_rules/description/identifier"},

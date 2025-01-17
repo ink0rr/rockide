@@ -1,8 +1,8 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var Feature = newJsonStore(core.FeatureGlob, []jsonStoreEntry{
+var Feature = newJsonStore(shared.FeatureGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"*/description/identifier"},

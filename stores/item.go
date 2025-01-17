@@ -1,8 +1,8 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var Item = newJsonStore(core.ItemGlob, []jsonStoreEntry{
+var Item = newJsonStore(shared.ItemGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"minecraft:item/description/identifier"},

@@ -1,11 +1,11 @@
 package stores
 
 import (
-	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
+	"github.com/ink0rr/rockide/shared"
 )
 
-var ClientBlock = newJsonStore(core.ClientBlockGlob, []jsonStoreEntry{
+var ClientBlock = newJsonStore(shared.ClientBlockGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"*"},

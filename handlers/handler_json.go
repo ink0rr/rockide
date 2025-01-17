@@ -9,6 +9,7 @@ import (
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
@@ -61,11 +62,11 @@ type jsonHandlerEntry struct {
 }
 
 type jsonHandler struct {
-	pattern core.Pattern
+	pattern shared.Pattern
 	entries []jsonHandlerEntry
 }
 
-func newJsonHandler(pattern core.Pattern, entries []jsonHandlerEntry) *jsonHandler {
+func newJsonHandler(pattern shared.Pattern, entries []jsonHandlerEntry) *jsonHandler {
 	return &jsonHandler{pattern, entries}
 }
 
@@ -165,7 +166,6 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 
 				changes[item.URI] = append(changes[item.URI], edit)
 			}
-			log.Println(changes)
 			return &protocol.WorkspaceEdit{Changes: changes}
 		}
 	}

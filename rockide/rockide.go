@@ -17,6 +17,7 @@ import (
 	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
@@ -67,14 +68,14 @@ func SetBaseDir(dir string) error {
 	project = core.Project{}
 	fsys := os.DirFS(dir)
 
-	bpPaths, err := doublestar.Glob(fsys, core.BpGlob, doublestar.WithFailOnIOErrors())
+	bpPaths, err := doublestar.Glob(fsys, shared.BpGlob, doublestar.WithFailOnIOErrors())
 	if bpPaths == nil || err != nil {
 		return errors.New("not a minecraft project")
 	}
 	bp := dir + "/" + bpPaths[0]
 	log.Printf("Behavior pack: %s", bp)
 
-	rpPaths, err := doublestar.Glob(fsys, core.RpGlob, doublestar.WithFailOnIOErrors())
+	rpPaths, err := doublestar.Glob(fsys, shared.RpGlob, doublestar.WithFailOnIOErrors())
 	if rpPaths == nil || err != nil {
 		return errors.New("not a minecraft project")
 	}

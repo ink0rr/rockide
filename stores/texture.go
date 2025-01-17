@@ -1,5 +1,5 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var Texture = &ResourceStore{pattern: core.TextureGlob}
+var Texture = &ResourceStore{pattern: shared.TextureGlob}

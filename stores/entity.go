@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/sliceutil"
+	"github.com/ink0rr/rockide/shared"
 )
 
-var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
+var Entity = newJsonStore(shared.EntityGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"minecraft:entity/description/identifier"},
@@ -36,7 +36,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "property_refs",
-		Path: sliceutil.Map(core.FilterPaths, func(path string) string {
+		Path: sliceutil.Map(shared.FilterPaths, func(path string) string {
 			return path + "/domain"
 		}),
 		Transform: func(node *jsonc.Node) *string {
@@ -50,7 +50,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 				return nil
 			}
 			testValue, ok := test.Value.(string)
-			if !ok || slices.Index(core.PropertyDomain, testValue) == -1 {
+			if !ok || slices.Index(shared.PropertyDomain, testValue) == -1 {
 				return nil
 			}
 			return &nodeValue
@@ -153,7 +153,7 @@ var Entity = newJsonStore(core.EntityGlob, []jsonStoreEntry{
 	},
 	{
 		Id: "family_refs",
-		Path: sliceutil.Map(core.FilterPaths, func(path string) string {
+		Path: sliceutil.Map(shared.FilterPaths, func(path string) string {
 			return path + "/value"
 		}),
 		Transform: func(node *jsonc.Node) *string {

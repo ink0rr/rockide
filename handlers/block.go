@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Block = newJsonHandler(core.BlockGlob, []jsonHandlerEntry{
+var Block = newJsonHandler(shared.BlockGlob, []jsonHandlerEntry{
 	{
 		Matcher:    []jsonPath{matchValue("minecraft:block/description/identifier")},
 		Actions:    completions | definitions | rename,

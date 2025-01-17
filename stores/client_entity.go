@@ -1,10 +1,10 @@
 package stores
 
 import (
-	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 )
 
-var ClientEntity = newJsonStore(core.ClientEntityGlob, []jsonStoreEntry{
+var ClientEntity = newJsonStore(shared.ClientEntityGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"minecraft:client_entity/description/identifier"},

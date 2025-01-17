@@ -1,8 +1,8 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var Recipe = newJsonStore(core.RecipeGlob, []jsonStoreEntry{
+var Recipe = newJsonStore(shared.RecipeGlob, []jsonStoreEntry{
 	{
 		Id: "item_id",
 		Path: []string{

@@ -5,10 +5,11 @@ import (
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
-var ClientAnimation = newJsonHandler(core.ClientAnimationGlob, []jsonHandlerEntry{
+var ClientAnimation = newJsonHandler(shared.ClientAnimationGlob, []jsonHandlerEntry{
 	{
 		Matcher:    []jsonPath{matchKey("animations/*")},
 		Actions:    completions | definitions | rename,

@@ -1,8 +1,8 @@
 package stores
 
-import "github.com/ink0rr/rockide/core"
+import "github.com/ink0rr/rockide/shared"
 
-var TerrainTexture = newJsonStore(core.TerrainTextureGlob, []jsonStoreEntry{
+var TerrainTexture = newJsonStore(shared.TerrainTextureGlob, []jsonStoreEntry{
 	{
 		Id:   "id",
 		Path: []string{"texture_data"},

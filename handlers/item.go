@@ -4,10 +4,11 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
-var Item = newJsonHandler(core.ItemGlob, []jsonHandlerEntry{
+var Item = newJsonHandler(shared.ItemGlob, []jsonHandlerEntry{
 	{
 		Matcher:    []jsonPath{matchValue("minecraft:item/description/identifier")},
 		Actions:    completions | definitions | rename,
