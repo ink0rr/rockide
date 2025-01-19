@@ -4,17 +4,21 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/ink0rr/rockide/shared"
 	"github.com/sourcegraph/jsonrpc2"
 )
 
 func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializeParams) (*protocol.InitializeResult, error) {
 	log.Printf("Process ID: %d", params.ProcessID)
 	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
+
+	if err := findProjectPaths(params.InitializationOptions); err != nil {
+		return nil, err
+	}
 
 	result := protocol.InitializeResult{
 		ServerInfo: &protocol.ServerInfo{
@@ -37,25 +41,25 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 }
 
 func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializedParams) error {
-	configParams := protocol.ConfigurationParams{
-		Items: []protocol.ConfigurationItem{{Section: "rockide.baseDir"}},
+	project := shared.GetProject()
+	registration := protocol.Registration{
+		ID:     "fileWatcher",
+		Method: "workspace/didChangeWatchedFiles",
+		RegisterOptions: protocol.DidChangeWatchedFilesRegistrationOptions{
+			Watchers: []protocol.FileSystemWatcher{{
+				GlobPattern: protocol.GlobPattern{Value: protocol.RelativePattern{
+					BaseURI: protocol.URIFromPath(shared.Getwd()),
+					Pattern: fmt.Sprintf("{%s,%s}/**/*", project.BP, project.RP),
+				}},
+			}},
+		},
 	}
-	configResult := []any{}
-	err := conn.Call(ctx, "workspace/configuration", &configParams, &configResult)
-	if err != nil {
-		return err
-	}
-
-	baseDir, ok := configResult[0].(string)
-	if baseDir == "" || !ok {
-		baseDir = "."
-		if stat, err := os.Stat("packs"); err == nil && stat.IsDir() {
-			baseDir = "packs"
-		}
-	}
-	err = setBaseDir(baseDir)
-	if err != nil {
-		return err
+	var registrationError any
+	conn.Call(ctx, "client/registerCapability", protocol.RegistrationParams{
+		Registrations: []protocol.Registration{registration},
+	}, &registrationError)
+	if registrationError != nil {
+		return fmt.Errorf("%v", registrationError)
 	}
 
 	token := protocol.ProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))
@@ -77,8 +81,5 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 		return err
 	}
 
-	if err := watchFiles(); err != nil {
-		return err
-	}
 	return nil
 }

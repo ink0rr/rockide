@@ -78,7 +78,7 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(position))
 	entry := j.findEntry(location)
 	if entry == nil {
-		log.Println("entry not found:", location.Path)
+		log.Println("Entry not found:", location.Path)
 		return nil
 	}
 

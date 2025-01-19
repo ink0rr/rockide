@@ -64,6 +64,20 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			res, err = Rename(ctx, conn, &params)
 		}
+	case "workspace/didChangeWatchedFiles":
+		var params protocol.DidChangeWatchedFilesParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			for _, change := range params.Changes {
+				switch change.Type {
+				case protocol.Created:
+					onCreate(change.URI)
+				case protocol.Changed:
+					onChange(change.URI)
+				case protocol.Deleted:
+					onDelete(change.URI)
+				}
+			}
+		}
 	default:
 		log.Printf("Unhandled method: %s", req.Method)
 	}
