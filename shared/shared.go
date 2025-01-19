@@ -1,9 +1,24 @@
 package shared
 
 import (
+	"os"
+
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 )
+
+var wd string
+
+func Getwd() string {
+	if wd == "" {
+		dir, err := os.Getwd()
+		if err != nil {
+			panic(err)
+		}
+		wd = dir
+	}
+	return wd
+}
 
 var project core.Project
 

@@ -1,7 +1,6 @@
 package stores
 
 import (
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -9,16 +8,6 @@ import (
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/shared"
 )
-
-var cwd string
-
-func init() {
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	cwd = dir + string(filepath.Separator)
-}
 
 type PathStore struct {
 	pattern    shared.Pattern
@@ -31,7 +20,7 @@ func (s *PathStore) GetPattern() string {
 }
 
 func (s *PathStore) Parse(uri protocol.DocumentURI) error {
-	path, err := filepath.Rel(cwd, uri.Path())
+	path, err := filepath.Rel(shared.Getwd(), uri.Path())
 	if err != nil {
 		panic(err)
 	}
