@@ -8,9 +8,11 @@ import (
 
 	"github.com/arexon/fsnotify"
 	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/ink0rr/rockide/shared"
 )
 
 func watchFiles() error {
+	project := shared.GetProject()
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return err

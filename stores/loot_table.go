@@ -2,4 +2,4 @@ package stores
 
 import "github.com/ink0rr/rockide/shared"
 
-var LootTable = &BehaviorStore{pattern: shared.LootTableGlob}
+var LootTable = &PathStore{pattern: shared.LootTableGlob}

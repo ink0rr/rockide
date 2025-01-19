@@ -58,7 +58,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		Matcher: []jsonPath{matchValue("minecraft:attachable/description/textures/*")},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Texture.Get("path")
+			return stores.Texture.GetPaths()
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return nil

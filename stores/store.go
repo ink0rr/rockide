@@ -6,10 +6,8 @@ import (
 )
 
 type Store interface {
-	GetPattern(project *core.Project) string
+	GetPattern() string
 	Parse(uri protocol.DocumentURI) error
-	Get(key string) []core.Reference
-	GetFrom(uri protocol.DocumentURI, key string) []core.Reference
 	Delete(uri protocol.DocumentURI)
 }
 

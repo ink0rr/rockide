@@ -29,28 +29,26 @@ func (j *jsonStoreEntry) getJsonPath() [][]string {
 	return j.jsonPath
 }
 
-type jsonStore struct {
+type JsonStore struct {
 	pattern shared.Pattern
 	entries []jsonStoreEntry
 	store   map[string][]core.Reference
 	mutex   sync.Mutex
 }
 
-func newJsonStore(pattern shared.Pattern, entries []jsonStoreEntry) *jsonStore {
-	return &jsonStore{
+func newJsonStore(pattern shared.Pattern, entries []jsonStoreEntry) *JsonStore {
+	return &JsonStore{
 		pattern: pattern,
 		entries: entries,
 		store:   make(map[string][]core.Reference),
 	}
 }
 
-// GetPattern implements Store.
-func (j *jsonStore) GetPattern(project *core.Project) string {
-	return j.pattern.Resolve(project)
+func (j *JsonStore) GetPattern() string {
+	return j.pattern.ToString()
 }
 
-// Parse implements Store.
-func (j *jsonStore) Parse(uri protocol.DocumentURI) error {
+func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	document, err := textdocument.ReadFile(uri)
@@ -119,26 +117,7 @@ func (j *jsonStore) Parse(uri protocol.DocumentURI) error {
 	return nil
 }
 
-// Get implements Store.
-func (j *jsonStore) Get(key string) []core.Reference {
-	j.mutex.Lock()
-	defer j.mutex.Unlock()
-	return j.store[key]
-}
-
-// GetFrom implements Store.
-func (j *jsonStore) GetFrom(uri protocol.DocumentURI, key string) []core.Reference {
-	res := []core.Reference{}
-	for _, ref := range j.Get(key) {
-		if ref.URI == uri {
-			res = append(res, ref)
-		}
-	}
-	return res
-}
-
-// Delete implements Store.
-func (j *jsonStore) Delete(uri protocol.DocumentURI) {
+func (j *JsonStore) Delete(uri protocol.DocumentURI) {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
 	for id, refs := range j.store {
@@ -150,4 +129,20 @@ func (j *jsonStore) Delete(uri protocol.DocumentURI) {
 		}
 		j.store[id] = filtered
 	}
+}
+
+func (j *JsonStore) Get(key string) []core.Reference {
+	j.mutex.Lock()
+	defer j.mutex.Unlock()
+	return j.store[key]
+}
+
+func (j *JsonStore) GetFrom(uri protocol.DocumentURI, key string) []core.Reference {
+	res := []core.Reference{}
+	for _, ref := range j.Get(key) {
+		if ref.URI == uri {
+			res = append(res, ref)
+		}
+	}
+	return res
 }

@@ -58,7 +58,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/textures/*")},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Texture.Get("path")
+			return stores.Texture.GetPaths()
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return nil

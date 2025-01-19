@@ -10,7 +10,7 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-func animationControllerSources(id string, stores ...stores.Store) []core.Reference {
+func animationControllerSources(id string, stores ...*stores.JsonStore) []core.Reference {
 	res := []core.Reference{}
 	matchedURIs := make(map[protocol.DocumentURI]bool)
 	for _, store := range stores {
@@ -25,7 +25,7 @@ func animationControllerSources(id string, stores ...stores.Store) []core.Refere
 	return res
 }
 
-func animationControllerReferences(id string, source stores.Store, stores ...stores.Store) []core.Reference {
+func animationControllerReferences(id string, source *stores.JsonStore, stores ...*stores.JsonStore) []core.Reference {
 	res := []core.Reference{}
 	referenceGroup := make(map[protocol.DocumentURI][]core.Reference)
 	for _, store := range stores {

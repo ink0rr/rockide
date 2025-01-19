@@ -70,8 +70,8 @@ func newJsonHandler(pattern shared.Pattern, entries []jsonHandlerEntry) *jsonHan
 	return &jsonHandler{pattern, entries}
 }
 
-func (j *jsonHandler) GetPattern(project *core.Project) string {
-	return j.pattern.Resolve(project)
+func (j *jsonHandler) GetPattern() string {
+	return j.pattern.ToString()
 }
 
 func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position protocol.Position) *HandlerActions {

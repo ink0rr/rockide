@@ -183,7 +183,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.LootTable.Get("path")
+			return stores.LootTable.GetPaths()
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return nil
@@ -198,7 +198,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.TradeTable.Get("path")
+			return stores.TradeTable.GetPaths()
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return nil

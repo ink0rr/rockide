@@ -14,11 +14,10 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/ink0rr/rockide/internal/textdocument"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
-
-var project core.Project
 
 var handlerList = [...]handlers.Handler{
 	// BP
@@ -62,7 +61,6 @@ var storeList = [...]stores.Store{
 }
 
 func setBaseDir(dir string) error {
-	project = core.Project{}
 	fsys := os.DirFS(dir)
 
 	bpPaths, err := doublestar.Glob(fsys, shared.BpGlob, doublestar.WithFailOnIOErrors())
@@ -79,8 +77,10 @@ func setBaseDir(dir string) error {
 	rp := dir + "/" + rpPaths[0]
 	log.Printf("Resource pack: %s", rp)
 
-	project.BP = filepath.ToSlash(filepath.Clean(bp))
-	project.RP = filepath.ToSlash(filepath.Clean(rp))
+	shared.SetProject(core.Project{
+		BP: filepath.ToSlash(filepath.Clean(bp)),
+		RP: filepath.ToSlash(filepath.Clean(rp)),
+	})
 
 	return nil
 }
@@ -96,7 +96,7 @@ func indexWorkspace() {
 	for _, store := range storeList {
 		go func() {
 			defer wg.Done()
-			doublestar.GlobWalk(fsys, store.GetPattern(&project), func(path string, d fs.DirEntry) error {
+			doublestar.GlobWalk(fsys, store.GetPattern(), func(path string, d fs.DirEntry) error {
 				if d.IsDir() {
 					return nil
 				}
@@ -119,4 +119,22 @@ func indexWorkspace() {
 	if count := skippedFiles.Load(); count > 0 {
 		log.Printf("Skipped %d files", count)
 	}
+}
+
+func findActions(document *textdocument.TextDocument, position protocol.Position) *handlers.HandlerActions {
+	for _, handler := range handlerList {
+		if doublestar.MatchUnvalidated("**/"+handler.GetPattern(), string(document.URI)) {
+			return handler.GetActions(document, position)
+		}
+	}
+	return nil
+}
+
+func findStore(uri protocol.DocumentURI) stores.Store {
+	for _, store := range storeList {
+		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
+			return store
+		}
+	}
+	return nil
 }

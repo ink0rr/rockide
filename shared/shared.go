@@ -5,6 +5,16 @@ import (
 	"github.com/ink0rr/rockide/internal/sliceutil"
 )
 
+var project core.Project
+
+func GetProject() *core.Project {
+	return &project
+}
+
+func SetProject(p core.Project) {
+	project = p
+}
+
 const (
 	BpGlob = "{behavior_pack,*BP,BP_*,*bp,bp_*}"
 	RpGlob = "{resource_pack,*RP,RP_*,*rp,rp_*}"
@@ -12,16 +22,19 @@ const (
 
 type Pattern string
 
-func (p Pattern) Resolve(project *core.Project) string {
-	pattern := string(p[1:])
+func (p Pattern) PackType() string {
 	switch p[0] {
 	case 'b':
-		return project.BP + pattern
+		return project.BP
 	case 'r':
-		return project.RP + pattern
+		return project.RP
 	default:
 		panic("invalid pattern")
 	}
+}
+
+func (p Pattern) ToString() string {
+	return p.PackType() + string(p[1:])
 }
 
 func behaviorPattern(pattern string) Pattern {

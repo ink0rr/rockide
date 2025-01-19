@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
 )
 
 type Handler interface {
-	GetPattern(project *core.Project) string
+	GetPattern() string
 	GetActions(document *textdocument.TextDocument, position protocol.Position) *HandlerActions
 }
 
