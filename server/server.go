@@ -119,7 +119,7 @@ func indexWorkspace() {
 	for _, store := range storeList {
 		go func() {
 			defer wg.Done()
-			doublestar.GlobWalk(fsys, store.GetPattern(), func(path string, d fs.DirEntry) error {
+			doublestar.GlobWalk(fsys, store.Pattern(), func(path string, d fs.DirEntry) error {
 				if d.IsDir() {
 					return nil
 				}
@@ -146,7 +146,7 @@ func indexWorkspace() {
 
 func findActions(document *textdocument.TextDocument, position protocol.Position) *handlers.HandlerActions {
 	for _, handler := range handlerList {
-		if doublestar.MatchUnvalidated("**/"+handler.GetPattern(), string(document.URI)) {
+		if doublestar.MatchUnvalidated("**/"+handler.Pattern(), string(document.URI)) {
 			return handler.GetActions(document, position)
 		}
 	}
@@ -155,7 +155,7 @@ func findActions(document *textdocument.TextDocument, position protocol.Position
 
 func findStore(uri protocol.DocumentURI) stores.Store {
 	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.GetPattern(), string(uri)) {
+		if doublestar.MatchUnvalidated("**/"+store.Pattern(), string(uri)) {
 			return store
 		}
 	}

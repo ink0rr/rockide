@@ -15,7 +15,7 @@ type PathStore struct {
 	trimSuffix bool
 }
 
-func (s *PathStore) GetPattern() string {
+func (s *PathStore) Pattern() string {
 	return s.pattern.ToString()
 }
 

@@ -70,7 +70,7 @@ func newJsonHandler(pattern shared.Pattern, entries []jsonHandlerEntry) *jsonHan
 	return &jsonHandler{pattern, entries}
 }
 
-func (j *jsonHandler) GetPattern() string {
+func (j *jsonHandler) Pattern() string {
 	return j.pattern.ToString()
 }
 

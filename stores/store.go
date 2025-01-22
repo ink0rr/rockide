@@ -6,7 +6,7 @@ import (
 )
 
 type Store interface {
-	GetPattern() string
+	Pattern() string
 	Parse(uri protocol.DocumentURI) error
 	Delete(uri protocol.DocumentURI)
 }

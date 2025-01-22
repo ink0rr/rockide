@@ -6,7 +6,7 @@ import (
 )
 
 type Handler interface {
-	GetPattern() string
+	Pattern() string
 	GetActions(document *textdocument.TextDocument, position protocol.Position) *HandlerActions
 }
 

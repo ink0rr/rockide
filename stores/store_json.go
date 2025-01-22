@@ -44,7 +44,7 @@ func newJsonStore(pattern shared.Pattern, entries []jsonStoreEntry) *JsonStore {
 	}
 }
 
-func (j *JsonStore) GetPattern() string {
+func (j *JsonStore) Pattern() string {
 	return j.pattern.ToString()
 }
 
