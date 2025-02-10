@@ -93,6 +93,9 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 						}
 						value = *result
 					}
+					if value == nil {
+						return
+					}
 					targetNode := node.Children[index]
 					data = append(data, core.Reference{
 						Value: value.(string),
