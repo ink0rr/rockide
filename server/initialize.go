@@ -28,7 +28,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 		Capabilities: protocol.ServerCapabilities{
 			TextDocumentSync: protocol.Incremental,
 			CompletionProvider: &protocol.CompletionOptions{
-				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz:.'"() `, ""),
+				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz.'"() `, ""),
 			},
 			DefinitionProvider: &protocol.Or_ServerCapabilities_definitionProvider{Value: true},
 			RenameProvider: &protocol.RenameOptions{
