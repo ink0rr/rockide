@@ -1,18 +1,28 @@
-package stores
+package handlers
 
 import (
+	"slices"
+
+	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Feature = newJsonStore(shared.FeatureGlob, []jsonStoreEntry{
+var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 	{
-		Id:   "id",
-		Path: []string{"*/description/identifier"},
+		Matcher:    []jsonPath{matchValue("*/description/identifier")},
+		Actions:    completions | definitions | rename,
+		FilterDiff: true,
+		Source: func(params *jsonParams) []core.Reference {
+			return slices.Concat(stores.Feature.Get("feature_id"), stores.FeatureRule.Get("feature_id"))
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return stores.Feature.Get("id")
+		},
 	},
 	{
-		Id: "block_id",
-		Path: sliceutil.FlatMap([]string{
+		Matcher: sliceutil.FlatMap([]string{
 			"minecraft:catalyst_feature/can_place_sculk_catalyst_on/*",
 			"minecraft:catalyst_feature/central_block",
 			"minecraft:cave_carver_feature/fill_with",
@@ -64,23 +74,36 @@ var Feature = newJsonStore(shared.FeatureGlob, []jsonStoreEntry{
 			"minecraft:underwater_cave_carver_feature/replace_air_with",
 			"minecraft:vegetation_patch_feature/ground_block",
 			"minecraft:vegetation_patch_feature/replaceable_blocks/*",
-		}, func(value string) []string {
-			return []string{value, value + "/name"}
+		}, func(value string) []jsonPath {
+			return []jsonPath{matchValue(value), matchValue(value + "/name")}
 		}),
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.Block.Get("id")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return stores.Feature.Get("block_id")
+		},
 	},
 	{
-		Id: "feature_id",
-		Path: []string{
-			"minecraft:aggregate_feature/features/*",
-			"minecraft:catalyst_feature/central_patch_feature",
-			"minecraft:catalyst_feature/patch_feature",
-			"minecraft:scatter_feature/places_feature",
-			"minecraft:search_feature/places_feature",
-			"minecraft:sequence_feature/features/*",
-			"minecraft:snap_to_surface_feature/feature_to_snap",
-			"minecraft:surface_relative_threshold_feature/feature_to_place",
-			"minecraft:vegetation_patch_feature/vegetation_feature",
-			"minecraft:weighted_random_feature/features/*/0",
+		Matcher: []jsonPath{
+			matchValue("minecraft:aggregate_feature/features/*"),
+			matchValue("minecraft:catalyst_feature/central_patch_feature"),
+			matchValue("minecraft:catalyst_feature/patch_feature"),
+			matchValue("minecraft:scatter_feature/places_feature"),
+			matchValue("minecraft:search_feature/places_feature"),
+			matchValue("minecraft:sequence_feature/features/*"),
+			matchValue("minecraft:snap_to_surface_feature/feature_to_snap"),
+			matchValue("minecraft:surface_relative_threshold_feature/feature_to_place"),
+			matchValue("minecraft:vegetation_patch_feature/vegetation_feature"),
+			matchValue("minecraft:weighted_random_feature/features/*/0"),
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.Feature.Get("id")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return stores.Feature.Get("feature_id")
 		},
 	},
 })

@@ -25,6 +25,8 @@ var handlerList = [...]handlers.Handler{
 	handlers.Animation,
 	handlers.Block,
 	handlers.Entity,
+	handlers.FeatureRule,
+	handlers.Feature,
 	handlers.Item,
 	// RP
 	handlers.ClientAnimationController,
