@@ -6,10 +6,10 @@ import (
 	"github.com/ink0rr/rockide/internal/jsonc"
 )
 
-func findNodesAtPath(root *jsonc.Node, jsonPath []string) []*jsonc.Node {
+func findNodesAtPath(root *jsonc.Node, jsonPath jsonc.Path) []*jsonc.Node {
 	result := []*jsonc.Node{}
-	var visitNodes func(node *jsonc.Node, keys []string)
-	visitNodes = func(node *jsonc.Node, keys []string) {
+	var visitNodes func(node *jsonc.Node, keys jsonc.Path)
+	visitNodes = func(node *jsonc.Node, keys jsonc.Path) {
 		if len(keys) == 0 {
 			panic(fmt.Sprintf("unhandled empty keys: %s", jsonPath))
 		}

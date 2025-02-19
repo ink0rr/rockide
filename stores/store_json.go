@@ -1,7 +1,6 @@
 package stores
 
 import (
-	"strings"
 	"sync"
 
 	"github.com/ink0rr/rockide/core"
@@ -17,13 +16,13 @@ type jsonStoreEntry struct {
 	Transform func(node *jsonc.Node) *string
 
 	// Used to cache Path splitted by '/'
-	jsonPath [][]string
+	jsonPath []jsonc.Path
 }
 
-func (j *jsonStoreEntry) getJsonPath() [][]string {
+func (j *jsonStoreEntry) getJsonPath() []jsonc.Path {
 	if j.jsonPath == nil {
 		for _, path := range j.Path {
-			j.jsonPath = append(j.jsonPath, strings.Split(path, "/"))
+			j.jsonPath = append(j.jsonPath, jsonc.NewPath(path))
 		}
 	}
 	return j.jsonPath

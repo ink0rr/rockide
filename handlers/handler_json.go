@@ -3,7 +3,6 @@ package handlers
 import (
 	"log"
 	"slices"
-	"strings"
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
@@ -15,15 +14,15 @@ import (
 
 type jsonPath struct {
 	isKey bool
-	path  []string
+	path  jsonc.Path
 }
 
 func matchKey(path string) jsonPath {
-	return jsonPath{isKey: true, path: strings.Split(path, "/")}
+	return jsonPath{isKey: true, path: jsonc.NewPath(path)}
 }
 
 func matchValue(path string) jsonPath {
-	return jsonPath{isKey: false, path: strings.Split(path, "/")}
+	return jsonPath{isKey: false, path: jsonc.NewPath(path)}
 }
 
 type jsonHandlerActions uint16

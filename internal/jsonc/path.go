@@ -1,10 +1,27 @@
 package jsonc
 
+import (
+	"strconv"
+	"strings"
+)
+
 type Path []any // string | int
+
+func NewPath(path string) Path {
+	res := Path{}
+	for _, segment := range strings.Split(path, "/") {
+		if val, err := strconv.Atoi(segment); err == nil {
+			res = append(res, val)
+		} else {
+			res = append(res, segment)
+		}
+	}
+	return res
+}
 
 // PathMatches checks if path matches the given pattern.
 // The pattern may contain wildcards "*" and "**" (match any segment and any number of segments, respectively).
-func (path Path) Matches(pattern []string) bool {
+func (path Path) Matches(pattern Path) bool {
 	pathIndex := 0
 	patternIndex := 0
 
