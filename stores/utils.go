@@ -8,6 +8,9 @@ import (
 
 func findNodesAtPath(root *jsonc.Node, jsonPath jsonc.Path) []*jsonc.Node {
 	result := []*jsonc.Node{}
+	if root == nil {
+		return result
+	}
 	var visitNodes func(node *jsonc.Node, keys jsonc.Path)
 	visitNodes = func(node *jsonc.Node, keys jsonc.Path) {
 		if len(keys) == 0 {
