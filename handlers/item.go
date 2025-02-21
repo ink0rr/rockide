@@ -14,7 +14,7 @@ var Item = newJsonHandler(shared.ItemGlob, []jsonHandlerEntry{
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return slices.Concat(stores.Item.Get("item_id"), stores.Attachable.Get("id"))
+			return slices.Concat(stores.Item.Get("item_id"), stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Recipe.Get("item_id"))
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return stores.Item.Get("id")

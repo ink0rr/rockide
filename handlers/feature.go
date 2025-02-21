@@ -82,7 +82,7 @@ var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 			return stores.Block.Get("id")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.Feature.Get("block_id")
+			return slices.Concat(stores.Entity.Get("block_id"), stores.Feature.Get("block_id"))
 		},
 	},
 	{

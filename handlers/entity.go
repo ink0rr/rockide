@@ -177,6 +177,113 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
+		Matcher: sliceutil.FlatMap([]string{
+			"minecraft:behavior.avoid_block/target_blocks",
+			"minecraft:behavior.eat_block/eat_and_replace_block_pairs/*/eat_block",
+			"minecraft:behavior.eat_block/eat_and_replace_block_pairs/*/replace_block",
+			"minecraft:behavior.jump_to_block/forbidden_blocks",
+			"minecraft:behavior.jump_to_block/preferred_blocks",
+			"minecraft:behavior.lay_egg/egg_type",
+			"minecraft:behavior.lay_egg/target_blocks",
+			"minecraft:behavior.move_to_block/target_blocks",
+			"minecraft:behavior.raid_garden/blocks",
+			"minecraft:behavior.random_search_and_dig/target_blocks",
+			"minecraft:block_sensor/on_break/*/block_list",
+			"minecraft:break_blocks/breakable_blocks",
+			"minecraft:breathable/breathe_blocks",
+			"minecraft:breathable/non_breathe_blocks",
+			"minecraft:breedable/environment_requirements/blocks",
+			"minecraft:breedable/environment_requirements/*/blocks",
+			"minecraft:buoyant/liquid_blocks",
+			"minecraft:home/home_block_list",
+			"minecraft:inside_block_notifier/block_list/*/block/name",
+			"minecraft:navigation.climb/blocks_to_avoid",
+			"minecraft:navigation.float/blocks_to_avoid",
+			"minecraft:navigation.fly/blocks_to_avoid",
+			"minecraft:navigation.generic/blocks_to_avoid",
+			"minecraft:navigation.hover/blocks_to_avoid",
+			"minecraft:navigation.swim/blocks_to_avoid",
+			"minecraft:navigation.walk/blocks_to_avoid",
+			"minecraft:preferred_path/preferred_path_blocks/blocks",
+			"minecraft:preferred_path/preferred_path_blocks/blocks/*/name",
+			"minecraft:trail/block_type",
+			"minecraft:transformation/delay/block_types",
+		}, func(value string) []jsonPath {
+			return []jsonPath{
+				matchValue("minecraft:entity/components/" + value),
+				matchValue("minecraft:entity/component_groups/*/" + value),
+			}
+		}),
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.Block.Get("id")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return slices.Concat(stores.Entity.Get("block_id"), stores.Feature.Get("block_id"))
+		},
+	},
+	{
+		Matcher: sliceutil.FlatMap([]string{
+			"minecraft:ageable/drop_items",
+			"minecraft:ageable/feed_items",
+			"minecraft:ageable/feed_items/*/item",
+			"minecraft:behavior.beg/items",
+			"minecraft:behavior.charge_held_item/items",
+			"minecraft:behavior.pickup_items/excluded_items",
+			"minecraft:behavior.snacking/items",
+			"minecraft:behavior.tempt/items",
+			"minecraft:boostable/boost_items/*/item",
+			"minecraft:boostable/boost_items/*/replace_item",
+			"minecraft:breedable/breed_items",
+			"minecraft:bribeable/bribe_items",
+			"minecraft:equippable/slots/*/accepted_items",
+			"minecraft:equippable/slots/*/item",
+			"minecraft:giveable/triggers/items",
+			"minecraft:giveable/triggers/*/items",
+			"minecraft:healable/items/*/item",
+			"minecraft:interact/interactions/transform_to_item",
+			"minecraft:interact/interactions/*/transform_to_item",
+			"minecraft:item_controllable/control_items",
+			"minecraft:shareables/items/*/craft_into",
+			"minecraft:shareables/items/*/item",
+			"minecraft:spawn_entity/entities/spawn_item",
+			"minecraft:spawn_entity/entities/*/spawn_item",
+			"minecraft:tameable/tame_items",
+			"minecraft:tamemount/auto_reject_items/*/item",
+			"minecraft:tamemount/feed_items/*/item",
+			"minecraft:trusting/trust_items",
+		}, func(value string) []jsonPath {
+			return []jsonPath{
+				matchValue("minecraft:entity/components/" + value),
+				matchValue("minecraft:entity/component_groups/*/" + value),
+			}
+		}),
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.Item.Get("id")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return slices.Concat(stores.Item.Get("item_id"), stores.Entity.Get("item_id"), stores.Recipe.Get("item_id"))
+		},
+	},
+	{
+		Matcher: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
+			return matchValue(path + "/value")
+		}),
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			parent := params.getParentNode()
+			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+			if test == nil || test.Value != "has_equipment" {
+				return nil
+			}
+			return stores.Item.Get("id")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return slices.Concat(stores.Item.Get("item_id"), stores.Entity.Get("item_id"), stores.Recipe.Get("item_id"))
+		},
+	},
+	{
 		Matcher: []jsonPath{
 			matchValue("minecraft:entity/components/minecraft:loot/table"),
 			matchValue("minecraft:entity/component_groups/*/minecraft:loot/table"),
