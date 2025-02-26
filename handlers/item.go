@@ -10,7 +10,7 @@ import (
 
 var Item = newJsonHandler(shared.ItemGlob, []jsonHandlerEntry{
 	{
-		Matcher:    []jsonPath{matchValue("minecraft:item/description/identifier")},
+		Path:       []jsonPath{matchValue("minecraft:item/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -21,7 +21,7 @@ var Item = newJsonHandler(shared.ItemGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:item/components/minecraft:icon"),
 			matchValue("minecraft:item/components/minecraft:icon/texture"),
 			matchValue("minecraft:item/components/minecraft:icon/textures/*"),
@@ -35,7 +35,7 @@ var Item = newJsonHandler(shared.ItemGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:item/components/minecraft:repairable/repair_items/*/items/*")},
+		Path:    []jsonPath{matchValue("minecraft:item/components/minecraft:repairable/repair_items/*/items/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Item.Get("id")

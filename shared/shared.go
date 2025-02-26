@@ -92,7 +92,7 @@ var (
 	TextureGlob                   = resourcePattern("/textures/**/*.{png,tga,fsb}")
 )
 
-var PropertyDomain = []string{"bool_property", "enum_property", "float_property", "int_property"}
+var PropertyTests = []string{"bool_property", "enum_property", "float_property", "int_property"}
 
 var FilterPaths = sliceutil.FlatMap([]string{
 	"**/filters",

@@ -10,7 +10,7 @@ import (
 
 var FeatureRule = newJsonHandler(shared.FeatureRuleGlob, []jsonHandlerEntry{
 	{
-		Matcher: []jsonPath{matchValue("minecraft:feature_rules/description/places_feature")},
+		Path:    []jsonPath{matchValue("minecraft:feature_rules/description/places_feature")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Feature.Get("id")

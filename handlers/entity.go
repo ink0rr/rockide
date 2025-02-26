@@ -12,7 +12,7 @@ import (
 
 var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 	{
-		Matcher:    []jsonPath{matchValue("minecraft:entity/description/identifier")},
+		Path:       []jsonPath{matchValue("minecraft:entity/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -23,7 +23,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher:    []jsonPath{matchKey("minecraft:entity/description/animations/*")},
+		Path:       []jsonPath{matchKey("minecraft:entity/description/animations/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -34,7 +34,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:entity/description/animations/*")},
+		Path:    []jsonPath{matchValue("minecraft:entity/description/animations/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.AnimationController.Get("id"), stores.Animation.Get("id"))
@@ -44,7 +44,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchKey("minecraft:entity/description/scripts/animate/*/*"),
 			matchValue("minecraft:entity/description/scripts/animate/*"),
 		},
@@ -57,7 +57,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher:    []jsonPath{matchKey("minecraft:entity/description/properties/*")},
+		Path:       []jsonPath{matchKey("minecraft:entity/description/properties/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -68,7 +68,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchKey("minecraft:entity/events/**/set_property/*")},
+		Path:    []jsonPath{matchKey("minecraft:entity/events/**/set_property/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Entity.GetFrom(params.URI, "property")
@@ -78,19 +78,23 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
+		Path: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
 			return matchValue(path + "/domain")
 		}),
-		Actions: completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
+		Matcher: func(params *jsonParams) bool {
 			parent := params.getParentNode()
 			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
 			if test == nil {
-				return nil
+				return false
 			}
-			if value, ok := test.Value.(string); !ok || !slices.Contains(shared.PropertyDomain, value) {
-				return nil
+			if value, ok := test.Value.(string); ok {
+				return slices.Contains(shared.PropertyTests, value)
 			}
+			return false
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			parent := params.getParentNode()
 			subject := jsonc.FindNodeAtLocation(parent, jsonc.Path{"subject"})
 			if subject == nil || subject.Value == "self" {
 				return stores.Entity.GetFrom(params.URI, "property")
@@ -102,7 +106,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher:    []jsonPath{matchKey("minecraft:entity/component_groups/*")},
+		Path:       []jsonPath{matchKey("minecraft:entity/component_groups/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -113,7 +117,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher:    []jsonPath{matchKey("minecraft:entity/events/*")},
+		Path:       []jsonPath{matchKey("minecraft:entity/events/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -124,7 +128,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:entity/events/**/component_groups/*")},
+		Path:    []jsonPath{matchValue("minecraft:entity/events/**/component_groups/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Entity.GetFrom(params.URI, "component_group")
@@ -134,7 +138,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:entity/components/**/event"),
 			matchValue("minecraft:entity/component_groups/**/event"),
 		},
@@ -147,7 +151,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:entity/components/minecraft:type_family/family/*"),
 			matchValue("minecraft:entity/component_groups/*/minecraft:type_family/family/*"),
 		},
@@ -160,16 +164,16 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
+		Path: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
 			return matchValue(path + "/value")
 		}),
-		Actions: completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
+		Matcher: func(params *jsonParams) bool {
 			parent := params.getParentNode()
 			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
-			if test == nil || test.Value != "is_family" {
-				return nil
-			}
+			return test != nil && test.Value == "is_family"
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
 			return stores.Entity.Get("family")
 		},
 		References: func(params *jsonParams) []core.Reference {
@@ -177,7 +181,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.FlatMap([]string{
+		Path: sliceutil.FlatMap([]string{
 			"minecraft:behavior.avoid_block/target_blocks",
 			"minecraft:behavior.eat_block/eat_and_replace_block_pairs/*/eat_block",
 			"minecraft:behavior.eat_block/eat_and_replace_block_pairs/*/replace_block",
@@ -223,7 +227,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.FlatMap([]string{
+		Path: sliceutil.FlatMap([]string{
 			"minecraft:ageable/drop_items",
 			"minecraft:ageable/feed_items",
 			"minecraft:ageable/feed_items/*/item",
@@ -267,16 +271,16 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
+		Path: sliceutil.Map(shared.FilterPaths, func(path string) jsonPath {
 			return matchValue(path + "/value")
 		}),
-		Actions: completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
+		Matcher: func(params *jsonParams) bool {
 			parent := params.getParentNode()
 			test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
-			if test == nil || test.Value != "has_equipment" {
-				return nil
-			}
+			return test != nil && test.Value == "has_equipment"
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
 			return stores.Item.Get("id")
 		},
 		References: func(params *jsonParams) []core.Reference {
@@ -284,7 +288,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:entity/components/minecraft:loot/table"),
 			matchValue("minecraft:entity/component_groups/*/minecraft:loot/table"),
 		},
@@ -297,7 +301,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:entity/components/minecraft:trade_table/table"),
 			matchValue("minecraft:entity/components/minecraft:economy_trade_table/table"),
 			matchValue("minecraft:entity/component_groups/*/minecraft:trade_table/table"),

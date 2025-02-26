@@ -10,7 +10,7 @@ import (
 
 var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 	{
-		Matcher:    []jsonPath{matchValue("minecraft:client_entity/description/identifier")},
+		Path:       []jsonPath{matchValue("minecraft:client_entity/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -21,7 +21,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher:    []jsonPath{matchKey("minecraft:client_entity/description/animations/*")},
+		Path:       []jsonPath{matchKey("minecraft:client_entity/description/animations/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -32,7 +32,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/animations/*")},
+		Path:    []jsonPath{matchValue("minecraft:client_entity/description/animations/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.ClientAnimationController.Get("id"), stores.ClientAnimation.Get("id"))
@@ -42,7 +42,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchKey("minecraft:client_entity/description/scripts/animate/*/*"),
 			matchValue("minecraft:client_entity/description/scripts/animate/*"),
 		},
@@ -55,7 +55,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/textures/*")},
+		Path:    []jsonPath{matchValue("minecraft:client_entity/description/textures/*")},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Texture.GetPaths()
@@ -65,7 +65,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/geometry/*")},
+		Path:    []jsonPath{matchValue("minecraft:client_entity/description/geometry/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Geometry.Get("id")
@@ -75,7 +75,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchKey("minecraft:client_entity/description/render_controllers/*/*"),
 			matchValue("minecraft:client_entity/description/render_controllers/*"),
 		},
@@ -88,7 +88,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/spawn_egg/texture")},
+		Path:    []jsonPath{matchValue("minecraft:client_entity/description/spawn_egg/texture")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.ItemTexture.Get("id")
@@ -98,7 +98,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:client_entity/description/particle_effects/*"),
 			matchValue("minecraft:client_entity/description/particle_emitters/*"),
 		},
@@ -111,7 +111,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:client_entity/description/sound_effects/*")},
+		Path:    []jsonPath{matchValue("minecraft:client_entity/description/sound_effects/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.SoundDefinition.Get("id")

@@ -10,7 +10,7 @@ import (
 
 var Particle = newJsonHandler(shared.ParticleGlob, []jsonHandlerEntry{
 	{
-		Matcher:    []jsonPath{matchValue("particle_effect/description/identifier")},
+		Path:       []jsonPath{matchValue("particle_effect/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -21,7 +21,7 @@ var Particle = newJsonHandler(shared.ParticleGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher:    []jsonPath{matchValue("particle_effect/description/basic_render_parameters/texture")},
+		Path:       []jsonPath{matchValue("particle_effect/description/basic_render_parameters/texture")},
 		Actions:    completions | definitions,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {

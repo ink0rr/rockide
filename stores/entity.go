@@ -50,7 +50,7 @@ var Entity = newJsonStore(shared.EntityGlob, []jsonStoreEntry{
 				return nil
 			}
 			testValue, ok := test.Value.(string)
-			if !ok || slices.Index(shared.PropertyDomain, testValue) == -1 {
+			if !ok || slices.Index(shared.PropertyTests, testValue) == -1 {
 				return nil
 			}
 			return &nodeValue

@@ -10,7 +10,7 @@ import (
 
 var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 	{
-		Matcher:    []jsonPath{matchValue("minecraft:attachable/description/identifier")},
+		Path:       []jsonPath{matchValue("minecraft:attachable/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -21,7 +21,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher:    []jsonPath{matchKey("minecraft:attachable/description/animations/*")},
+		Path:       []jsonPath{matchKey("minecraft:attachable/description/animations/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -32,7 +32,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:attachable/description/animations/*")},
+		Path:    []jsonPath{matchValue("minecraft:attachable/description/animations/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.ClientAnimationController.Get("id"), stores.ClientAnimation.Get("id"))
@@ -42,7 +42,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchKey("minecraft:attachable/description/scripts/animate/*/*"),
 			matchValue("minecraft:attachable/description/scripts/animate/*"),
 		},
@@ -55,7 +55,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:attachable/description/textures/*")},
+		Path:    []jsonPath{matchValue("minecraft:attachable/description/textures/*")},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Texture.GetPaths()
@@ -65,7 +65,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:attachable/description/geometry/*")},
+		Path:    []jsonPath{matchValue("minecraft:attachable/description/geometry/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Geometry.Get("id")
@@ -75,7 +75,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchKey("minecraft:attachable/description/render_controllers/*/*"),
 			matchValue("minecraft:attachable/description/render_controllers/*"),
 		},
@@ -88,7 +88,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:attachable/description/particle_effects/*"),
 			matchValue("minecraft:attachable/description/particle_emitters/*"),
 		},
@@ -101,7 +101,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("minecraft:attachable/description/sound_effects/*")},
+		Path:    []jsonPath{matchValue("minecraft:attachable/description/sound_effects/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.SoundDefinition.Get("id")

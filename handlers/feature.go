@@ -11,7 +11,7 @@ import (
 
 var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 	{
-		Matcher:    []jsonPath{matchValue("*/description/identifier")},
+		Path:       []jsonPath{matchValue("*/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -22,7 +22,7 @@ var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: sliceutil.FlatMap([]string{
+		Path: sliceutil.FlatMap([]string{
 			"minecraft:catalyst_feature/can_place_sculk_catalyst_on/*",
 			"minecraft:catalyst_feature/central_block",
 			"minecraft:cave_carver_feature/fill_with",
@@ -86,7 +86,7 @@ var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Matcher: []jsonPath{
+		Path: []jsonPath{
 			matchValue("minecraft:aggregate_feature/features/*"),
 			matchValue("minecraft:catalyst_feature/central_patch_feature"),
 			matchValue("minecraft:catalyst_feature/patch_feature"),

@@ -11,7 +11,7 @@ import (
 
 var ClientAnimationController = newJsonHandler(shared.ClientAnimationControllerGlob, []jsonHandlerEntry{
 	{
-		Matcher:    []jsonPath{matchKey("animation_controllers/*")},
+		Path:       []jsonPath{matchKey("animation_controllers/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -28,7 +28,7 @@ var ClientAnimationController = newJsonHandler(shared.ClientAnimationControllerG
 		},
 	},
 	{
-		Matcher: []jsonPath{matchValue("animation_controllers/*/states/*/animations/*")},
+		Path:    []jsonPath{matchValue("animation_controllers/*/states/*/animations/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			id, ok := params.Location.Path[1].(string)
@@ -46,7 +46,7 @@ var ClientAnimationController = newJsonHandler(shared.ClientAnimationControllerG
 		},
 	},
 	{
-		Matcher: []jsonPath{matchKey("animation_controllers/*/states/*/animations/*/*")},
+		Path:    []jsonPath{matchKey("animation_controllers/*/states/*/animations/*/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			id, ok := params.Location.Path[1].(string)

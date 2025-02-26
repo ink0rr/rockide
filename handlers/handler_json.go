@@ -50,7 +50,8 @@ func (j *jsonParams) getParentNode() *jsonc.Node {
 }
 
 type jsonHandlerEntry struct {
-	Matcher []jsonPath
+	Path    []jsonPath
+	Matcher func(params *jsonParams) bool
 	Actions jsonHandlerActions
 	// Filter completions to only show undeclared reference
 	FilterDiff bool
@@ -75,17 +76,17 @@ func (j *jsonHandler) Pattern() string {
 
 func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position protocol.Position) *HandlerActions {
 	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(position))
-	entry := j.findEntry(location)
+	params := jsonParams{
+		URI:      document.URI,
+		Location: location,
+	}
+	entry := j.findEntry(&params)
 	if entry == nil {
 		log.Println("Entry not found:", location.Path)
 		return nil
 	}
 
 	node := location.PreviousNode
-	params := jsonParams{
-		URI:      document.URI,
-		Location: location,
-	}
 	actions := HandlerActions{}
 
 	if entry.Actions.Has(completions) {
@@ -171,11 +172,13 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 	return &actions
 }
 
-func (j *jsonHandler) findEntry(location *jsonc.Location) *jsonHandlerEntry {
+func (j *jsonHandler) findEntry(params *jsonParams) *jsonHandlerEntry {
 	for _, entry := range j.entries {
-		for _, matcher := range entry.Matcher {
-			if matcher.isKey == location.IsAtPropertyKey && location.Path.Matches(matcher.path) {
-				return &entry
+		for _, jsonPath := range entry.Path {
+			if jsonPath.isKey == params.Location.IsAtPropertyKey && params.Location.Path.Matches(jsonPath.path) {
+				if entry.Matcher == nil || entry.Matcher(params) {
+					return &entry
+				}
 			}
 		}
 	}
