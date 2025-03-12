@@ -32,6 +32,7 @@ var handlerList = [...]handlers.Handler{
 	handlers.ClientAnimationController,
 	handlers.ClientAnimation,
 	handlers.ClientEntity,
+	handlers.ItemTexture,
 	handlers.Particle,
 }
 
