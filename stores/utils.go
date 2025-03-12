@@ -67,7 +67,7 @@ func findNodesAtPath(root *jsonc.Node, jsonPath jsonc.Path) []*jsonc.Node {
 // Skip the keys when an entry might match both keys and values
 func skipKey(node *jsonc.Node) *string {
 	value, ok := node.Value.(string)
-	if !ok || node.Parent != nil && node.Parent.Type == jsonc.NodeTypeProperty && len(node.Parent.Children) > 0 {
+	if !ok || node.Parent != nil && node.Parent.Type == jsonc.NodeTypeProperty && len(node.Parent.Children) > 0 && node == node.Parent.Children[0] {
 		return nil
 	}
 	return &value

@@ -31,9 +31,11 @@ var handlerList = [...]handlers.Handler{
 	// RP
 	handlers.ClientAnimationController,
 	handlers.ClientAnimation,
+	handlers.ClientBlock,
 	handlers.ClientEntity,
 	handlers.ItemTexture,
 	handlers.Particle,
+	handlers.TerrainTexture,
 }
 
 var storeList = [...]stores.Store{
