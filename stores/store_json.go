@@ -1,6 +1,8 @@
 package stores
 
 import (
+	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/ink0rr/rockide/core"
@@ -29,10 +31,12 @@ func (j *jsonStoreEntry) getJsonPath() []jsonc.Path {
 }
 
 type JsonStore struct {
-	pattern shared.Pattern
-	entries []jsonStoreEntry
-	store   map[string][]core.Reference
-	mutex   sync.Mutex
+	pattern    shared.Pattern
+	savePath   bool
+	trimSuffix bool
+	entries    []jsonStoreEntry
+	store      map[string][]core.Reference
+	mutex      sync.Mutex
 }
 
 func (j *JsonStore) Pattern() string {
@@ -44,6 +48,9 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 	defer j.mutex.Unlock()
 	if j.store == nil {
 		j.store = make(map[string][]core.Reference)
+	}
+	if j.savePath {
+		j.parsePath(uri)
 	}
 	document, err := textdocument.ReadFile(uri)
 	if err != nil {
@@ -112,6 +119,23 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 		j.store[entry.Id] = data
 	}
 	return nil
+}
+
+func (j *JsonStore) parsePath(uri protocol.DocumentURI) {
+	path, err := filepath.Rel(shared.Getwd(), uri.Path())
+	if err != nil {
+		panic(err)
+	}
+	packType := j.pattern.PackType()
+	path = filepath.ToSlash(path)
+	_, path, found := strings.Cut(path, packType+"/")
+	if !found {
+		panic("invalid project path")
+	}
+	if j.trimSuffix {
+		path = strings.TrimSuffix(path, filepath.Ext(path))
+	}
+	j.store["path"] = append(j.store["path"], core.Reference{Value: path, URI: uri})
 }
 
 func (j *JsonStore) Delete(uri protocol.DocumentURI) {

@@ -28,7 +28,9 @@ var handlerList = [...]handlers.Handler{
 	handlers.FeatureRule,
 	handlers.Feature,
 	handlers.Item,
+	handlers.LootTable,
 	// RP
+	handlers.Attachable,
 	handlers.ClientAnimationController,
 	handlers.ClientAnimation,
 	handlers.ClientBlock,

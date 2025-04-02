@@ -267,7 +267,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 			return stores.Item.Get("id")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return slices.Concat(stores.Item.Get("item_id"), stores.Entity.Get("item_id"), stores.Recipe.Get("item_id"))
+			return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
 		},
 	},
 	{
@@ -284,7 +284,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 			return stores.Item.Get("id")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return slices.Concat(stores.Item.Get("item_id"), stores.Entity.Get("item_id"), stores.Recipe.Get("item_id"))
+			return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
 		},
 	},
 	{
@@ -294,7 +294,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.LootTable.GetPaths()
+			return stores.LootTable.Get("path")
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return nil

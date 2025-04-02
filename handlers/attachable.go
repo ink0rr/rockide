@@ -17,7 +17,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 			return stores.Item.Get("id")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return stores.Attachable.Get("id")
+			return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
 		},
 	},
 	{
