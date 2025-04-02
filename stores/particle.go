@@ -2,42 +2,45 @@ package stores
 
 import "github.com/ink0rr/rockide/shared"
 
-var Particle = newJsonStore(shared.ParticleGlob, []jsonStoreEntry{
-	{
-		Id:   "id",
-		Path: []string{"particle_effect/description/identifier"},
-	},
-	{
-		Id:   "id_refs",
-		Path: []string{"particle_effect/events/**/particle_effect/effect"},
-	},
-	{
-		Id:   "texture_path",
-		Path: []string{"particle_effect/description/basic_render_parameters/texture"},
-	},
-	{
-		Id:   "event",
-		Path: []string{"particle_effect/events"},
-	},
-	{
-		Id: "event_refs",
-		Path: []string{
-			"particle_effect/components/minecraft:emitter_lifetime_events/creation_event",
-			"particle_effect/components/minecraft:emitter_lifetime_events/expiration_event",
-			"particle_effect/components/minecraft:emitter_lifetime_events/looping_travel_distance_events",
-			"particle_effect/components/minecraft:emitter_lifetime_events/timeline/*/*",
-			"particle_effect/components/minecraft:emitter_lifetime_events/travel_distance_events/*/*",
-			"particle_effect/components/minecraft:particle_lifetime_events/creation_event",
-			"particle_effect/components/minecraft:particle_lifetime_events/expiration_event",
-			"particle_effect/components/minecraft:particle_lifetime_events/timeline/*/*",
-			"particle_effect/events/**/components/minecraft:emitter_lifetime_events/creation_event",
-			"particle_effect/events/**/components/minecraft:emitter_lifetime_events/expiration_event",
-			"particle_effect/events/**/components/minecraft:emitter_lifetime_events/looping_travel_distance_events",
-			"particle_effect/events/**/components/minecraft:emitter_lifetime_events/timeline/*/*",
-			"particle_effect/events/**/components/minecraft:emitter_lifetime_events/travel_distance_events/*/*",
-			"particle_effect/events/**/components/minecraft:particle_lifetime_events/creation_event",
-			"particle_effect/events/**/components/minecraft:particle_lifetime_events/expiration_event",
-			"particle_effect/events/**/components/minecraft:particle_lifetime_events/timeline/*/*",
+var Particle = &JsonStore{
+	pattern: shared.ParticleGlob,
+	entries: []jsonStoreEntry{
+		{
+			Id:   "id",
+			Path: []string{"particle_effect/description/identifier"},
+		},
+		{
+			Id:   "id_refs",
+			Path: []string{"particle_effect/events/**/particle_effect/effect"},
+		},
+		{
+			Id:   "texture_path",
+			Path: []string{"particle_effect/description/basic_render_parameters/texture"},
+		},
+		{
+			Id:   "event",
+			Path: []string{"particle_effect/events"},
+		},
+		{
+			Id: "event_refs",
+			Path: []string{
+				"particle_effect/components/minecraft:emitter_lifetime_events/creation_event",
+				"particle_effect/components/minecraft:emitter_lifetime_events/expiration_event",
+				"particle_effect/components/minecraft:emitter_lifetime_events/looping_travel_distance_events",
+				"particle_effect/components/minecraft:emitter_lifetime_events/timeline/*/*",
+				"particle_effect/components/minecraft:emitter_lifetime_events/travel_distance_events/*/*",
+				"particle_effect/components/minecraft:particle_lifetime_events/creation_event",
+				"particle_effect/components/minecraft:particle_lifetime_events/expiration_event",
+				"particle_effect/components/minecraft:particle_lifetime_events/timeline/*/*",
+				"particle_effect/events/**/components/minecraft:emitter_lifetime_events/creation_event",
+				"particle_effect/events/**/components/minecraft:emitter_lifetime_events/expiration_event",
+				"particle_effect/events/**/components/minecraft:emitter_lifetime_events/looping_travel_distance_events",
+				"particle_effect/events/**/components/minecraft:emitter_lifetime_events/timeline/*/*",
+				"particle_effect/events/**/components/minecraft:emitter_lifetime_events/travel_distance_events/*/*",
+				"particle_effect/events/**/components/minecraft:particle_lifetime_events/creation_event",
+				"particle_effect/events/**/components/minecraft:particle_lifetime_events/expiration_event",
+				"particle_effect/events/**/components/minecraft:particle_lifetime_events/timeline/*/*",
+			},
 		},
 	},
-})
+}

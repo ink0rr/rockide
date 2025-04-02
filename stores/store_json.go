@@ -35,14 +35,6 @@ type JsonStore struct {
 	mutex   sync.Mutex
 }
 
-func newJsonStore(pattern shared.Pattern, entries []jsonStoreEntry) *JsonStore {
-	return &JsonStore{
-		pattern: pattern,
-		entries: entries,
-		store:   make(map[string][]core.Reference),
-	}
-}
-
 func (j *JsonStore) Pattern() string {
 	return j.pattern.ToString()
 }
@@ -50,6 +42,9 @@ func (j *JsonStore) Pattern() string {
 func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 	j.mutex.Lock()
 	defer j.mutex.Unlock()
+	if j.store == nil {
+		j.store = make(map[string][]core.Reference)
+	}
 	document, err := textdocument.ReadFile(uri)
 	if err != nil {
 		return err

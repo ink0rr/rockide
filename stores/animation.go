@@ -4,9 +4,12 @@ import (
 	"github.com/ink0rr/rockide/shared"
 )
 
-var Animation = newJsonStore(shared.AnimationGlob, []jsonStoreEntry{
-	{
-		Id:   "id",
-		Path: []string{"animations"},
+var Animation = &JsonStore{
+	pattern: shared.AnimationGlob,
+	entries: []jsonStoreEntry{
+		{
+			Id:   "id",
+			Path: []string{"animations"},
+		},
 	},
-})
+}

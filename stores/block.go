@@ -7,22 +7,25 @@ import (
 	"github.com/ink0rr/rockide/shared"
 )
 
-var Block = newJsonStore(shared.BlockGlob, []jsonStoreEntry{
-	{
-		Id:   "id",
-		Path: []string{"minecraft:block/description/identifier"},
-	},
-	{
-		Id:   "tag",
-		Path: []string{"minecraft:block/components", "minecraft:block/permutations/*/components"},
-		Transform: func(node *jsonc.Node) *string {
-			value, ok := node.Value.(string)
-			if ok {
-				if after, found := strings.CutPrefix(value, "tag:"); found {
-					return &after
+var Block = &JsonStore{
+	pattern: shared.BlockGlob,
+	entries: []jsonStoreEntry{
+		{
+			Id:   "id",
+			Path: []string{"minecraft:block/description/identifier"},
+		},
+		{
+			Id:   "tag",
+			Path: []string{"minecraft:block/components", "minecraft:block/permutations/*/components"},
+			Transform: func(node *jsonc.Node) *string {
+				value, ok := node.Value.(string)
+				if ok {
+					if after, found := strings.CutPrefix(value, "tag:"); found {
+						return &after
+					}
 				}
-			}
-			return nil
+				return nil
+			},
 		},
 	},
-})
+}
