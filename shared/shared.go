@@ -118,5 +118,6 @@ var FilterPaths = sliceutil.FlatMap([]string{
 	return []string{
 		"minecraft:entity/components/" + path + "/**",
 		"minecraft:entity/component_groups/*/" + path + "/**",
+		"minecraft:entity/events/*/" + path + "/**",
 	}
 })

@@ -10,7 +10,7 @@ import (
 
 var Block = newJsonHandler(shared.BlockGlob, []jsonHandlerEntry{
 	{
-		Path:       []jsonPath{matchValue("minecraft:block/description/identifier")},
+		Path:       []shared.JsonPath{shared.JsonValue("minecraft:block/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {

@@ -7,7 +7,7 @@ var SoundDefinition = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"sound_definitions"},
+			Path: []shared.JsonPath{shared.JsonKey("sound_definitions/*")},
 		},
 	},
 }

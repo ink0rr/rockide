@@ -8,7 +8,7 @@ var LootTable = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "item_id",
-			Path: []string{"**/entries/*/name"},
+			Path: []shared.JsonPath{shared.JsonValue("**/entries/*/name")},
 		},
 	},
 }

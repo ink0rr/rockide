@@ -7,24 +7,23 @@ var Item = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"minecraft:item/description/identifier"},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:item/description/identifier")},
 		},
 		{
 			Id: "icon",
-			Path: []string{
-				"minecraft:item/components/minecraft:icon",
-				"minecraft:item/components/minecraft:icon/texture",
-				"minecraft:item/components/minecraft:icon/textures/*",
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:item/components/minecraft:icon"),
+				shared.JsonValue("minecraft:item/components/minecraft:icon/texture"),
+				shared.JsonValue("minecraft:item/components/minecraft:icon/textures/*"),
 			},
-			Transform: skipKey,
 		},
 		{
 			Id:   "tag",
-			Path: []string{"minecraft:item/components/minecraft:tags/tags"},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:tags/tags/*")},
 		},
 		{
 			Id:   "item_id",
-			Path: []string{"minecraft:item/components/minecraft:repairable/repair_items/*/items"},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:repairable/repair_items/*/items/*")},
 		},
 	},
 }

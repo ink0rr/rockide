@@ -8,7 +8,7 @@ import (
 
 var ClientBlock = newJsonHandler(shared.ClientBlockGlob, []jsonHandlerEntry{
 	{
-		Path:       []jsonPath{matchKey("*")},
+		Path:       []shared.JsonPath{shared.JsonKey("*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -19,7 +19,10 @@ var ClientBlock = newJsonHandler(shared.ClientBlockGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("*/textures"), matchValue("*/textures/*")},
+		Path: []shared.JsonPath{
+			shared.JsonValue("*/textures"),
+			shared.JsonValue("*/textures/*"),
+		},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.TerrainTexture.Get("id")

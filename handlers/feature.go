@@ -11,7 +11,7 @@ import (
 
 var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 	{
-		Path:       []jsonPath{matchValue("*/description/identifier")},
+		Path:       []shared.JsonPath{shared.JsonValue("*/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -74,8 +74,8 @@ var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 			"minecraft:underwater_cave_carver_feature/replace_air_with",
 			"minecraft:vegetation_patch_feature/ground_block",
 			"minecraft:vegetation_patch_feature/replaceable_blocks/*",
-		}, func(value string) []jsonPath {
-			return []jsonPath{matchValue(value), matchValue(value + "/name")}
+		}, func(value string) []shared.JsonPath {
+			return []shared.JsonPath{shared.JsonValue(value), shared.JsonValue(value + "/name")}
 		}),
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
@@ -86,17 +86,17 @@ var Feature = newJsonHandler(shared.FeatureGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []jsonPath{
-			matchValue("minecraft:aggregate_feature/features/*"),
-			matchValue("minecraft:catalyst_feature/central_patch_feature"),
-			matchValue("minecraft:catalyst_feature/patch_feature"),
-			matchValue("minecraft:scatter_feature/places_feature"),
-			matchValue("minecraft:search_feature/places_feature"),
-			matchValue("minecraft:sequence_feature/features/*"),
-			matchValue("minecraft:snap_to_surface_feature/feature_to_snap"),
-			matchValue("minecraft:surface_relative_threshold_feature/feature_to_place"),
-			matchValue("minecraft:vegetation_patch_feature/vegetation_feature"),
-			matchValue("minecraft:weighted_random_feature/features/*/0"),
+		Path: []shared.JsonPath{
+			shared.JsonValue("minecraft:aggregate_feature/features/*"),
+			shared.JsonValue("minecraft:catalyst_feature/central_patch_feature"),
+			shared.JsonValue("minecraft:catalyst_feature/patch_feature"),
+			shared.JsonValue("minecraft:scatter_feature/places_feature"),
+			shared.JsonValue("minecraft:search_feature/places_feature"),
+			shared.JsonValue("minecraft:sequence_feature/features/*"),
+			shared.JsonValue("minecraft:snap_to_surface_feature/feature_to_snap"),
+			shared.JsonValue("minecraft:surface_relative_threshold_feature/feature_to_place"),
+			shared.JsonValue("minecraft:vegetation_patch_feature/vegetation_feature"),
+			shared.JsonValue("minecraft:weighted_random_feature/features/*/0"),
 		},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {

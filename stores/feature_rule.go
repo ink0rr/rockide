@@ -7,11 +7,11 @@ var FeatureRule = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"minecraft:feature_rules/description/identifier"},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/identifier")},
 		},
 		{
 			Id:   "feature_id",
-			Path: []string{"minecraft:feature_rules/description/places_feature"},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/places_feature")},
 		},
 	},
 }

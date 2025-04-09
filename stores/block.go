@@ -12,15 +12,18 @@ var Block = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"minecraft:block/description/identifier"},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:block/description/identifier")},
 		},
 		{
-			Id:   "tag",
-			Path: []string{"minecraft:block/components", "minecraft:block/permutations/*/components"},
+			Id: "tag",
+			Path: []shared.JsonPath{
+				shared.JsonKey("minecraft:block/components/*"),
+				shared.JsonKey("minecraft:block/permutations/*/components/*"),
+			},
 			Transform: func(node *jsonc.Node) *string {
-				value, ok := node.Value.(string)
+				nodeValue, ok := node.Value.(string)
 				if ok {
-					if after, found := strings.CutPrefix(value, "tag:"); found {
+					if after, found := strings.CutPrefix(nodeValue, "tag:"); found {
 						return &after
 					}
 				}

@@ -10,7 +10,7 @@ import (
 
 var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 	{
-		Path:       []jsonPath{matchValue("minecraft:client_entity/description/identifier")},
+		Path:       []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/identifier")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -21,7 +21,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:       []jsonPath{matchKey("minecraft:client_entity/description/animations/*")},
+		Path:       []shared.JsonPath{shared.JsonKey("minecraft:client_entity/description/animations/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -32,7 +32,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("minecraft:client_entity/description/animations/*")},
+		Path:    []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/animations/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.ClientAnimationController.Get("id"), stores.ClientAnimation.Get("id"))
@@ -42,9 +42,9 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []jsonPath{
-			matchKey("minecraft:client_entity/description/scripts/animate/*/*"),
-			matchValue("minecraft:client_entity/description/scripts/animate/*"),
+		Path: []shared.JsonPath{
+			shared.JsonValue("minecraft:client_entity/description/scripts/animate/*"),
+			shared.JsonKey("minecraft:client_entity/description/scripts/animate/*/*"),
 		},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
@@ -55,7 +55,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("minecraft:client_entity/description/textures/*")},
+		Path:    []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/textures/*")},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Texture.GetPaths()
@@ -65,7 +65,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("minecraft:client_entity/description/geometry/*")},
+		Path:    []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/geometry/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Geometry.Get("id")
@@ -75,9 +75,9 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []jsonPath{
-			matchKey("minecraft:client_entity/description/render_controllers/*/*"),
-			matchValue("minecraft:client_entity/description/render_controllers/*"),
+		Path: []shared.JsonPath{
+			shared.JsonValue("minecraft:client_entity/description/render_controllers/*"),
+			shared.JsonKey("minecraft:client_entity/description/render_controllers/*/*"),
 		},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
@@ -88,7 +88,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("minecraft:client_entity/description/spawn_egg/texture")},
+		Path:    []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/spawn_egg/texture")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.ItemTexture.Get("id")
@@ -98,9 +98,9 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path: []jsonPath{
-			matchValue("minecraft:client_entity/description/particle_effects/*"),
-			matchValue("minecraft:client_entity/description/particle_emitters/*"),
+		Path: []shared.JsonPath{
+			shared.JsonValue("minecraft:client_entity/description/particle_effects/*"),
+			shared.JsonValue("minecraft:client_entity/description/particle_emitters/*"),
 		},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
@@ -111,7 +111,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("minecraft:client_entity/description/sound_effects/*")},
+		Path:    []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/sound_effects/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.SoundDefinition.Get("id")

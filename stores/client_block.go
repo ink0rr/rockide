@@ -10,19 +10,21 @@ var ClientBlock = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"*"},
+			Path: []shared.JsonPath{shared.JsonKey("*")},
 			Transform: func(node *jsonc.Node) *string {
 				nodeValue, ok := node.Value.(string)
-				if !ok || node.Value == "format_version" {
+				if !ok || nodeValue == "format_version" {
 					return nil
 				}
 				return &nodeValue
 			},
 		},
 		{
-			Id:        "texture",
-			Path:      []string{"*/textures", "*/textures/*"},
-			Transform: skipKey,
+			Id: "texture",
+			Path: []shared.JsonPath{
+				shared.JsonValue("*/textures"),
+				shared.JsonValue("*/textures/*"),
+			},
 		},
 	},
 }

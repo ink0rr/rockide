@@ -10,7 +10,7 @@ import (
 
 var ItemTexture = newJsonHandler(shared.ItemTextureGlob, []jsonHandlerEntry{
 	{
-		Path:       []jsonPath{matchKey("texture_data/*")},
+		Path:       []shared.JsonPath{shared.JsonKey("texture_data/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -21,7 +21,7 @@ var ItemTexture = newJsonHandler(shared.ItemTextureGlob, []jsonHandlerEntry{
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("texture_data/*/textures")},
+		Path:    []shared.JsonPath{shared.JsonValue("texture_data/*/textures")},
 		Actions: completions | definitions,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Texture.GetPaths()

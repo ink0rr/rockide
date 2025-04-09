@@ -7,7 +7,7 @@ var Geometry = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"minecraft:geometry/*/description/identifier"},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:geometry/*/description/identifier")},
 		},
 	},
 }

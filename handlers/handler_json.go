@@ -12,19 +12,6 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-type jsonPath struct {
-	isKey bool
-	path  jsonc.Path
-}
-
-func matchKey(path string) jsonPath {
-	return jsonPath{isKey: true, path: jsonc.NewPath(path)}
-}
-
-func matchValue(path string) jsonPath {
-	return jsonPath{isKey: false, path: jsonc.NewPath(path)}
-}
-
 type jsonHandlerActions uint16
 
 const (
@@ -50,7 +37,7 @@ func (j *jsonParams) getParentNode() *jsonc.Node {
 }
 
 type jsonHandlerEntry struct {
-	Path    []jsonPath
+	Path    []shared.JsonPath
 	Matcher func(params *jsonParams) bool
 	Actions jsonHandlerActions
 	// Filter completions to only show undeclared reference
@@ -175,7 +162,7 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 func (j *jsonHandler) findEntry(params *jsonParams) *jsonHandlerEntry {
 	for _, entry := range j.entries {
 		for _, jsonPath := range entry.Path {
-			if jsonPath.isKey == params.Location.IsAtPropertyKey && params.Location.Path.Matches(jsonPath.path) {
+			if jsonPath.IsKey == params.Location.IsAtPropertyKey && params.Location.Path.Matches(jsonPath.Path) {
 				if entry.Matcher == nil || entry.Matcher(params) {
 					return &entry
 				}

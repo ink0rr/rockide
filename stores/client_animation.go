@@ -9,7 +9,7 @@ var ClientAnimation = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"animations"},
+			Path: []shared.JsonPath{shared.JsonKey("animations/*")},
 		},
 	},
 }

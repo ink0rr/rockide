@@ -10,7 +10,7 @@ var Feature = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"*/description/identifier"},
+			Path: []shared.JsonPath{shared.JsonValue("*/description/identifier")},
 		},
 		{
 			Id: "block_id",
@@ -66,23 +66,23 @@ var Feature = &JsonStore{
 				"minecraft:underwater_cave_carver_feature/replace_air_with",
 				"minecraft:vegetation_patch_feature/ground_block",
 				"minecraft:vegetation_patch_feature/replaceable_blocks/*",
-			}, func(value string) []string {
-				return []string{value, value + "/name"}
+			}, func(value string) []shared.JsonPath {
+				return []shared.JsonPath{shared.JsonValue(value), shared.JsonValue(value + "/name")}
 			}),
 		},
 		{
 			Id: "feature_id",
-			Path: []string{
-				"minecraft:aggregate_feature/features/*",
-				"minecraft:catalyst_feature/central_patch_feature",
-				"minecraft:catalyst_feature/patch_feature",
-				"minecraft:scatter_feature/places_feature",
-				"minecraft:search_feature/places_feature",
-				"minecraft:sequence_feature/features/*",
-				"minecraft:snap_to_surface_feature/feature_to_snap",
-				"minecraft:surface_relative_threshold_feature/feature_to_place",
-				"minecraft:vegetation_patch_feature/vegetation_feature",
-				"minecraft:weighted_random_feature/features/*/0",
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:aggregate_feature/features/*"),
+				shared.JsonValue("minecraft:catalyst_feature/central_patch_feature"),
+				shared.JsonValue("minecraft:catalyst_feature/patch_feature"),
+				shared.JsonValue("minecraft:scatter_feature/places_feature"),
+				shared.JsonValue("minecraft:search_feature/places_feature"),
+				shared.JsonValue("minecraft:sequence_feature/features/*"),
+				shared.JsonValue("minecraft:snap_to_surface_feature/feature_to_snap"),
+				shared.JsonValue("minecraft:surface_relative_threshold_feature/feature_to_place"),
+				shared.JsonValue("minecraft:vegetation_patch_feature/vegetation_feature"),
+				shared.JsonValue("minecraft:weighted_random_feature/features/*/0"),
 			},
 		},
 	},

@@ -7,7 +7,7 @@ var TerrainTexture = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"texture_data"},
+			Path: []shared.JsonPath{shared.JsonKey("texture_data/*")},
 		},
 	},
 }

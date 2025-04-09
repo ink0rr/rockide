@@ -10,7 +10,7 @@ import (
 
 var AnimationController = newJsonHandler(shared.AnimationControllerGlob, []jsonHandlerEntry{
 	{
-		Path:       []jsonPath{matchKey("animation_controllers/*")},
+		Path:       []shared.JsonPath{shared.JsonKey("animation_controllers/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
@@ -27,25 +27,10 @@ var AnimationController = newJsonHandler(shared.AnimationControllerGlob, []jsonH
 		},
 	},
 	{
-		Path:    []jsonPath{matchValue("animation_controllers/*/states/*/animations/*")},
-		Actions: completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
-			id, ok := params.Location.Path[1].(string)
-			if !ok {
-				return nil
-			}
-			return animationControllerSources(id, stores.Entity)
+		Path: []shared.JsonPath{
+			shared.JsonValue("animation_controllers/*/states/*/animations/*"),
+			shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
 		},
-		References: func(params *jsonParams) []core.Reference {
-			id, ok := params.Location.Path[1].(string)
-			if !ok {
-				return nil
-			}
-			return animationControllerReferences(id, stores.AnimationController, stores.Entity)
-		},
-	},
-	{
-		Path:    []jsonPath{matchKey("animation_controllers/*/states/*/animations/*/*")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			id, ok := params.Location.Path[1].(string)

@@ -7,7 +7,7 @@ var RenderController = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"render_controllers"},
+			Path: []shared.JsonPath{shared.JsonKey("render_controllers/*")},
 		},
 	},
 }

@@ -9,11 +9,14 @@ var AnimationController = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []string{"animation_controllers"},
+			Path: []shared.JsonPath{shared.JsonKey("animation_controllers/*")},
 		},
 		{
-			Id:   "animate_refs",
-			Path: []string{"animation_controllers/*/states/*/animations"},
+			Id: "animate_refs",
+			Path: []shared.JsonPath{
+				shared.JsonValue("animation_controllers/*/states/*/animations/*"),
+				shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
+			},
 		},
 	},
 }

@@ -14,20 +14,8 @@ import (
 
 type jsonStoreEntry struct {
 	Id        string
-	Path      []string
+	Path      []shared.JsonPath
 	Transform func(node *jsonc.Node) *string
-
-	// Used to cache Path splitted by '/'
-	jsonPath []jsonc.Path
-}
-
-func (j *jsonStoreEntry) getJsonPath() []jsonc.Path {
-	if j.jsonPath == nil {
-		for _, path := range j.Path {
-			j.jsonPath = append(j.jsonPath, jsonc.NewPath(path))
-		}
-	}
-	return j.jsonPath
 }
 
 type JsonStore struct {
@@ -59,16 +47,34 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
 	for _, entry := range j.entries {
 		data := j.store[entry.Id]
-		for _, path := range entry.getJsonPath() {
-			// If the last path segment is "*", we want to grab the values instead of keys
-			// The only exception is when the path is just a single "*"
-			index := 0
-			if len(path) > 1 && path[len(path)-1] == "*" {
-				index = 1
+		for _, jsonPath := range entry.Path {
+			index := 1
+			if jsonPath.IsKey {
+				index = 0
 			}
-			var extract func(node *jsonc.Node)
-			extract = func(node *jsonc.Node) {
-				if node.Type == jsonc.NodeTypeString {
+			extract := func(node *jsonc.Node) {
+				if node.Type == jsonc.NodeTypeProperty && len(node.Children) > index {
+					targetNode := node.Children[index]
+					value := targetNode.Value
+					if entry.Transform != nil {
+						result := entry.Transform(targetNode)
+						if result == nil {
+							return
+						}
+						value = *result
+					}
+					if value == nil {
+						return
+					}
+					data = append(data, core.Reference{
+						Value: value.(string),
+						URI:   uri,
+						Range: &protocol.Range{
+							Start: document.PositionAt(targetNode.Offset),
+							End:   document.PositionAt(targetNode.Offset + targetNode.Length),
+						},
+					})
+				} else if !jsonPath.IsKey && node.Type == jsonc.NodeTypeString {
 					value := node.Value
 					if entry.Transform != nil {
 						result := entry.Transform(node)
@@ -85,34 +91,9 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 							End:   document.PositionAt(node.Offset + node.Length),
 						},
 					})
-				} else if node.Type == jsonc.NodeTypeProperty && node.Children != nil && index < len(node.Children) {
-					value := node.Children[index].Value
-					if entry.Transform != nil {
-						result := entry.Transform(node.Children[index])
-						if result == nil {
-							return
-						}
-						value = *result
-					}
-					if value == nil {
-						return
-					}
-					targetNode := node.Children[index]
-					data = append(data, core.Reference{
-						Value: value.(string),
-						URI:   uri,
-						Range: &protocol.Range{
-							Start: document.PositionAt(targetNode.Offset),
-							End:   document.PositionAt(targetNode.Offset + targetNode.Length),
-						},
-					})
-				} else if node.Children != nil {
-					for _, child := range node.Children {
-						extract(child)
-					}
 				}
 			}
-			for _, node := range findNodesAtPath(root, path) {
+			for _, node := range findNodesAtPath(root, jsonPath.Path) {
 				extract(node)
 			}
 		}

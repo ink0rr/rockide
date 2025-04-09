@@ -11,7 +11,7 @@ import (
 
 var ClientAnimation = newJsonHandler(shared.ClientAnimationGlob, []jsonHandlerEntry{
 	{
-		Path:       []jsonPath{matchKey("animations/*")},
+		Path:       []shared.JsonPath{shared.JsonKey("animations/*")},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {

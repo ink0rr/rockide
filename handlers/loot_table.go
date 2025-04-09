@@ -10,7 +10,7 @@ import (
 
 var LootTable = newJsonHandler(shared.LootTableGlob, []jsonHandlerEntry{
 	{
-		Path:    []jsonPath{matchValue("**/entries/*/name")},
+		Path:    []shared.JsonPath{shared.JsonValue("**/entries/*/name")},
 		Actions: completions | definitions | rename,
 		Source: func(params *jsonParams) []core.Reference {
 			return stores.Item.Get("id")
