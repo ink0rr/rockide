@@ -107,7 +107,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 			return stores.Particle.Get("id")
 		},
 		References: func(params *jsonParams) []core.Reference {
-			return slices.Concat(stores.Particle.Get("id_refs"), stores.Attachable.Get("particle_id"), stores.ClientEntity.Get("particle_id"))
+			return slices.Concat(stores.Attachable.Get("particle_id"), stores.ClientEntity.Get("particle_id"), stores.Particle.Get("particle_id"))
 		},
 	},
 	{

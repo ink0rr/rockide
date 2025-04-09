@@ -1,6 +1,9 @@
 package stores
 
-import "github.com/ink0rr/rockide/shared"
+import (
+	"github.com/ink0rr/rockide/internal/sliceutil"
+	"github.com/ink0rr/rockide/shared"
+)
 
 var Particle = &JsonStore{
 	pattern: shared.ParticleGlob,
@@ -10,7 +13,7 @@ var Particle = &JsonStore{
 			Path: []shared.JsonPath{shared.JsonValue("particle_effect/description/identifier")},
 		},
 		{
-			Id:   "id_refs",
+			Id:   "particle_id",
 			Path: []shared.JsonPath{shared.JsonValue("particle_effect/events/**/particle_effect/effect")},
 		},
 		{
@@ -23,24 +26,23 @@ var Particle = &JsonStore{
 		},
 		{
 			Id: "event_refs",
-			Path: []shared.JsonPath{
-				shared.JsonValue("particle_effect/components/minecraft:emitter_lifetime_events/creation_event"),
-				shared.JsonValue("particle_effect/components/minecraft:emitter_lifetime_events/expiration_event"),
-				shared.JsonValue("particle_effect/components/minecraft:emitter_lifetime_events/looping_travel_distance_events"),
-				shared.JsonValue("particle_effect/components/minecraft:emitter_lifetime_events/timeline/*/*"),
-				shared.JsonValue("particle_effect/components/minecraft:emitter_lifetime_events/travel_distance_events/*/*"),
-				shared.JsonValue("particle_effect/components/minecraft:particle_lifetime_events/creation_event"),
-				shared.JsonValue("particle_effect/components/minecraft:particle_lifetime_events/expiration_event"),
-				shared.JsonValue("particle_effect/components/minecraft:particle_lifetime_events/timeline/*/*"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:emitter_lifetime_events/creation_event"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:emitter_lifetime_events/expiration_event"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:emitter_lifetime_events/looping_travel_distance_events"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:emitter_lifetime_events/timeline/*/*"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:emitter_lifetime_events/travel_distance_events/*/*"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:particle_lifetime_events/creation_event"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:particle_lifetime_events/expiration_event"),
-				shared.JsonValue("particle_effect/events/**/components/minecraft:particle_lifetime_events/timeline/*/*"),
-			},
+			Path: sliceutil.FlatMap([]string{
+				"minecraft:emitter_lifetime_events/creation_event",
+				"minecraft:emitter_lifetime_events/expiration_event",
+				"minecraft:emitter_lifetime_events/looping_travel_distance_events/*/effects",
+				"minecraft:emitter_lifetime_events/timeline/*",
+				"minecraft:emitter_lifetime_events/travel_distance_events/*",
+				"minecraft:particle_lifetime_events/creation_event",
+				"minecraft:particle_lifetime_events/expiration_event",
+				"minecraft:particle_lifetime_events/timeline/*",
+			}, func(path string) []shared.JsonPath {
+				return []shared.JsonPath{
+					shared.JsonValue("particle_effect/components/" + path),
+					shared.JsonValue("particle_effect/components/" + path + "/*"),
+					shared.JsonValue("particle_effect/events/**/components/" + path),
+					shared.JsonValue("particle_effect/events/**/components/" + path + "/*"),
+				}
+			}),
 		},
 	},
 }
