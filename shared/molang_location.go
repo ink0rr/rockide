@@ -143,7 +143,7 @@ func IsMolangLocation(location *jsonc.Location) bool {
 		return false
 	}
 	nodeValue, ok := node.Value.(string)
-	if !ok {
+	if !ok || nodeValue == "" {
 		return false
 	}
 	return node.Type == jsonc.NodeTypeString &&

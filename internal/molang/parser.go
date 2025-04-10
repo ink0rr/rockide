@@ -20,11 +20,11 @@ func NewParser(source string) (*Parser, error) {
 	for len(current) > 0 {
 		matched := false
 		for _, tp := range tokenPatterns {
-			match := tp.Pattern.FindString(current)
+			match := tp.pattern.FindString(current)
 			if match != "" {
 				length := len(match)
 				parser.Tokens = append(parser.Tokens, Token{
-					Kind:   tp.Kind,
+					Kind:   tp.kind,
 					Value:  match,
 					Offset: offset,
 					Length: length,

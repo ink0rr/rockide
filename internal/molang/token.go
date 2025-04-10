@@ -26,8 +26,8 @@ type Token struct {
 }
 
 type tokenPattern struct {
-	Kind    TokenKind
-	Pattern *regexp.Regexp
+	kind    TokenKind
+	pattern *regexp.Regexp
 }
 
 var tokenPatterns = []tokenPattern{

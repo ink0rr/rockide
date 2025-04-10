@@ -64,6 +64,11 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			res, err = Rename(ctx, conn, &params)
 		}
+	case "textDocument/semanticTokens/full":
+		var params protocol.SemanticTokensParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			res, err = SemanticTokens(ctx, conn, &params)
+		}
 	case "textDocument/signatureHelp":
 		var params protocol.SignatureHelpParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ink0rr/rockide/internal/protocol"
+	"github.com/ink0rr/rockide/internal/protocol/semtok"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/sourcegraph/jsonrpc2"
 )
@@ -37,6 +38,12 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 			HoverProvider: &protocol.Or_ServerCapabilities_hoverProvider{Value: true},
 			SignatureHelpProvider: &protocol.SignatureHelpOptions{
 				TriggerCharacters: triggerCharacters,
+			},
+			SemanticTokensProvider: protocol.SemanticTokensOptions{
+				Legend: protocol.SemanticTokensLegend{
+					TokenTypes: semtok.TokenTypes,
+				},
+				Full: &protocol.Or_SemanticTokensOptions_full{Value: true},
 			},
 		},
 	}

@@ -21,20 +21,21 @@ const (
 	// These are the tokens defined by LSP 3.18, but a client is
 	// free to send its own set; any tokens that the server emits
 	// that are not in this set are simply not encoded in the bitfield.
-	TokComment   Type = "comment"       // for a comment
-	TokFunction  Type = "function"      // for a function
-	TokKeyword   Type = "keyword"       // for a keyword
-	TokLabel     Type = "label"         // for a control label (LSP 3.18)
-	TokMacro     Type = "macro"         // for text/template tokens
-	TokMethod    Type = "method"        // for a method
-	TokNamespace Type = "namespace"     // for an imported package name
-	TokNumber    Type = "number"        // for a numeric literal
-	TokOperator  Type = "operator"      // for an operator
-	TokParameter Type = "parameter"     // for a parameter variable
-	TokString    Type = "string"        // for a string literal
-	TokType      Type = "type"          // for a type name (plus other uses)
-	TokTypeParam Type = "typeParameter" // for a type parameter
-	TokVariable  Type = "variable"      // for a var or const
+	TokComment    Type = "comment"       // for a comment
+	TokEnumMember Type = "enumMember"    // for enum members
+	TokFunction   Type = "function"      // for a function
+	TokKeyword    Type = "keyword"       // for a keyword
+	TokLabel      Type = "label"         // for a control label (LSP 3.18)
+	TokMacro      Type = "macro"         // for text/template tokens
+	TokMethod     Type = "method"        // for a method
+	TokNamespace  Type = "namespace"     // for an imported package name
+	TokNumber     Type = "number"        // for a numeric literal
+	TokOperator   Type = "operator"      // for an operator
+	TokParameter  Type = "parameter"     // for a parameter variable
+	TokString     Type = "string"        // for a string literal
+	TokType       Type = "type"          // for a type name (plus other uses)
+	TokTypeParam  Type = "typeParameter" // for a type parameter
+	TokVariable   Type = "variable"      // for a var or const
 	// The section below defines a subset of token types in standard token types
 	// that gopls does not use.
 	//
@@ -43,7 +44,6 @@ const (
 	// TokClass      TokenType = "class"
 	// TokDecorator  TokenType = "decorator"
 	// TokEnum       TokenType = "enum"
-	// TokEnumMember TokenType = "enumMember"
 	// TokEvent      TokenType = "event"
 	// TokInterface  TokenType = "interface"
 	// TokModifier   TokenType = "modifier"
@@ -55,6 +55,7 @@ const (
 // TokenTypes is a slice of types gopls will return as its server capabilities.
 var TokenTypes = []Type{
 	TokNamespace,
+	TokEnumMember,
 	TokType,
 	TokTypeParam,
 	TokParameter,

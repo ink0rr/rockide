@@ -10,7 +10,11 @@ package protocol
 // https://github.com/microsoft/vscode-languageserver-node/blob/release/protocol/3.17.6-next.9/protocol/metaModel.json
 // LSP metaData.version = 3.17.0.
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/ink0rr/rockide/internal/protocol/semtok"
+)
 
 // A special text edit with an additional change annotation.
 //
@@ -4602,9 +4606,9 @@ type SemanticTokensFullDelta struct {
 // See https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification#semanticTokensLegend
 type SemanticTokensLegend struct {
 	// The token types a server uses.
-	TokenTypes []string `json:"tokenTypes"`
+	TokenTypes []semtok.Type `json:"tokenTypes"`
 	// The token modifiers a server uses.
-	TokenModifiers []string `json:"tokenModifiers"`
+	TokenModifiers []semtok.Modifier `json:"tokenModifiers"`
 }
 
 // @since 3.16.0
