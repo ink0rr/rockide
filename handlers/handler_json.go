@@ -62,7 +62,11 @@ func (j *jsonHandler) Pattern() string {
 }
 
 func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position protocol.Position) *HandlerActions {
-	location := jsonc.GetLocation(document.GetText(), document.OffsetAt(position))
+	offset := document.OffsetAt(position)
+	location := jsonc.GetLocation(document.GetText(), offset)
+	if shared.IsMolangLocation(location) {
+		return Molang.GetActions(document, offset, location)
+	}
 	params := jsonParams{
 		URI:      document.URI,
 		Location: location,

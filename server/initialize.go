@@ -19,7 +19,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 	if err := findProjectPaths(params.InitializationOptions); err != nil {
 		return nil, err
 	}
-
+	triggerCharacters := strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz.'"() `, "")
 	result := protocol.InitializeResult{
 		ServerInfo: &protocol.ServerInfo{
 			Name:    "rockide",
@@ -28,13 +28,16 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 		Capabilities: protocol.ServerCapabilities{
 			TextDocumentSync: protocol.Incremental,
 			CompletionProvider: &protocol.CompletionOptions{
-				TriggerCharacters: strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz.'"() `, ""),
+				TriggerCharacters: triggerCharacters,
 			},
 			DefinitionProvider: &protocol.Or_ServerCapabilities_definitionProvider{Value: true},
 			RenameProvider: &protocol.RenameOptions{
 				PrepareProvider: true,
 			},
 			HoverProvider: &protocol.Or_ServerCapabilities_hoverProvider{Value: true},
+			SignatureHelpProvider: &protocol.SignatureHelpOptions{
+				TriggerCharacters: triggerCharacters,
+			},
 		},
 	}
 	return &result, nil

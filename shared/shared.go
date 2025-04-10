@@ -31,8 +31,9 @@ func SetProject(p core.Project) {
 }
 
 const (
-	BpGlob = "{behavior_pack,*BP,BP_*,*bp,bp_*}"
-	RpGlob = "{resource_pack,*RP,RP_*,*rp,rp_*}"
+	BpGlob      = "{behavior_pack,*BP,BP_*,*bp,bp_*}"
+	RpGlob      = "{resource_pack,*RP,RP_*,*rp,rp_*}"
+	ProjectGlob = "{behavior_pack,*BP,BP_*,*bp,bp_*,resource_pack,*RP,RP_*,*rp,rp_*}"
 )
 
 type Pattern string
