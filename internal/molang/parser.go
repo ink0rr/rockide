@@ -2,6 +2,7 @@ package molang
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -43,12 +44,9 @@ func NewParser(source string) (*Parser, error) {
 }
 
 func (mp *Parser) FindIndex(offset int) int {
-	for i, token := range mp.Tokens {
-		if offset >= token.Offset && offset < token.Offset+token.Length {
-			return i
-		}
-	}
-	return -1
+	return slices.IndexFunc(mp.Tokens, func(token Token) bool {
+		return offset >= token.Offset && offset < token.Offset+token.Length
+	})
 }
 
 func (mp *Parser) IsMethodCall(offset int) bool {
@@ -65,10 +63,10 @@ func (mp *Parser) IsMethodCall(offset int) bool {
 			continue
 		}
 		if token.Kind == PAREN && token.Value == "(" {
-			depth--
 			if depth == 0 {
 				break
 			}
+			depth--
 		}
 	}
 
@@ -80,10 +78,10 @@ func (mp *Parser) IsMethodCall(offset int) bool {
 			continue
 		}
 		if token.Kind == PAREN && token.Value == ")" {
-			depth--
 			if depth == 0 {
 				return true
 			}
+			depth--
 		}
 	}
 
@@ -115,7 +113,6 @@ func (mp *Parser) GetMethodCall(offset int) *MethodCall {
 			continue
 		}
 		if token.Kind == PAREN && token.Value == "(" {
-			depth--
 			if depth == 0 {
 				if i-2 >= 0 && i-1 >= 0 {
 					prefix := mp.Tokens[i-2]
@@ -130,6 +127,7 @@ func (mp *Parser) GetMethodCall(offset int) *MethodCall {
 				}
 				break
 			}
+			depth--
 		}
 	}
 
