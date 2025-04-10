@@ -64,6 +64,11 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			res, err = Rename(ctx, conn, &params)
 		}
+	case "textDocument/hover":
+		var params protocol.HoverParams
+		if err = json.Unmarshal(*req.Params, &params); err == nil {
+			res, err = Hover(ctx, conn, &params)
+		}
 	case "textDocument/semanticTokens/full":
 		var params protocol.SemanticTokensParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
@@ -74,6 +79,7 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			res, err = SignatureHelp(ctx, conn, &params)
 		}
+
 	case "workspace/didChangeWatchedFiles":
 		var params protocol.DidChangeWatchedFilesParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {

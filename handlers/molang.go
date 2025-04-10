@@ -102,6 +102,44 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 	}
 }
 
+func (m *MolangHandler) GetHover(document *textdocument.TextDocument, offset uint32, location *jsonc.Location) *protocol.Hover {
+	node := location.PreviousNode
+	nodeValue, ok := node.Value.(string)
+	if !ok {
+		return nil
+	}
+	molangOffset := int(offset - node.Offset - 2) // -2 to offset quotes
+	parser, err := molang.NewParser(nodeValue)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	index := parser.FindIndex(molangOffset)
+	if index < 0 {
+		return nil
+	}
+	tPrefix := parser.Tokens[index-1]
+	tMethod := parser.Tokens[index]
+	if tPrefix.Kind != molang.PREFIX || tMethod.Kind != molang.METHOD {
+		return nil
+	}
+	method, found := sliceutil.Find(molang.GetMethodList(tPrefix.Value), func(method molang.Method) bool {
+		return method.Name == tMethod.Value[1:]
+	})
+	if !found {
+		return nil
+	}
+	return &protocol.Hover{
+		Contents: protocol.MarkupContent{
+			Kind: protocol.Markdown,
+			Value: "```rockide-molang\n" +
+				tPrefix.Value + tMethod.Value + string(method.Signature) +
+				"\n```\n" +
+				method.Description,
+		},
+	}
+}
+
 func (m *MolangHandler) GetSignature(document *textdocument.TextDocument, offset uint32, location *jsonc.Location) *protocol.SignatureHelp {
 	node := location.PreviousNode
 	nodeValue, ok := node.Value.(string)
