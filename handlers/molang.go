@@ -171,7 +171,7 @@ func (m *MolangHandler) GetSignature(document *textdocument.TextDocument, offset
 			Value: method.Description,
 		},
 		Parameters: sliceutil.Map(params, func(param molang.Parameter) protocol.ParameterInformation {
-			return protocol.ParameterInformation{Label: param.Label}
+			return protocol.ParameterInformation{Label: param.ToString()}
 		}),
 		ActiveParameter: uint32(activeParam),
 	}

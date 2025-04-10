@@ -10,11 +10,6 @@ import (
 
 type Signature string
 
-type Parameter struct {
-	Label string
-	Type  string
-}
-
 var signaturePattern = regexp.MustCompile(`^\(|\):.*$`)
 
 func (s Signature) GetParams() []Parameter {
@@ -27,4 +22,13 @@ func (s Signature) GetParams() []Parameter {
 			}
 			return Parameter{Label: label, Type: paramType}
 		})
+}
+
+type Parameter struct {
+	Label string
+	Type  string
+}
+
+func (p *Parameter) ToString() string {
+	return p.Label + ": " + p.Type
 }
