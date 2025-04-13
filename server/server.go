@@ -37,6 +37,7 @@ var handlerList = [...]handlers.Handler{
 	handlers.ClientEntity,
 	handlers.ItemTexture,
 	handlers.Particle,
+	handlers.RenderController,
 	handlers.TerrainTexture,
 }
 
