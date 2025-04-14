@@ -9,7 +9,7 @@ var ClientEntity = &JsonStore{
 	entries: []jsonStoreEntry{
 		{
 			Id:   "id",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/identifier/*")},
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/identifier")},
 		},
 		{
 			Id:   "animate",
