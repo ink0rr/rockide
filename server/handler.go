@@ -32,6 +32,7 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 		var params protocol.DidChangeTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			textdocument.SyncIncremental(params.TextDocument.URI, params.ContentChanges)
+			onChange(params.TextDocument.URI)
 		}
 	case "textDocument/didSave":
 		var params protocol.DidSaveTextDocumentParams
