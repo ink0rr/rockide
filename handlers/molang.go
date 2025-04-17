@@ -23,7 +23,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 	if !ok {
 		return nil
 	}
-	molangOffset := offset - node.Offset - 2 // -2 to offset quotes
+	molangOffset := offset - node.Offset - 2 // -2 to account for open quote and caret position
 	parser, err := molang.NewParser(nodeValue)
 	if err != nil {
 		log.Println(err)
@@ -37,7 +37,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 	token := parser.Tokens[index]
 	methodCall := parser.GetMethodCall(molangOffset)
 	if token.Kind == molang.STRING && methodCall != nil {
-		method, ok := sliceutil.Find(molang.GetMethodList(methodCall.Prefix), func(method molang.Method) bool { return method.Name == methodCall.Name })
+		method, ok := molang.GetMethod(methodCall.Prefix, methodCall.Name)
 		if !ok {
 			return nil
 		}
@@ -162,7 +162,7 @@ func (m *MolangHandler) GetHover(document *textdocument.TextDocument, offset uin
 	if !ok {
 		return nil
 	}
-	molangOffset := offset - node.Offset - 2 // -2 to offset quotes
+	molangOffset := offset - node.Offset - 1 // -1 to account for open quote
 	parser, err := molang.NewParser(nodeValue)
 	if err != nil {
 		log.Println(err)
@@ -172,22 +172,33 @@ func (m *MolangHandler) GetHover(document *textdocument.TextDocument, offset uin
 	if index < 0 {
 		return nil
 	}
-	tPrefix := parser.Tokens[index-1]
-	tMethod := parser.Tokens[index]
-	if tPrefix.Kind != molang.PREFIX || tMethod.Kind != molang.METHOD {
+	var prefix molang.Token
+	var method molang.Method
+	token := parser.Tokens[index]
+	switch token.Kind {
+	case molang.PREFIX:
+		if index+1 > len(parser.Tokens) {
+			return nil
+		}
+		prefix = token
+		method, ok = molang.GetMethod(prefix.Value, parser.Tokens[index+1].Value)
+	case molang.METHOD:
+		if index == 0 {
+			return nil
+		}
+		prefix = parser.Tokens[index-1]
+		method, ok = molang.GetMethod(prefix.Value, parser.Tokens[index].Value)
+	default:
 		return nil
 	}
-	method, found := sliceutil.Find(molang.GetMethodList(tPrefix.Value), func(method molang.Method) bool {
-		return method.Name == tMethod.Value[1:]
-	})
-	if !found {
+	if !ok {
 		return nil
 	}
 	return &protocol.Hover{
 		Contents: protocol.MarkupContent{
 			Kind: protocol.Markdown,
 			Value: "```rockide-molang\n" +
-				tPrefix.Value + tMethod.Value + string(method.Signature) +
+				prefix.Value + "." + method.Name + string(method.Signature) +
 				"\n```\n" +
 				method.Description,
 		},
@@ -210,7 +221,7 @@ func (m *MolangHandler) GetSignature(document *textdocument.TextDocument, offset
 	if methodCall == nil {
 		return nil
 	}
-	method, ok := sliceutil.Find(molang.GetMethodList(methodCall.Prefix), func(method molang.Method) bool { return method.Name == methodCall.Name })
+	method, ok := molang.GetMethod(methodCall.Prefix, methodCall.Name)
 	if !ok {
 		return nil
 	}

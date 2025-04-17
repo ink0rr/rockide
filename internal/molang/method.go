@@ -1,6 +1,11 @@
 package molang
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+
+	"github.com/ink0rr/rockide/internal/sliceutil"
+)
 
 type Method struct {
 	Name        string
@@ -1661,4 +1666,11 @@ func GetMethodList(prefix string) []Method {
 		return molangMath
 	}
 	return nil
+}
+
+func GetMethod(prefix string, name string) (Method, bool) {
+	name = strings.TrimPrefix(name, ".")
+	return sliceutil.Find(GetMethodList(prefix), func(method Method) bool {
+		return method.Name == name
+	})
 }

@@ -3,7 +3,6 @@ package molang
 import (
 	"fmt"
 	"slices"
-	"strings"
 )
 
 type Parser struct {
@@ -49,45 +48,6 @@ func (mp *Parser) FindIndex(offset uint32) int {
 	})
 }
 
-func (mp *Parser) IsMethodCall(offset uint32) bool {
-	index := mp.FindIndex(offset)
-	if index == -1 {
-		return false
-	}
-
-	depth := 0
-	for i := index; i >= 0; i-- {
-		token := mp.Tokens[i]
-		if token.Kind == PAREN && token.Value == ")" {
-			depth++
-			continue
-		}
-		if token.Kind == PAREN && token.Value == "(" {
-			if depth == 0 {
-				break
-			}
-			depth--
-		}
-	}
-
-	depth = 0
-	for i := index + 1; i < len(mp.Tokens); i++ {
-		token := mp.Tokens[i]
-		if token.Kind == PAREN && token.Value == "(" {
-			depth++
-			continue
-		}
-		if token.Kind == PAREN && token.Value == ")" {
-			if depth == 0 {
-				return true
-			}
-			depth--
-		}
-	}
-
-	return false
-}
-
 type MethodCall struct {
 	Prefix     string
 	Name       string
@@ -114,13 +74,13 @@ func (mp *Parser) GetMethodCall(offset uint32) *MethodCall {
 		}
 		if token.Kind == PAREN && token.Value == "(" {
 			if depth == 0 {
-				if i-2 >= 0 && i-1 >= 0 {
+				if i >= 2 {
 					prefix := mp.Tokens[i-2]
 					method := mp.Tokens[i-1]
 					if prefix.Kind == PREFIX && method.Kind == METHOD {
 						return &MethodCall{
 							Prefix:     prefix.Value,
-							Name:       strings.TrimPrefix(method.Value, "."),
+							Name:       method.Value,
 							ParamIndex: paramIndex,
 						}
 					}
