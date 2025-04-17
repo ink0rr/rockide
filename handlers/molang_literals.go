@@ -4,7 +4,6 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
-	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/stores"
 )
 
@@ -82,29 +81,40 @@ var equipmentSlots = [...]string{
 
 var inputModes = [...]string{"keyboard_and_mouse", "touch", "gamepad", "motion_controller"}
 
-var molangLiterals = map[string]func() []string{
-	"BiomeTag":      func() []string { return biomeTags[:] },
-	"EquipmentSlot": func() []string { return equipmentSlots[:] },
-	"InputMode":     func() []string { return inputModes[:] },
-	"BlockTag": func() []string {
-		return sliceutil.Map(stores.Block.Get("tag"), func(ref core.Reference) string { return ref.Value })
+type molangValue struct {
+	references []core.Reference
+	strings    []string
+}
+
+var molangTypes = map[string]func() molangValue{
+	"BiomeTag": func() molangValue {
+		return molangValue{strings: biomeTags[:]}
 	},
-	"BlockAndItemTag": func() []string {
-		return sliceutil.Map(slices.Concat(stores.Block.Get("tag"), stores.Item.Get("tag")), func(ref core.Reference) string { return ref.Value })
+	"EquipmentSlot": func() molangValue {
+		return molangValue{strings: equipmentSlots[:]}
 	},
-	"EntityIdentifier": func() []string {
-		return sliceutil.Map(stores.Entity.Get("id"), func(ref core.Reference) string { return ref.Value })
+	"InputMode": func() molangValue {
+		return molangValue{strings: inputModes[:]}
 	},
-	"EntityProperty": func() []string {
-		return sliceutil.Map(stores.Entity.Get("property"), func(ref core.Reference) string { return ref.Value })
+	"BlockTag": func() molangValue {
+		return molangValue{references: stores.Block.Get("tag")}
 	},
-	"TypeFamily": func() []string {
-		return sliceutil.Map(stores.Entity.Get("family"), func(ref core.Reference) string { return ref.Value })
+	"BlockAndItemTag": func() molangValue {
+		return molangValue{references: slices.Concat(stores.Block.Get("tag"), stores.Item.Get("tag"))}
 	},
-	"ItemIdentifier": func() []string {
-		return sliceutil.Map(stores.Item.Get("id"), func(ref core.Reference) string { return ref.Value })
+	"EntityIdentifier": func() molangValue {
+		return molangValue{references: stores.Entity.Get("id")}
 	},
-	"ItemTag": func() []string {
-		return sliceutil.Map(stores.Item.Get("tag"), func(ref core.Reference) string { return ref.Value })
+	"EntityProperty": func() molangValue {
+		return molangValue{references: stores.Entity.Get("property")}
+	},
+	"TypeFamily": func() molangValue {
+		return molangValue{references: stores.Entity.Get("family")}
+	},
+	"ItemIdentifier": func() molangValue {
+		return molangValue{references: stores.Item.Get("id")}
+	},
+	"ItemTag": func() molangValue {
+		return molangValue{references: stores.Item.Get("tag")}
 	},
 }

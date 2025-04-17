@@ -46,21 +46,75 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 		if methodCall.ParamIndex < len(params) {
 			param = params[methodCall.ParamIndex]
 		}
-		getValues := molangLiterals[param.Type]
-		if getValues == nil {
+		getTypeValues := molangTypes[param.Type]
+		if getTypeValues == nil {
 			log.Printf("Unknown param tokenType: %s", param.Type)
 			return nil
 		}
 		return &HandlerActions{
 			Completions: func() []protocol.CompletionItem {
 				res := []protocol.CompletionItem{}
-				set := make(map[string]bool)
-				for _, value := range getValues() {
-					if set[value] {
+				values := getTypeValues()
+				editRange := protocol.Range{
+					Start: document.PositionAt(node.Offset + uint32(token.Offset) + 2),
+					End:   document.PositionAt(node.Offset + uint32(token.Offset+token.Length)),
+				}
+				if values.references == nil {
+					for _, value := range values.strings {
+						res = append(res, protocol.CompletionItem{
+							Label: value,
+							TextEdit: &protocol.Or_CompletionItem_textEdit{
+								Value: protocol.TextEdit{
+									NewText: value,
+									Range:   editRange,
+								},
+							},
+						})
+					}
+				} else {
+					set := make(map[string]bool)
+					for _, ref := range values.references {
+						if set[ref.Value] {
+							continue
+						}
+						set[ref.Value] = true
+						res = append(res, protocol.CompletionItem{
+							Label: ref.Value,
+							TextEdit: &protocol.Or_CompletionItem_textEdit{
+								Value: protocol.TextEdit{
+									NewText: ref.Value,
+									Range:   editRange,
+								},
+							},
+						})
+					}
+				}
+				return res
+			},
+			Definitions: func() []protocol.LocationLink {
+				res := []protocol.LocationLink{}
+				values := getTypeValues()
+				if values.references == nil {
+					return nil
+				}
+				selectionRange := protocol.Range{
+					Start: document.PositionAt(node.Offset + uint32(token.Offset) + 1),
+					End:   document.PositionAt(node.Offset + uint32(token.Offset+token.Length) + 1),
+				}
+				molangValue := token.Value[1 : len(token.Value)-1] // Exclude quotes
+				for _, ref := range values.references {
+					if ref.Value != molangValue {
 						continue
 					}
-					set[value] = true
-					res = append(res, protocol.CompletionItem{Label: value})
+					location := protocol.LocationLink{
+						OriginSelectionRange: &selectionRange,
+						TargetURI:            ref.URI,
+					}
+					if ref.Range != nil {
+						location.TargetRange = *ref.Range
+						location.TargetSelectionRange = *ref.Range
+					}
+					res = append(res, location)
 				}
 				return res
 			},

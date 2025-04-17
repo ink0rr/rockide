@@ -13,6 +13,7 @@ Supported language features for JSON files:
 Supported language features for Molang:
 
 - Completions
+- Go to definitions
 - Hover
 - Signature help
 - Syntax highlighting
