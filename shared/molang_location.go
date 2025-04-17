@@ -15,6 +15,8 @@ var molangLocations = slices.Concat(
 		JsonValue("minecraft:biome/components/minecraft:forced_features/*/*/iterations"),
 		JsonValue("minecraft:entity/events/**/set_property/*"),
 		JsonValue("minecraft:entity/description/scripts/animate/*/*"),
+		JsonValue("minecraft:block/components/minecraft:geometry/bone_visibility/*"),
+		JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/bone_visibility/*"),
 		JsonValue("minecraft:block/permutations/*/condition"),
 		JsonValue("minecraft:item/components/minecraft:repairable/repair_items/*/repair_amount"),
 		JsonValue("minecraft:item/components/minecraft:icon/frame"),
@@ -142,6 +144,10 @@ var molangLocations = slices.Concat(
 var MolangSemanticLocations = slices.Concat(molangLocations, []JsonPath{
 	JsonValue("render_controllers/*/arrays/*/*/*"),
 	JsonValue("minecraft:attachable/description/geometry/*"),
+	JsonValue("minecraft:block/components/minecraft:geometry"),
+	JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
+	JsonValue("minecraft:block/permutations/*/components/minecraft:geometry"),
+	JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
 	JsonValue("minecraft:client_entity/description/geometry/*"),
 	JsonValue("minecraft:geometry/*/description/identifier"),
 })
