@@ -124,8 +124,20 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 	if token.Kind == molang.PREFIX {
 		return &HandlerActions{
 			Completions: func() []protocol.CompletionItem {
+				editRange := protocol.Range{
+					Start: document.PositionAt(node.Offset + token.Offset + 1),
+					End:   document.PositionAt(node.Offset + token.Offset + token.Length + 1),
+				}
 				return sliceutil.Map(molang.Prefixes, func(value string) protocol.CompletionItem {
-					return protocol.CompletionItem{Label: value}
+					return protocol.CompletionItem{
+						Label: value,
+						TextEdit: &protocol.Or_CompletionItem_textEdit{
+							Value: protocol.TextEdit{
+								NewText: value,
+								Range:   editRange,
+							},
+						},
+					}
 				})
 			},
 		}
