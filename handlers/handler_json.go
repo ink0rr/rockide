@@ -125,8 +125,8 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 				}
 				location := protocol.LocationLink{
 					OriginSelectionRange: &protocol.Range{
-						Start: document.PositionAt(node.Offset + 1),
-						End:   document.PositionAt(node.Offset + node.Length - 1),
+						Start: document.PositionAt(node.Offset),
+						End:   document.PositionAt(node.Offset + node.Length),
 					},
 					TargetURI: item.URI,
 				}
