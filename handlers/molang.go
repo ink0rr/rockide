@@ -162,6 +162,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 					Documentation: &protocol.Or_CompletionItem_documentation{
 						Value: method.Description,
 					},
+					Deprecated: method.Deprecated,
 				}
 			})
 		},
