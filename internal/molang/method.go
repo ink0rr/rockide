@@ -130,7 +130,7 @@ var molangQueries = []Method{
 	},
 	{
 		Name:        "block_state",
-		Signature:   ": string | number | boolean",
+		Signature:   "(name: string): string | number | boolean",
 		Description: "Returns the value of the associated block's Block State.",
 	},
 	{
