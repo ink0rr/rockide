@@ -15,14 +15,14 @@ func NewParser(source string) (*Parser, error) {
 	parser := &Parser{Source: source}
 
 	current := source
-	offset := 0
+	offset := uint32(0)
 
 	for len(current) > 0 {
 		matched := false
 		for _, tp := range tokenPatterns {
 			match := tp.pattern.FindString(current)
 			if match != "" {
-				length := len(match)
+				length := uint32(len(match))
 				parser.Tokens = append(parser.Tokens, Token{
 					Kind:   tp.kind,
 					Value:  match,
@@ -43,13 +43,13 @@ func NewParser(source string) (*Parser, error) {
 	return parser, nil
 }
 
-func (mp *Parser) FindIndex(offset int) int {
+func (mp *Parser) FindIndex(offset uint32) int {
 	return slices.IndexFunc(mp.Tokens, func(token Token) bool {
 		return offset >= token.Offset && offset < token.Offset+token.Length
 	})
 }
 
-func (mp *Parser) IsMethodCall(offset int) bool {
+func (mp *Parser) IsMethodCall(offset uint32) bool {
 	index := mp.FindIndex(offset)
 	if index == -1 {
 		return false
@@ -94,7 +94,7 @@ type MethodCall struct {
 	ParamIndex int
 }
 
-func (mp *Parser) GetMethodCall(offset int) *MethodCall {
+func (mp *Parser) GetMethodCall(offset uint32) *MethodCall {
 	index := mp.FindIndex(offset)
 	if index == -1 {
 		return nil

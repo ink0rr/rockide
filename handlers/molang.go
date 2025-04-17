@@ -23,7 +23,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 	if !ok {
 		return nil
 	}
-	molangOffset := int(offset - node.Offset - 2) // -2 to offset quotes
+	molangOffset := offset - node.Offset - 2 // -2 to offset quotes
 	parser, err := molang.NewParser(nodeValue)
 	if err != nil {
 		log.Println(err)
@@ -56,8 +56,8 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 				res := []protocol.CompletionItem{}
 				values := getTypeValues()
 				editRange := protocol.Range{
-					Start: document.PositionAt(node.Offset + uint32(token.Offset) + 2),
-					End:   document.PositionAt(node.Offset + uint32(token.Offset+token.Length)),
+					Start: document.PositionAt(node.Offset + token.Offset + 2),
+					End:   document.PositionAt(node.Offset + token.Offset + token.Length),
 				}
 				if values.references == nil {
 					for _, value := range values.strings {
@@ -98,8 +98,8 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 					return nil
 				}
 				selectionRange := protocol.Range{
-					Start: document.PositionAt(node.Offset + uint32(token.Offset) + 1),
-					End:   document.PositionAt(node.Offset + uint32(token.Offset+token.Length) + 1),
+					Start: document.PositionAt(node.Offset + token.Offset + 1),
+					End:   document.PositionAt(node.Offset + token.Offset + token.Length + 1),
 				}
 				molangValue := token.Value[1 : len(token.Value)-1] // Exclude quotes
 				for _, ref := range values.references {
@@ -162,7 +162,7 @@ func (m *MolangHandler) GetHover(document *textdocument.TextDocument, offset uin
 	if !ok {
 		return nil
 	}
-	molangOffset := int(offset - node.Offset - 2) // -2 to offset quotes
+	molangOffset := offset - node.Offset - 2 // -2 to offset quotes
 	parser, err := molang.NewParser(nodeValue)
 	if err != nil {
 		log.Println(err)
@@ -200,7 +200,7 @@ func (m *MolangHandler) GetSignature(document *textdocument.TextDocument, offset
 	if !ok {
 		return nil
 	}
-	molangOffset := int(offset - node.Offset - 2) // -2 to offset quotes
+	molangOffset := offset - node.Offset - 2 // -2 to offset quotes
 	parser, err := molang.NewParser(nodeValue)
 	if err != nil {
 		log.Println(err)

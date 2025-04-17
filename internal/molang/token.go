@@ -20,8 +20,8 @@ const (
 
 type Token struct {
 	Kind   TokenKind
-	Offset int
-	Length int
+	Offset uint32
+	Length uint32
 	Value  string
 }
 
