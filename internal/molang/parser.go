@@ -64,20 +64,20 @@ func (mp *Parser) GetMethodCall(offset uint32) *MethodCall {
 	depth := 0
 	for i := index; i >= 0; i-- {
 		token := mp.Tokens[i]
-		if token.Kind == COMMA && depth == 0 {
+		if token.Kind == KindComma && depth == 0 {
 			paramIndex++
 			continue
 		}
-		if token.Kind == PAREN && token.Value == ")" {
+		if token.Kind == KindParen && token.Value == ")" {
 			depth++
 			continue
 		}
-		if token.Kind == PAREN && token.Value == "(" {
+		if token.Kind == KindParen && token.Value == "(" {
 			if depth == 0 {
 				if i >= 2 {
 					prefix := mp.Tokens[i-2]
 					method := mp.Tokens[i-1]
-					if prefix.Kind == PREFIX && method.Kind == METHOD {
+					if prefix.Kind == KindPrefix && method.Kind == KindMethod {
 						return &MethodCall{
 							Prefix:     prefix.Value,
 							Name:       method.Value,

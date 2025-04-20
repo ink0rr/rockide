@@ -35,7 +35,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 
 	token := parser.Tokens[index]
 	methodCall := parser.GetMethodCall(molangOffset)
-	if token.Kind == molang.STRING && methodCall != nil {
+	if token.Kind == molang.KindString && methodCall != nil {
 		method, ok := molang.GetMethod(methodCall.Prefix, methodCall.Name)
 		if !ok {
 			return nil
@@ -120,7 +120,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 		}
 	}
 
-	if token.Kind == molang.PREFIX || token.Kind == molang.UNKNOWN {
+	if token.Kind == molang.KindPrefix || token.Kind == molang.KindUnknown {
 		return &HandlerActions{
 			Completions: func() []protocol.CompletionItem {
 				editRange := protocol.Range{
@@ -147,7 +147,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 	}
 
 	prefix := parser.Tokens[index-1]
-	if token.Kind != molang.METHOD || prefix.Kind != molang.PREFIX || strings.LastIndex(token.Value, ".") != 0 {
+	if token.Kind != molang.KindPrefix || prefix.Kind != molang.KindMethod || strings.LastIndex(token.Value, ".") != 0 {
 		return nil
 	}
 
@@ -188,13 +188,13 @@ func (m *MolangHandler) GetHover(document *textdocument.TextDocument, offset uin
 	var method molang.Method
 	token := parser.Tokens[index]
 	switch token.Kind {
-	case molang.PREFIX:
+	case molang.KindPrefix:
 		if index+1 > len(parser.Tokens) {
 			return nil
 		}
 		prefix = token
 		method, ok = molang.GetMethod(prefix.Value, parser.Tokens[index+1].Value)
-	case molang.METHOD:
+	case molang.KindMethod:
 		if index == 0 {
 			return nil
 		}
@@ -258,17 +258,17 @@ func (m *MolangHandler) GetSignature(document *textdocument.TextDocument, offset
 }
 
 var tokenMap = map[molang.TokenKind]semtok.Type{
-	molang.NUMBER:     semtok.TokNumber,
-	molang.STRING:     semtok.TokString,
-	molang.MACRO:      semtok.TokMacro,
-	molang.METHOD:     semtok.TokMethod,
-	molang.PREFIX:     semtok.TokType,
-	molang.KEYWORD:    semtok.TokKeyword,
-	molang.OPERATOR:   semtok.TokOperator,
-	molang.PAREN:      semtok.TokEnumMember,
-	molang.COMMA:      semtok.TokOperator,
-	molang.WHITESPACE: semtok.TokComment,
-	molang.UNKNOWN:    semtok.TokComment,
+	molang.KindNumber:     semtok.TokNumber,
+	molang.KindString:     semtok.TokString,
+	molang.KindMacro:      semtok.TokMacro,
+	molang.KindMethod:     semtok.TokMethod,
+	molang.KindPrefix:     semtok.TokType,
+	molang.KindKeyword:    semtok.TokKeyword,
+	molang.KindOperator:   semtok.TokOperator,
+	molang.KindParen:      semtok.TokEnumMember,
+	molang.KindComma:      semtok.TokOperator,
+	molang.KindWhitespace: semtok.TokComment,
+	molang.KindUnknown:    semtok.TokComment,
 }
 
 var tokenType = map[semtok.Type]bool{

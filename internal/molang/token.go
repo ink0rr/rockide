@@ -5,17 +5,17 @@ import "regexp"
 type TokenKind string
 
 const (
-	NUMBER     TokenKind = "NUMBER"
-	STRING     TokenKind = "STRING"
-	MACRO      TokenKind = "THIS"
-	METHOD     TokenKind = "METHOD"
-	PREFIX     TokenKind = "PREFIX"
-	KEYWORD    TokenKind = "KEYWORD"
-	OPERATOR   TokenKind = "OPERATOR"
-	PAREN      TokenKind = "PAREN"
-	COMMA      TokenKind = "COMMA"
-	WHITESPACE TokenKind = "WHITESPACE"
-	UNKNOWN    TokenKind = "UNKNOWN"
+	KindNumber     TokenKind = "NUMBER"
+	KindString     TokenKind = "STRING"
+	KindMacro      TokenKind = "THIS"
+	KindMethod     TokenKind = "METHOD"
+	KindPrefix     TokenKind = "PREFIX"
+	KindKeyword    TokenKind = "KEYWORD"
+	KindOperator   TokenKind = "OPERATOR"
+	KindParen      TokenKind = "PAREN"
+	KindComma      TokenKind = "COMMA"
+	KindWhitespace TokenKind = "WHITESPACE"
+	KindUnknown    TokenKind = "UNKNOWN"
 )
 
 type Token struct {
@@ -31,16 +31,16 @@ type tokenPattern struct {
 }
 
 var tokenPatterns = []tokenPattern{
-	{NUMBER, regexp.MustCompile(`^[0-9]+(\.[0-9]+)?f?`)},
-	{STRING, regexp.MustCompile(`^'[^']*'`)},
-	{MACRO, regexp.MustCompile(`(?i)^(this|true|false)`)},
-	{METHOD, regexp.MustCompile(`^\.([a-zA-Z_][a-zA-Z0-9_.]*)?`)},
-	{PREFIX, regexp.MustCompile(`(?i)^(q|v|t|c|query|variable|temp|context|math|array|geometry|material|texture)\b`)},
-	{KEYWORD, regexp.MustCompile(`(?i)^(break|continue|for_each|loop|return)`)},
-	{OPERATOR, regexp.MustCompile(`^[+\-*/%><=!&|;:?]+`)},
-	{PAREN, regexp.MustCompile(`^[\(\)\{\}\[\]]`)},
-	{COMMA, regexp.MustCompile(`^,`)},
-	{WHITESPACE, regexp.MustCompile(`^\s+`)},
-	{UNKNOWN, regexp.MustCompile(`^\w+`)},
-	{UNKNOWN, regexp.MustCompile(`^.`)},
+	{KindNumber, regexp.MustCompile(`^[0-9]+(\.[0-9]+)?f?`)},
+	{KindString, regexp.MustCompile(`^'[^']*'`)},
+	{KindMacro, regexp.MustCompile(`(?i)^(this|true|false)`)},
+	{KindMethod, regexp.MustCompile(`^\.([a-zA-Z_][a-zA-Z0-9_.]*)?`)},
+	{KindPrefix, regexp.MustCompile(`(?i)^(q|v|t|c|query|variable|temp|context|math|array|geometry|material|texture)\b`)},
+	{KindKeyword, regexp.MustCompile(`(?i)^(break|continue|for_each|loop|return)`)},
+	{KindOperator, regexp.MustCompile(`^[+\-*/%><=!&|;:?]+`)},
+	{KindParen, regexp.MustCompile(`^[\(\)\{\}\[\]]`)},
+	{KindComma, regexp.MustCompile(`^,`)},
+	{KindWhitespace, regexp.MustCompile(`^\s+`)},
+	{KindUnknown, regexp.MustCompile(`^\w+`)},
+	{KindUnknown, regexp.MustCompile(`^.`)},
 }
