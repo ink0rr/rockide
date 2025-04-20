@@ -7,7 +7,7 @@ type TokenKind string
 const (
 	NUMBER     TokenKind = "NUMBER"
 	STRING     TokenKind = "STRING"
-	THIS       TokenKind = "THIS"
+	MACRO      TokenKind = "THIS"
 	METHOD     TokenKind = "METHOD"
 	PREFIX     TokenKind = "PREFIX"
 	KEYWORD    TokenKind = "KEYWORD"
@@ -33,13 +33,14 @@ type tokenPattern struct {
 var tokenPatterns = []tokenPattern{
 	{NUMBER, regexp.MustCompile(`^[0-9]+(\.[0-9]+)?f?`)},
 	{STRING, regexp.MustCompile(`^'[^']*'`)},
-	{THIS, regexp.MustCompile(`^this`)},
+	{MACRO, regexp.MustCompile(`(?i)^(this|true|false)`)},
 	{METHOD, regexp.MustCompile(`^\.([a-zA-Z_][a-zA-Z0-9_.]*)?`)},
-	{PREFIX, regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*`)},
-	{KEYWORD, regexp.MustCompile(`^(break|continue|for_each|loop|return)`)},
+	{PREFIX, regexp.MustCompile(`(?i)^(q|v|t|c|query|variable|temp|context|math|array|geometry|material|texture)\b`)},
+	{KEYWORD, regexp.MustCompile(`(?i)^(break|continue|for_each|loop|return)`)},
 	{OPERATOR, regexp.MustCompile(`^[+\-*/%><=!&|;:?]+`)},
 	{PAREN, regexp.MustCompile(`^[\(\)\{\}\[\]]`)},
 	{COMMA, regexp.MustCompile(`^,`)},
 	{WHITESPACE, regexp.MustCompile(`^\s+`)},
+	{STRING, regexp.MustCompile(`^\w+`)},
 	{UNKNOWN, regexp.MustCompile(`^.`)},
 }

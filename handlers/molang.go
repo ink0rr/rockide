@@ -120,7 +120,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 		}
 	}
 
-	if token.Kind == molang.PREFIX {
+	if token.Kind == molang.PREFIX || token.Kind == molang.UNKNOWN {
 		return &HandlerActions{
 			Completions: func() []protocol.CompletionItem {
 				editRange := protocol.Range{
@@ -260,7 +260,7 @@ func (m *MolangHandler) GetSignature(document *textdocument.TextDocument, offset
 var tokenMap = map[molang.TokenKind]semtok.Type{
 	molang.NUMBER:     semtok.TokNumber,
 	molang.STRING:     semtok.TokString,
-	molang.THIS:       semtok.TokMacro,
+	molang.MACRO:      semtok.TokMacro,
 	molang.METHOD:     semtok.TokMethod,
 	molang.PREFIX:     semtok.TokType,
 	molang.KEYWORD:    semtok.TokKeyword,
