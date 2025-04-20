@@ -39,7 +39,7 @@ func Visit(text string, visitor *Visitor, options *ParseOptions) any {
 				suppressedCallbacks++
 			} else {
 				cbReturn := visitFunction(scanner.GetTokenOffset(), scanner.GetTokenLength(), scanner.GetTokenStartLine(), scanner.GetTokenStartCharacter(), func() Path {
-					return append(Path{}, jsonPath...)
+					return slices.Clone(jsonPath)
 				})
 				if !cbReturn {
 					suppressedCallbacks = 1
@@ -66,7 +66,7 @@ func Visit(text string, visitor *Visitor, options *ParseOptions) any {
 	onObjectProperty := func(arg string) {
 		if visitor.OnObjectProperty != nil && suppressedCallbacks == 0 {
 			visitor.OnObjectProperty(arg, scanner.GetTokenOffset(), scanner.GetTokenLength(), scanner.GetTokenStartLine(), scanner.GetTokenStartCharacter(), func() Path {
-				return append(Path{}, jsonPath...)
+				return slices.Clone(jsonPath)
 			})
 		}
 	}
@@ -76,7 +76,7 @@ func Visit(text string, visitor *Visitor, options *ParseOptions) any {
 	onLiteralValue := func(arg any) {
 		if visitor.OnLiteralValue != nil && suppressedCallbacks == 0 {
 			visitor.OnLiteralValue(arg, scanner.GetTokenOffset(), scanner.GetTokenLength(), scanner.GetTokenStartLine(), scanner.GetTokenStartCharacter(), func() Path {
-				return append(Path{}, jsonPath...)
+				return slices.Clone(jsonPath)
 			})
 		}
 	}
