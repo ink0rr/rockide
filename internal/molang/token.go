@@ -41,6 +41,6 @@ var tokenPatterns = []tokenPattern{
 	{PAREN, regexp.MustCompile(`^[\(\)\{\}\[\]]`)},
 	{COMMA, regexp.MustCompile(`^,`)},
 	{WHITESPACE, regexp.MustCompile(`^\s+`)},
-	{STRING, regexp.MustCompile(`^\w+`)},
+	{UNKNOWN, regexp.MustCompile(`^\w+`)},
 	{UNKNOWN, regexp.MustCompile(`^.`)},
 }
