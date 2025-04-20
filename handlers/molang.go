@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"log"
-	"regexp"
 	"slices"
 	"strings"
 
@@ -258,22 +257,18 @@ func (m *MolangHandler) GetSignature(document *textdocument.TextDocument, offset
 	}
 }
 
-type tokenPattern struct {
-	kind    semtok.Type
-	pattern *regexp.Regexp
-}
-
-var tokenPatterns = []tokenPattern{
-	{semtok.TokNumber, regexp.MustCompile(`^[0-9]+(\.[0-9]+)?f?`)},
-	{semtok.TokString, regexp.MustCompile(`^'[^']*'`)},
-	{semtok.TokMacro, regexp.MustCompile(`^this`)},
-	{semtok.TokMethod, regexp.MustCompile(`^\.([a-zA-Z_][a-zA-Z0-9_.]*)?`)},
-	{semtok.TokType, regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*`)},
-	{semtok.TokKeyword, regexp.MustCompile(`^(break|continue|for_each|loop|return)`)},
-	{semtok.TokOperator, regexp.MustCompile(`^[+\-*/%><=!&|;:?,]+`)},
-	{semtok.TokEnumMember, regexp.MustCompile(`[\(\)\{\}\[\]]`)},
-	{semtok.TokComment, regexp.MustCompile(`^\s+`)},
-	{semtok.TokComment, regexp.MustCompile(`^.`)},
+var tokenMap = map[molang.TokenKind]semtok.Type{
+	molang.NUMBER:     semtok.TokNumber,
+	molang.STRING:     semtok.TokString,
+	molang.THIS:       semtok.TokMacro,
+	molang.METHOD:     semtok.TokMethod,
+	molang.PREFIX:     semtok.TokType,
+	molang.KEYWORD:    semtok.TokKeyword,
+	molang.OPERATOR:   semtok.TokOperator,
+	molang.PAREN:      semtok.TokEnumMember,
+	molang.COMMA:      semtok.TokOperator,
+	molang.WHITESPACE: semtok.TokComment,
+	molang.UNKNOWN:    semtok.TokComment,
 }
 
 var tokenType = map[semtok.Type]bool{
@@ -303,24 +298,22 @@ func (m *MolangHandler) GetSemanticTokens(document *textdocument.TextDocument) *
 			if !slices.ContainsFunc(shared.MolangSemanticLocations, func(jsonPath shared.JsonPath) bool { return path.Matches(jsonPath.Path) }) {
 				return
 			}
-			current := text
-			for len(current) > 0 {
-				for _, tp := range tokenPatterns {
-					match := tp.pattern.FindString(current)
-					if match != "" {
-						length := uint32(len(match))
-						tokens = append(tokens,
-							semtok.Token{
-								Line:  startLine,
-								Start: startCharacter + 1,
-								Len:   length,
-								Type:  tp.kind,
-							})
-						current = current[length:]
-						startCharacter += length
-						break
-					}
+			parser, err := molang.NewParser(text)
+			if err != nil {
+				return
+			}
+			for _, token := range parser.Tokens {
+				tokenType, ok := tokenMap[token.Kind]
+				if !ok {
+					continue
 				}
+				tokens = append(tokens,
+					semtok.Token{
+						Type:  tokenType,
+						Line:  startLine,
+						Start: startCharacter + token.Offset + 1,
+						Len:   token.Length,
+					})
 			}
 		},
 	}, nil)
