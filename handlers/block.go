@@ -35,4 +35,17 @@ var Block = newJsonHandler(shared.BlockGlob, []jsonHandlerEntry{
 			return slices.Concat(stores.Attachable.Get("geometry_id"), stores.Block.Get("geometry_id"), stores.ClientEntity.Get("geometry_id"))
 		},
 	},
+	{
+		Path: []shared.JsonPath{
+			shared.JsonValue("minecraft:block/components/minecraft:material_instances/*/texture"),
+			shared.JsonValue("minecraft:block/permutations/*/components/minecraft:material_instances/*/texture"),
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.TerrainTexture.Get("id")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return slices.Concat(stores.Block.Get("texture_id"), stores.ClientBlock.Get("texture_id"))
+		},
+	},
 })

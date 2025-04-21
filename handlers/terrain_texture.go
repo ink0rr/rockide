@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"slices"
+
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
@@ -12,7 +14,7 @@ var TerrainTexture = newJsonHandler(shared.TerrainTextureGlob, []jsonHandlerEntr
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.ClientBlock.Get("texture")
+			return slices.Concat(stores.Block.Get("texture_id"), stores.ClientBlock.Get("texture_id"))
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return stores.TerrainTexture.Get("id")

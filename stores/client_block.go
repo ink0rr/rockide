@@ -20,7 +20,7 @@ var ClientBlock = &JsonStore{
 			},
 		},
 		{
-			Id: "texture",
+			Id: "texture_id",
 			Path: []shared.JsonPath{
 				shared.JsonValue("*/textures"),
 				shared.JsonValue("*/textures/*"),

@@ -39,5 +39,12 @@ var Block = &JsonStore{
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
 			},
 		},
+		{
+			Id: "texture_id",
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:material_instances/*/texture"),
+			},
+		},
 	},
 }
