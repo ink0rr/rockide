@@ -147,7 +147,7 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 	}
 
 	prefix := parser.Tokens[index-1]
-	if token.Kind != molang.KindPrefix || prefix.Kind != molang.KindMethod || strings.LastIndex(token.Value, ".") != 0 {
+	if prefix.Kind != molang.KindPrefix || token.Kind != molang.KindMethod || strings.LastIndex(token.Value, ".") != 0 {
 		return nil
 	}
 
