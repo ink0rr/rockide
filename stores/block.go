@@ -30,5 +30,14 @@ var Block = &JsonStore{
 				return nil
 			},
 		},
+		{
+			Id: "geometry_id",
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:geometry"),
+				shared.JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
+			},
+		},
 	},
 }
