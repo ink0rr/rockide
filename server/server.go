@@ -35,10 +35,12 @@ var handlerList = [...]handlers.Handler{
 	handlers.ClientAnimation,
 	handlers.ClientBlock,
 	handlers.ClientEntity,
+	handlers.ClientSound,
 	handlers.Geometry,
 	handlers.ItemTexture,
 	handlers.Particle,
 	handlers.RenderController,
+	handlers.SoundDefinition,
 	handlers.TerrainTexture,
 }
 
@@ -60,6 +62,7 @@ var storeList = [...]stores.Store{
 	stores.ClientAnimation,
 	stores.ClientBlock,
 	stores.ClientEntity,
+	stores.ClientSound,
 	stores.Geometry,
 	stores.ItemTexture,
 	stores.Particle,
