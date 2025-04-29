@@ -67,11 +67,12 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 						}
 						value = *result
 					}
-					if value == nil {
+					nodeValue, ok := value.(string)
+					if !ok {
 						return
 					}
 					data = append(data, core.Reference{
-						Value: value.(string),
+						Value: nodeValue,
 						URI:   uri,
 						Range: &protocol.Range{
 							Start: document.PositionAt(targetNode.Offset),
@@ -87,8 +88,12 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 						}
 						value = *result
 					}
+					nodeValue, ok := value.(string)
+					if !ok {
+						return
+					}
 					data = append(data, core.Reference{
-						Value: value.(string),
+						Value: nodeValue,
 						URI:   uri,
 						Range: &protocol.Range{
 							Start: document.PositionAt(node.Offset),
