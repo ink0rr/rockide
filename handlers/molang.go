@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strings"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/molang"
 	"github.com/ink0rr/rockide/internal/protocol"
@@ -71,12 +72,12 @@ func (m *MolangHandler) GetActions(document *textdocument.TextDocument, offset u
 						})
 					}
 				} else {
-					set := make(map[string]bool)
+					set := mapset.NewThreadUnsafeSet[string]()
 					for _, ref := range values.references {
-						if set[ref.Value] {
+						if set.Contains(ref.Value) {
 							continue
 						}
-						set[ref.Value] = true
+						set.Add(ref.Value)
 						res = append(res, protocol.CompletionItem{
 							Label: ref.Value,
 							TextEdit: &protocol.Or_CompletionItem_textEdit{

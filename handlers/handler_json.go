@@ -4,6 +4,7 @@ import (
 	"log"
 	"slices"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/protocol"
@@ -83,7 +84,7 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 	if entry.Actions.Has(completions) {
 		actions.Completions = func() []protocol.CompletionItem {
 			res := []protocol.CompletionItem{}
-			set := make(map[string]bool)
+			set := mapset.NewThreadUnsafeSet[string]()
 			var items []core.Reference
 			if entry.FilterDiff {
 				items = stores.Difference(entry.Source(&params), entry.References(&params))
@@ -91,10 +92,10 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 				items = entry.Source(&params)
 			}
 			for _, item := range items {
-				if set[item.Value] {
+				if set.Contains(item.Value) {
 					continue
 				}
-				set[item.Value] = true
+				set.Add(item.Value)
 				value := `"` + item.Value + `"`
 				completion := protocol.CompletionItem{
 					Label: value,
