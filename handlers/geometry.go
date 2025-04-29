@@ -10,7 +10,10 @@ import (
 
 var Geometry = newJsonHandler(shared.GeometryGlob, []jsonHandlerEntry{
 	{
-		Path:       []shared.JsonPath{shared.JsonValue("minecraft:geometry/*/description/identifier")},
+		Path: []shared.JsonPath{
+			shared.JsonKey("*"),
+			shared.JsonValue("minecraft:geometry/*/description/identifier"),
+		},
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
