@@ -6,6 +6,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var ClientBlock = newJsonHandler(shared.ClientBlockGlob, []jsonHandlerEntry{
@@ -32,5 +33,6 @@ var ClientBlock = newJsonHandler(shared.ClientBlockGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Block.Get("texture_id"), stores.ClientBlock.Get("texture_id"))
 		},
+		VanillaData: vanilla.TexturePaths,
 	},
 })

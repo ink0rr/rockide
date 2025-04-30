@@ -46,7 +46,8 @@ type jsonHandlerEntry struct {
 	// Source for completions and definitions
 	Source func(params *jsonParams) []core.Reference
 	// References that uses the same source
-	References func(params *jsonParams) []core.Reference
+	References  func(params *jsonParams) []core.Reference
+	VanillaData mapset.Set[string]
 }
 
 type jsonHandler struct {
@@ -85,6 +86,9 @@ func (j *jsonHandler) GetActions(document *textdocument.TextDocument, position p
 		actions.Completions = func() []protocol.CompletionItem {
 			res := []protocol.CompletionItem{}
 			set := mapset.NewThreadUnsafeSet[string]()
+			if entry.VanillaData != nil {
+				set = entry.VanillaData.Clone()
+			}
 			var items []core.Reference
 			if entry.FilterDiff {
 				items = stores.Difference(entry.Source(&params), entry.References(&params))

@@ -7,6 +7,7 @@ import (
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var Particle = newJsonHandler(shared.ParticleGlob, []jsonHandlerEntry{
@@ -30,6 +31,7 @@ var Particle = newJsonHandler(shared.ParticleGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("particle_id"), stores.ClientEntity.Get("particle_id"), stores.Particle.Get("particle_id"))
 		},
+		VanillaData: vanilla.ParticleIdentifiers,
 	},
 	{
 		Path:    []shared.JsonPath{shared.JsonValue("particle_effect/description/basic_render_parameters/texture")},
@@ -40,6 +42,7 @@ var Particle = newJsonHandler(shared.ParticleGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.TexturePaths,
 	},
 	{
 		Path:       []shared.JsonPath{shared.JsonKey("particle_effect/events/*")},

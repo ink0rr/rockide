@@ -6,6 +6,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var TerrainTexture = newJsonHandler(shared.TerrainTextureGlob, []jsonHandlerEntry{
@@ -29,5 +30,6 @@ var TerrainTexture = newJsonHandler(shared.TerrainTextureGlob, []jsonHandlerEntr
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.TexturePaths,
 	},
 })

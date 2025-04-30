@@ -6,6 +6,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var LootTable = newJsonHandler(shared.LootTableGlob, []jsonHandlerEntry{
@@ -18,5 +19,6 @@ var LootTable = newJsonHandler(shared.LootTableGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
 		},
+		VanillaData: vanilla.ItemIdentifiers,
 	},
 })

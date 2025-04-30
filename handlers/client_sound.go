@@ -4,6 +4,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var ClientSound = newJsonHandler(shared.ClientSoundGlob, []jsonHandlerEntry{
@@ -29,5 +30,6 @@ var ClientSound = newJsonHandler(shared.ClientSoundGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return stores.ClientSound.Get("sound_id")
 		},
+		VanillaData: vanilla.SoundDefinition,
 	},
 })

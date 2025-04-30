@@ -6,6 +6,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
@@ -40,6 +41,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("animation_id"), stores.ClientEntity.Get("animation_id"))
 		},
+		VanillaData: vanilla.AnimationAndController,
 	},
 	{
 		Path: []shared.JsonPath{
@@ -63,6 +65,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.TexturePaths,
 	},
 	{
 		Path:    []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/geometry/*")},
@@ -73,6 +76,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("geometry_id"), stores.Block.Get("geometry_id"), stores.ClientEntity.Get("geometry_id"))
 		},
+		VanillaData: vanilla.Geometry,
 	},
 	{
 		Path: []shared.JsonPath{
@@ -86,6 +90,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("render_controller_id"), stores.ClientEntity.Get("render_controller_id"))
 		},
+		VanillaData: vanilla.RenderController,
 	},
 	{
 		Path: []shared.JsonPath{
@@ -99,6 +104,7 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("particle_id"), stores.ClientEntity.Get("particle_id"), stores.Particle.Get("particle_id"))
 		},
+		VanillaData: vanilla.ParticleIdentifiers,
 	},
 	{
 		Path:    []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/sound_effects/*")},
@@ -109,5 +115,6 @@ var Attachable = newJsonHandler(shared.AttachableGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("sound_definition_id"), stores.ClientEntity.Get("sound_definition_id"))
 		},
+		VanillaData: vanilla.SoundDefinition,
 	},
 })

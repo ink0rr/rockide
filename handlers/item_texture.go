@@ -6,6 +6,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var ItemTexture = newJsonHandler(shared.ItemTextureGlob, []jsonHandlerEntry{
@@ -19,6 +20,7 @@ var ItemTexture = newJsonHandler(shared.ItemTextureGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return stores.ItemTexture.Get("id")
 		},
+		VanillaData: vanilla.ItemTexture,
 	},
 	{
 		Path:    []shared.JsonPath{shared.JsonValue("texture_data/*/textures")},
@@ -29,5 +31,6 @@ var ItemTexture = newJsonHandler(shared.ItemTextureGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.TexturePaths,
 	},
 })

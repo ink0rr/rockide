@@ -8,6 +8,7 @@ import (
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
@@ -164,6 +165,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.Family,
 	},
 	{
 		Path: []shared.JsonPath{
@@ -177,6 +179,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return stores.Entity.Get("family_refs")
 		},
+		VanillaData: vanilla.Family,
 	},
 	{
 		Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
@@ -194,6 +197,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return stores.Entity.Get("family_refs")
 		},
+		VanillaData: vanilla.Family,
 	},
 	{
 		Path: sliceutil.FlatMap([]string{
@@ -240,6 +244,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Entity.Get("block_id"), stores.Feature.Get("block_id"))
 		},
+		VanillaData: vanilla.BlockIdentifiers,
 	},
 	{
 		Path: sliceutil.FlatMap([]string{
@@ -284,6 +289,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
 		},
+		VanillaData: vanilla.ItemIdentifiers,
 	},
 	{
 		Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
@@ -301,6 +307,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
 		},
+		VanillaData: vanilla.ItemIdentifiers,
 	},
 	{
 		Path: sliceutil.FlatMap([]string{
@@ -325,6 +332,7 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.LootTablePaths,
 	},
 	{
 		Path: sliceutil.FlatMap([]string{
@@ -343,5 +351,6 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.TradeTablePaths,
 	},
 })

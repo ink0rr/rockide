@@ -4,6 +4,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var SoundDefinition = newJsonHandler(shared.SoundDefinitionGlob, []jsonHandlerEntry{
@@ -30,5 +31,6 @@ var SoundDefinition = newJsonHandler(shared.SoundDefinitionGlob, []jsonHandlerEn
 		References: func(params *jsonParams) []core.Reference {
 			return nil
 		},
+		VanillaData: vanilla.SoundPaths,
 	},
 })
