@@ -52,7 +52,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 
 func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializedParams) error {
 	project := shared.GetProject()
-	registration := protocol.Registration{
+	fileWatcher := protocol.Registration{
 		ID:     "fileWatcher",
 		Method: "workspace/didChangeWatchedFiles",
 		RegisterOptions: protocol.DidChangeWatchedFilesRegistrationOptions{
@@ -64,12 +64,8 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 			}},
 		},
 	}
-	var registrationError any
-	conn.Call(ctx, "client/registerCapability", protocol.RegistrationParams{
-		Registrations: []protocol.Registration{registration},
-	}, &registrationError)
-	if registrationError != nil {
-		return fmt.Errorf("%v", registrationError)
+	if err := registerCapability(ctx, conn, []protocol.Registration{fileWatcher}); err != nil {
+		return err
 	}
 
 	token := protocol.ProgressToken(fmt.Sprintf("indexing-workspace-%d", time.Now().Unix()))
@@ -91,5 +87,14 @@ func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Init
 		return err
 	}
 
+	return nil
+}
+
+func registerCapability(ctx context.Context, conn *jsonrpc2.Conn, registrations []protocol.Registration) error {
+	var result any
+	conn.Call(ctx, "client/registerCapability", protocol.RegistrationParams{Registrations: registrations}, &result)
+	if result != nil {
+		return fmt.Errorf("%v", result)
+	}
 	return nil
 }
