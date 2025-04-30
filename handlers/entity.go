@@ -166,6 +166,19 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		},
 	},
 	{
+		Path: []shared.JsonPath{
+			shared.JsonValue("minecraft:entity/components/minecraft:rideable/family_types/*"),
+			shared.JsonValue("minecraft:entity/component_groups/*/minecraft:rideable/family_types/*"),
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.Entity.Get("family")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return stores.Entity.Get("family_refs")
+		},
+	},
+	{
 		Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
 			return shared.JsonValue(path + "/value")
 		}),
