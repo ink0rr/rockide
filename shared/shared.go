@@ -20,13 +20,13 @@ func Getwd() string {
 	return wd
 }
 
-var project core.Project
+var project *core.Project
 
 func GetProject() *core.Project {
-	return &project
+	return project
 }
 
-func SetProject(p core.Project) {
+func SetProject(p *core.Project) {
 	project = p
 }
 

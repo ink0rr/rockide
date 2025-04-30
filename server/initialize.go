@@ -17,8 +17,11 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 	log.Printf("Process ID: %d", params.ProcessID)
 	log.Printf("Connected to: %s %s", params.ClientInfo.Name, params.ClientInfo.Version)
 
-	if err := findProjectPaths(params.InitializationOptions); err != nil {
-		return nil, err
+	project, err := findProjectPaths(params.InitializationOptions)
+	if err != nil {
+		log.Println(err)
+	} else {
+		shared.SetProject(project)
 	}
 	triggerCharacters := strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz.'"() `, "")
 	result := protocol.InitializeResult{
@@ -52,6 +55,9 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 
 func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializedParams) error {
 	project := shared.GetProject()
+	if project == nil {
+		return conn.Notify(ctx, "shutdown", nil)
+	}
 	fileWatcher := protocol.Registration{
 		ID:     "fileWatcher",
 		Method: "workspace/didChangeWatchedFiles",

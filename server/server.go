@@ -15,7 +15,6 @@ import (
 	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
-	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
 
@@ -73,23 +72,22 @@ var storeList = [...]stores.Store{
 	stores.Texture,
 }
 
-func findProjectPaths(params any) error {
+func findProjectPaths(params any) (*core.Project, error) {
 	// try to get project paths from user settings
 	options, ok := params.(map[string]any)
 	if ok {
 		bp, ok := options["behaviorPack"].(string)
 		if !ok {
-			return errors.New("invalid initialization options")
+			return nil, errors.New("invalid initialization options")
 		}
 		rp, ok := options["resourcePack"].(string)
 		if !ok {
-			return errors.New("invalid initialization options")
+			return nil, errors.New("invalid initialization options")
 		}
-		shared.SetProject(core.Project{
+		return &core.Project{
 			BP: filepath.ToSlash(filepath.Clean(bp)),
 			RP: filepath.ToSlash(filepath.Clean(rp)),
-		})
-		return nil
+		}, nil
 	}
 
 	// if not found, search the current dir and the 'packs' dir
@@ -101,24 +99,22 @@ func findProjectPaths(params any) error {
 
 	bpPaths, err := doublestar.Glob(fsys, "{behavior_pack,*BP,BP_*,*bp,bp_*}", doublestar.WithFailOnIOErrors())
 	if bpPaths == nil || err != nil {
-		return errors.New("not a minecraft project")
+		return nil, errors.New("not a minecraft project")
 	}
 	bp := dir + "/" + bpPaths[0]
 	log.Printf("Behavior pack: %s", bp)
 
 	rpPaths, err := doublestar.Glob(fsys, "{resource_pack,*RP,RP_*,*rp,rp_*}", doublestar.WithFailOnIOErrors())
 	if rpPaths == nil || err != nil {
-		return errors.New("not a minecraft project")
+		return nil, errors.New("not a minecraft project")
 	}
 	rp := dir + "/" + rpPaths[0]
 	log.Printf("Resource pack: %s", rp)
 
-	shared.SetProject(core.Project{
+	return &core.Project{
 		BP: filepath.ToSlash(filepath.Clean(bp)),
 		RP: filepath.ToSlash(filepath.Clean(rp)),
-	})
-
-	return nil
+	}, nil
 }
 
 func indexWorkspace() {
