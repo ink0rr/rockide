@@ -17,10 +17,23 @@ var Entity = newJsonHandler(shared.EntityGlob, []jsonHandlerEntry{
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.ClientEntity.Get("id")
+			return slices.Concat(stores.ClientEntity.Get("id"), stores.Entity.Get("id_refs"))
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return stores.Entity.Get("id")
+		},
+	},
+	{
+		Path: []shared.JsonPath{
+			shared.JsonValue("minecraft:entity/components/minecraft:behavior.mingle/mingle_partner_type"),
+			shared.JsonValue("minecraft:entity/component_groups/*/minecraft:behavior.mingle/mingle_partner_type"),
+		},
+		Actions: completions | definitions | rename,
+		Source: func(params *jsonParams) []core.Reference {
+			return stores.Entity.Get("id")
+		},
+		References: func(params *jsonParams) []core.Reference {
+			return slices.Concat(stores.ClientEntity.Get("id"), stores.Entity.Get("id_refs"))
 		},
 	},
 	{

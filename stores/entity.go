@@ -16,6 +16,13 @@ var Entity = &JsonStore{
 			Path: []shared.JsonPath{shared.JsonValue("minecraft:entity/description/identifier")},
 		},
 		{
+			Id: "id_refs",
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:entity/components/minecraft:behavior.mingle/mingle_partner_type"),
+				shared.JsonValue("minecraft:entity/component_groups/*/minecraft:behavior.mingle/mingle_partner_type"),
+			},
+		},
+		{
 			Id:   "animate",
 			Path: []shared.JsonPath{shared.JsonKey("minecraft:entity/description/animations/*")},
 		},

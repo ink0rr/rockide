@@ -15,7 +15,7 @@ var ClientEntity = newJsonHandler(shared.ClientEntityGlob, []jsonHandlerEntry{
 		Actions:    completions | definitions | rename,
 		FilterDiff: true,
 		Source: func(params *jsonParams) []core.Reference {
-			return stores.Entity.Get("id")
+			return slices.Concat(stores.Entity.Get("id"), stores.Entity.Get("id_refs"))
 		},
 		References: func(params *jsonParams) []core.Reference {
 			return stores.ClientEntity.Get("id")
