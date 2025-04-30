@@ -103,6 +103,7 @@ const (
 	ModArray     Modifier = "array"
 	ModBool      Modifier = "bool"
 	ModChan      Modifier = "chan"
+	ModFormat    Modifier = "format" // for format string directives such as "%s"
 	ModInterface Modifier = "interface"
 	ModMap       Modifier = "map"
 	ModNumber    Modifier = "number"
@@ -124,6 +125,7 @@ var TokenModifiers = []Modifier{
 	ModArray,
 	ModBool,
 	ModChan,
+	ModFormat,
 	ModInterface,
 	ModMap,
 	ModNumber,
@@ -141,8 +143,8 @@ var TokenModifiers = []Modifier{
 func Encode(
 	tokens []Token,
 	encodeType map[Type]bool,
-	encodeModifier map[Modifier]bool) []uint32 {
-
+	encodeModifier map[Modifier]bool,
+) []uint32 {
 	// binary operators, at least, will be out of order
 	sort.Slice(tokens, func(i, j int) bool {
 		if tokens[i].Line != tokens[j].Line {
@@ -172,7 +174,7 @@ func Encode(
 	x := make([]uint32, 5*len(tokens))
 	var j int
 	var last Token
-	for i := 0; i < len(tokens); i++ {
+	for i := range tokens {
 		item := tokens[i]
 		typ, ok := typeMap[item.Type]
 		if !ok {
