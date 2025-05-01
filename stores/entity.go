@@ -60,11 +60,11 @@ var Entity = &JsonStore{
 				if test == nil {
 					return nil
 				}
-				testValue, ok := test.Value.(string)
-				if !ok || slices.Index(shared.PropertyTests, testValue) == -1 {
-					return nil
+				value, ok := test.Value.(string)
+				if ok && slices.Contains(shared.PropertyTests, value) {
+					return &nodeValue
 				}
-				return &nodeValue
+				return nil
 			},
 		},
 		{
