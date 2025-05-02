@@ -48,58 +48,27 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 	for _, entry := range j.entries {
 		data := j.store[entry.Id]
 		for _, jsonPath := range entry.Path {
-			index := 1
-			if jsonPath.IsKey {
-				index = 0
-			}
-			extract := func(node *jsonc.Node) {
-				if node.Type == jsonc.NodeTypeProperty && len(node.Children) > index {
-					targetNode := node.Children[index]
-					value := targetNode.Value
-					if entry.Transform != nil {
-						result := entry.Transform(targetNode)
-						if result == nil {
-							return
-						}
-						value = *result
+			for _, node := range jsonPath.GetNodes(root) {
+				value := node.Value
+				if entry.Transform != nil {
+					result := entry.Transform(node)
+					if result == nil {
+						continue
 					}
-					nodeValue, ok := value.(string)
-					if !ok {
-						return
-					}
-					data = append(data, core.Reference{
-						Value: nodeValue,
-						URI:   uri,
-						Range: &protocol.Range{
-							Start: document.PositionAt(targetNode.Offset),
-							End:   document.PositionAt(targetNode.Offset + targetNode.Length),
-						},
-					})
-				} else if !jsonPath.IsKey && node.Type == jsonc.NodeTypeString {
-					value := node.Value
-					if entry.Transform != nil {
-						result := entry.Transform(node)
-						if result == nil {
-							return
-						}
-						value = *result
-					}
-					nodeValue, ok := value.(string)
-					if !ok {
-						return
-					}
-					data = append(data, core.Reference{
-						Value: nodeValue,
-						URI:   uri,
-						Range: &protocol.Range{
-							Start: document.PositionAt(node.Offset),
-							End:   document.PositionAt(node.Offset + node.Length),
-						},
-					})
+					value = *result
 				}
-			}
-			for _, node := range findNodesAtPath(root, jsonPath.Path) {
-				extract(node)
+				nodeValue, ok := value.(string)
+				if !ok {
+					continue
+				}
+				data = append(data, core.Reference{
+					Value: nodeValue,
+					URI:   uri,
+					Range: &protocol.Range{
+						Start: document.PositionAt(node.Offset),
+						End:   document.PositionAt(node.Offset + node.Length),
+					},
+				})
 			}
 		}
 		j.store[entry.Id] = data
