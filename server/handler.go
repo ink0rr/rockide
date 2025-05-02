@@ -4,11 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"time"
 
+	"github.com/ink0rr/rockide/internal/debouncer"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
 	"github.com/sourcegraph/jsonrpc2"
 )
+
+var d = debouncer.NewDebouncer[protocol.DocumentURI](300 * time.Millisecond)
 
 func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (res any, err error) {
 	switch req.Method {
@@ -32,7 +36,9 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 		var params protocol.DidChangeTextDocumentParams
 		if err = json.Unmarshal(*req.Params, &params); err == nil {
 			textdocument.SyncIncremental(params.TextDocument.URI, params.ContentChanges)
-			onChange(params.TextDocument.URI)
+			d.Debounce(params.TextDocument.URI, func() {
+				onChange(params.TextDocument.URI)
+			})
 		}
 	case "textDocument/didSave":
 		var params protocol.DidSaveTextDocumentParams
@@ -89,8 +95,11 @@ func Handle(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (re
 				case protocol.Created:
 					onCreate(change.URI)
 				case protocol.Changed:
-					onChange(change.URI)
+					d.Debounce(change.URI, func() {
+						onChange(change.URI)
+					})
 				case protocol.Deleted:
+					d.Cancel(change.URI)
 					onDelete(change.URI)
 				}
 			}
