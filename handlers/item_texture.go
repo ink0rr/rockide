@@ -9,28 +9,31 @@ import (
 	"github.com/ink0rr/rockide/vanilla"
 )
 
-var ItemTexture = newJsonHandler(shared.ItemTextureGlob, []jsonHandlerEntry{
-	{
-		Path:       []shared.JsonPath{shared.JsonKey("texture_data/*")},
-		Actions:    completions | definitions | rename,
-		FilterDiff: true,
-		Source: func(params *jsonParams) []core.Reference {
-			return slices.Concat(stores.ClientEntity.Get("spawn_egg"), stores.Item.Get("icon"))
+var ItemTexture = &jsonHandler{
+	pattern: shared.ItemTextureGlob,
+	entries: []jsonHandlerEntry{
+		{
+			Path:       []shared.JsonPath{shared.JsonKey("texture_data/*")},
+			Actions:    completions | definitions | rename,
+			FilterDiff: true,
+			Source: func(params *jsonParams) []core.Reference {
+				return slices.Concat(stores.ClientEntity.Get("spawn_egg"), stores.Item.Get("icon"))
+			},
+			References: func(params *jsonParams) []core.Reference {
+				return stores.ItemTexture.Get("id")
+			},
+			VanillaData: vanilla.ItemTexture,
 		},
-		References: func(params *jsonParams) []core.Reference {
-			return stores.ItemTexture.Get("id")
+		{
+			Path:    []shared.JsonPath{shared.JsonValue("texture_data/*/textures")},
+			Actions: completions | definitions,
+			Source: func(params *jsonParams) []core.Reference {
+				return stores.Texture.GetPaths()
+			},
+			References: func(params *jsonParams) []core.Reference {
+				return nil
+			},
+			VanillaData: vanilla.TexturePaths,
 		},
-		VanillaData: vanilla.ItemTexture,
 	},
-	{
-		Path:    []shared.JsonPath{shared.JsonValue("texture_data/*/textures")},
-		Actions: completions | definitions,
-		Source: func(params *jsonParams) []core.Reference {
-			return stores.Texture.GetPaths()
-		},
-		References: func(params *jsonParams) []core.Reference {
-			return nil
-		},
-		VanillaData: vanilla.TexturePaths,
-	},
-})
+}

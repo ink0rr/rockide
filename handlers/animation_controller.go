@@ -8,43 +8,46 @@ import (
 	"github.com/ink0rr/rockide/stores"
 )
 
-var AnimationController = newJsonHandler(shared.AnimationControllerGlob, []jsonHandlerEntry{
-	{
-		Path:       []shared.JsonPath{shared.JsonKey("animation_controllers/*")},
-		Actions:    completions | definitions | rename,
-		FilterDiff: true,
-		Source: func(params *jsonParams) []core.Reference {
-			filtered := []core.Reference{}
-			for _, ref := range stores.Entity.Get("animation_id") {
-				if strings.HasPrefix(ref.Value, "controller.") {
-					filtered = append(filtered, ref)
+var AnimationController = &jsonHandler{
+	pattern: shared.AnimationControllerGlob,
+	entries: []jsonHandlerEntry{
+		{
+			Path:       []shared.JsonPath{shared.JsonKey("animation_controllers/*")},
+			Actions:    completions | definitions | rename,
+			FilterDiff: true,
+			Source: func(params *jsonParams) []core.Reference {
+				filtered := []core.Reference{}
+				for _, ref := range stores.Entity.Get("animation_id") {
+					if strings.HasPrefix(ref.Value, "controller.") {
+						filtered = append(filtered, ref)
+					}
 				}
-			}
-			return filtered
+				return filtered
+			},
+			References: func(params *jsonParams) []core.Reference {
+				return stores.AnimationController.Get("id")
+			},
 		},
-		References: func(params *jsonParams) []core.Reference {
-			return stores.AnimationController.Get("id")
+		{
+			Path: []shared.JsonPath{
+				shared.JsonValue("animation_controllers/*/states/*/animations/*"),
+				shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
+			},
+			Actions: completions | definitions | rename,
+			Source: func(params *jsonParams) []core.Reference {
+				id, ok := params.Location.Path[1].(string)
+				if !ok {
+					return nil
+				}
+				return animationControllerSources(id, stores.Entity)
+			},
+			References: func(params *jsonParams) []core.Reference {
+				id, ok := params.Location.Path[1].(string)
+				if !ok {
+					return nil
+				}
+				return animationControllerReferences(id, stores.AnimationController, stores.Entity)
+			},
 		},
 	},
-	{
-		Path: []shared.JsonPath{
-			shared.JsonValue("animation_controllers/*/states/*/animations/*"),
-			shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
-		},
-		Actions: completions | definitions | rename,
-		Source: func(params *jsonParams) []core.Reference {
-			id, ok := params.Location.Path[1].(string)
-			if !ok {
-				return nil
-			}
-			return animationControllerSources(id, stores.Entity)
-		},
-		References: func(params *jsonParams) []core.Reference {
-			id, ok := params.Location.Path[1].(string)
-			if !ok {
-				return nil
-			}
-			return animationControllerReferences(id, stores.AnimationController, stores.Entity)
-		},
-	},
-})
+}

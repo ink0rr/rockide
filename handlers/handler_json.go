@@ -55,10 +55,6 @@ type jsonHandler struct {
 	entries []jsonHandlerEntry
 }
 
-func newJsonHandler(pattern shared.Pattern, entries []jsonHandlerEntry) *jsonHandler {
-	return &jsonHandler{pattern, entries}
-}
-
 func (j *jsonHandler) Pattern() string {
 	return j.pattern.ToString()
 }
