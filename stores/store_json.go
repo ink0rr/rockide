@@ -40,13 +40,9 @@ func (j *JsonStore) Parse(uri protocol.DocumentURI) error {
 	if j.savePath {
 		j.parsePath(uri)
 	}
-	document := textdocument.Get(uri)
-	if document == nil {
-		doc, err := textdocument.ReadFile(uri)
-		if err != nil {
-			return err
-		}
-		document = doc
+	document, err := textdocument.GetOrReadFile(uri)
+	if err != nil {
+		return err
 	}
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
 	for _, entry := range j.entries {

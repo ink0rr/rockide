@@ -138,3 +138,10 @@ func ReadFile(uri protocol.DocumentURI) (*TextDocument, error) {
 	document := TextDocument{URI: uri, content: string(txt)}
 	return &document, nil
 }
+
+func GetOrReadFile(uri protocol.DocumentURI) (*TextDocument, error) {
+	if document := Get(uri); document != nil {
+		return document, nil
+	}
+	return ReadFile(uri)
+}

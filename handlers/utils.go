@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
@@ -45,7 +46,11 @@ func animationControllerReferences(id string, source *stores.JsonStore, stores .
 		}
 	}
 	for _, ref := range source.Get("animate_refs") {
-		document, _ := textdocument.ReadFile(ref.URI)
+		document, err := textdocument.GetOrReadFile(ref.URI)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
 		location := jsonc.GetLocation(document.GetText(), document.OffsetAt(ref.Range.Start))
 		if id, ok := location.Path[1].(string); ok && slices.Contains(animationIds, id) {
 			res = append(res, ref)
