@@ -27,10 +27,17 @@ func init() {
 		},
 		{
 			Id: "id_refs",
-			Path: []shared.JsonPath{
-				shared.JsonValue("minecraft:entity/components/minecraft:behavior.mingle/mingle_partner_type"),
-				shared.JsonValue("minecraft:entity/component_groups/*/minecraft:behavior.mingle/mingle_partner_type"),
-			},
+			Path: sliceutil.FlatMap([]string{
+				"minecraft:behavior.mingle/mingle_partner_type",
+				"minecraft:breedable/breeds_with/baby_type",
+				"minecraft:breedable/breeds_with/mate_type",
+				"minecraft:transformation/into",
+			}, func(value string) []shared.JsonPath {
+				return []shared.JsonPath{
+					shared.JsonValue("minecraft:entity/components/" + value),
+					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
+				}
+			}),
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return Entity.Get("id")
 			},
