@@ -7,98 +7,99 @@ import (
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 	"github.com/ink0rr/rockide/vanilla"
 )
 
-var Entity = &jsonHandler{
-	pattern: shared.EntityGlob,
-	entries: []jsonHandlerEntry{
+var Entity = &JsonHandler{Pattern: shared.EntityGlob}
+
+func init() {
+	Entity.Entries = []JsonEntry{
 		{
+			Id:         "id",
 			Path:       []shared.JsonPath{shared.JsonValue("minecraft:entity/description/identifier")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.ClientEntity.Get("id"), stores.Entity.Get("id_refs"))
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(ClientEntity.Get("id"), Entity.Get("id_refs"))
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.Get("id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.Get("id")
 			},
 		},
 		{
+			Id: "id_refs",
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:entity/components/minecraft:behavior.mingle/mingle_partner_type"),
 				shared.JsonValue("minecraft:entity/component_groups/*/minecraft:behavior.mingle/mingle_partner_type"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.ClientEntity.Get("id"), stores.Entity.Get("id_refs"))
+			References: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(ClientEntity.Get("id"), Entity.Get("id_refs"))
 			},
 		},
 		{
+			Id:         "animate",
 			Path:       []shared.JsonPath{shared.JsonKey("minecraft:entity/description/animations/*")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "animate_refs")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "animate_refs")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "animate")
-			},
-		},
-		{
-			Path:    []shared.JsonPath{shared.JsonValue("minecraft:entity/description/animations/*")},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.AnimationController.Get("id"), stores.Animation.Get("id"))
-			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.Get("animation_id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "animate")
 			},
 		},
 		{
+			Id:   "animation_id",
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:entity/description/animations/*")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(AnimationController.Get("id"), Animation.Get("id"))
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.Get("animation_id")
+			},
+		},
+		{
+			Id: "animate_refs",
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:entity/description/scripts/animate/*"),
 				shared.JsonKey("minecraft:entity/description/scripts/animate/*/*"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "animate")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "animate")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "animate_refs")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "animate_refs")
 			},
 		},
 		{
+			Id:         "property",
 			Path:       []shared.JsonPath{shared.JsonKey("minecraft:entity/description/properties/*")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "property_refs")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "property_refs")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "property")
-			},
-		},
-		{
-			Path:    []shared.JsonPath{shared.JsonKey("minecraft:entity/events/**/set_property/*")},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "property")
-			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "property_refs")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "property")
 			},
 		},
 		{
+			Id:   "property_refs",
+			Path: []shared.JsonPath{shared.JsonKey("minecraft:entity/events/**/set_property/*")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "property")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "property_refs")
+			},
+		},
+		{
+			Id: "property_refs",
 			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
 				return shared.JsonValue(path + "/domain")
 			}),
-			Matcher: func(params *jsonParams) bool {
-				parent := params.getParentNode()
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
 				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
 				if test == nil {
 					return false
@@ -108,113 +109,113 @@ var Entity = &jsonHandler{
 				}
 				return false
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				parent := params.getParentNode()
+			Source: func(ctx *JsonContext) []core.Symbol {
+				parent := ctx.GetParentNode()
 				subject := jsonc.FindNodeAtLocation(parent, jsonc.Path{"subject"})
 				if subject == nil || subject.Value == "self" {
-					return stores.Entity.GetFrom(params.URI, "property")
+					return Entity.GetFrom(ctx.URI, "property")
 				}
-				return stores.Entity.Get("property")
+				return Entity.Get("property")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "property_refs")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "property_refs")
 			},
 		},
 		{
+			Id:         "component_group",
 			Path:       []shared.JsonPath{shared.JsonKey("minecraft:entity/component_groups/*")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "component_group_refs")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "component_group_refs")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "component_group")
-			},
-		},
-		{
-			Path:    []shared.JsonPath{shared.JsonValue("minecraft:entity/events/**/component_groups/*")},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "component_group")
-			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "component_group_refs")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "component_group")
 			},
 		},
 		{
+			Id:   "component_group_refs",
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:entity/events/**/component_groups/*")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "component_group")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "component_group_refs")
+			},
+		},
+		{
+			Id:         "event",
 			Path:       []shared.JsonPath{shared.JsonKey("minecraft:entity/events/*")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "event_refs")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "event_refs")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "event")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "event")
 			},
 		},
 		{
+			Id: "event_refs",
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:entity/components/**/event"),
 				shared.JsonValue("minecraft:entity/component_groups/**/event"),
 				shared.JsonValue("minecraft:entity/events/**/trigger"),
 				shared.JsonValue("minecraft:entity/events/**/trigger/event"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "event")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "event")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.GetFrom(params.URI, "event_refs")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "event_refs")
 			},
 		},
 		{
+			Id: "family",
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:entity/components/minecraft:type_family/family/*"),
 				shared.JsonValue("minecraft:entity/component_groups/*/minecraft:type_family/family/*"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Entity.Get("family"), stores.Entity.Get("family_refs"))
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Entity.Get("family"), Entity.Get("family_refs"))
 			},
-			References: func(params *jsonParams) []core.Reference {
+			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
 			VanillaData: vanilla.Family,
 		},
 		{
+			Id: "family_refs",
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:entity/components/minecraft:rideable/family_types/*"),
 				shared.JsonValue("minecraft:entity/component_groups/*/minecraft:rideable/family_types/*"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.Get("family")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.Get("family")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.Get("family_refs")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.Get("family_refs")
 			},
 			VanillaData: vanilla.Family,
 		},
 		{
+			Id: "family_refs",
 			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
 				return shared.JsonValue(path + "/value")
 			}),
-			Matcher: func(params *jsonParams) bool {
-				parent := params.getParentNode()
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
 				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
 				return test != nil && test.Value == "is_family"
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Entity.Get("family")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.Get("family")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Entity.Get("family_refs")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.Get("family_refs")
 			},
 			VanillaData: vanilla.Family,
 		},
 		{
+			Id: "block_id",
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:behavior.avoid_block/target_blocks",
 				"minecraft:behavior.eat_block/eat_and_replace_block_pairs/*/eat_block",
@@ -252,16 +253,16 @@ var Entity = &jsonHandler{
 					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
 				}
 			}),
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Block.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Block.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Entity.Get("block_id"), stores.Feature.Get("block_id"))
+			References: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Entity.Get("block_id"), Feature.Get("block_id"))
 			},
 			VanillaData: vanilla.BlockIdentifiers,
 		},
 		{
+			Id: "item_id",
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:ageable/drop_items",
 				"minecraft:ageable/feed_items",
@@ -297,34 +298,34 @@ var Entity = &jsonHandler{
 					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
 				}
 			}),
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Item.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Item.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
+			References: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
 			},
 			VanillaData: vanilla.ItemIdentifiers,
 		},
 		{
+			Id: "item_id",
 			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
 				return shared.JsonValue(path + "/value")
 			}),
-			Matcher: func(params *jsonParams) bool {
-				parent := params.getParentNode()
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
 				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
 				return test != nil && test.Value == "has_equipment"
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Item.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Item.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
+			References: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
 			},
 			VanillaData: vanilla.ItemIdentifiers,
 		},
 		{
+			Id: "loot_table_path",
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:loot/table",
 				"minecraft:behavior.sneeze/loot_table",
@@ -338,18 +339,18 @@ var Entity = &jsonHandler{
 					shared.JsonValue("minecraft:entity/components/" + value),
 					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
 				}
+			}),
+			DisableRename: true,
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return LootTable.Get("path")
 			},
-			),
-			Actions: completions | definitions,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.LootTable.Get("path")
-			},
-			References: func(params *jsonParams) []core.Reference {
+			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
 			VanillaData: vanilla.LootTablePaths,
 		},
 		{
+			Id: "trade_table_path",
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:trade_table/table",
 				"minecraft:economy_trade_table/table",
@@ -359,14 +360,36 @@ var Entity = &jsonHandler{
 					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
 				}
 			}),
-			Actions: completions | definitions,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.TradeTable.GetPaths()
+			DisableRename: true,
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return TradeTable.Get("path")
 			},
-			References: func(params *jsonParams) []core.Reference {
+			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
 			VanillaData: vanilla.TradeTablePaths,
 		},
-	},
+	}
+	Entity.MolangLocations = slices.Concat(
+		[]shared.JsonPath{
+			shared.JsonValue("minecraft:entity/description/scripts/animate/*/*"),
+			shared.JsonValue("minecraft:entity/events/**/set_property/*"),
+		},
+		sliceutil.FlatMap([]string{
+			"minecraft:behavior.eat_block/success_chance",
+			"minecraft:experience_reward/on_bred",
+			"minecraft:experience_reward/on_death",
+			"minecraft:projectile/on_hit/impact_damage/filter",
+			"minecraft:rideable/seats/*/rotate_rider_by",
+			"minecraft:rideable/seats/rotate_rider_by",
+			"minecraft:ambient_sound_interval/event_names/*/condition",
+			"minecraft:anger_level/on_increase_sounds/*/condition",
+			"minecraft:heartbeat/interval",
+		}, func(value string) []shared.JsonPath {
+			return []shared.JsonPath{
+				shared.JsonValue("minecraft:entity/components/" + value),
+				shared.JsonValue("minecraft:entity/component_groups/*/" + value),
+			}
+		}),
+	)
 }

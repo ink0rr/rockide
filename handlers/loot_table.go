@@ -6,44 +6,45 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 	"github.com/ink0rr/rockide/vanilla"
 )
 
-var LootTable = &jsonHandler{
-	pattern: shared.LootTableGlob,
-	entries: []jsonHandlerEntry{
+var LootTable = &JsonHandler{Pattern: shared.LootTableGlob, SavePath: true}
+
+func init() {
+	LootTable.Entries = []JsonEntry{
 		{
+			Id:   "item_id",
 			Path: []shared.JsonPath{shared.JsonValue("**/entries/*/name")},
-			Matcher: func(params *jsonParams) bool {
-				parent := params.getParentNode()
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
 				entryType := jsonc.FindNodeAtLocation(parent, jsonc.Path{"type"})
 				return entryType != nil && entryType.Value == "item"
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Item.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Item.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Attachable.Get("id"), stores.Entity.Get("item_id"), stores.Item.Get("item_id"), stores.LootTable.Get("item_id"), stores.Recipe.Get("item_id"))
+			References: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
 			},
 			VanillaData: vanilla.ItemIdentifiers,
 		},
 		{
+			Id:   "loot_table_path",
 			Path: []shared.JsonPath{shared.JsonValue("**/entries/*/name")},
-			Matcher: func(params *jsonParams) bool {
-				parent := params.getParentNode()
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
 				entryType := jsonc.FindNodeAtLocation(parent, jsonc.Path{"type"})
 				return entryType != nil && entryType.Value == "loot_table"
 			},
-			Actions: completions | definitions,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.LootTable.Get("path")
+			DisableRename: true,
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return LootTable.Get("path")
 			},
-			References: func(params *jsonParams) []core.Reference {
+			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
 			VanillaData: vanilla.LootTablePaths,
 		},
-	},
+	}
 }

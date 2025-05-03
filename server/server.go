@@ -14,63 +14,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/internal/protocol"
-	"github.com/ink0rr/rockide/internal/textdocument"
-	"github.com/ink0rr/rockide/stores"
 )
-
-var handlerList = [...]handlers.Handler{
-	// BP
-	handlers.AnimationController,
-	handlers.Animation,
-	handlers.Block,
-	handlers.Entity,
-	handlers.FeatureRule,
-	handlers.Feature,
-	handlers.Item,
-	handlers.LootTable,
-	// RP
-	handlers.Attachable,
-	handlers.ClientAnimationController,
-	handlers.ClientAnimation,
-	handlers.ClientBlock,
-	handlers.ClientEntity,
-	handlers.ClientSound,
-	handlers.Geometry,
-	handlers.ItemTexture,
-	handlers.Particle,
-	handlers.RenderController,
-	handlers.SoundDefinition,
-	handlers.TerrainTexture,
-}
-
-var storeList = [...]stores.Store{
-	// BP
-	stores.AnimationController,
-	stores.Animation,
-	stores.Block,
-	stores.Entity,
-	stores.FeatureRule,
-	stores.Feature,
-	stores.Item,
-	stores.LootTable,
-	stores.Recipe,
-	stores.TradeTable,
-	// RP
-	stores.Attachable,
-	stores.ClientAnimationController,
-	stores.ClientAnimation,
-	stores.ClientBlock,
-	stores.ClientEntity,
-	stores.ClientSound,
-	stores.Geometry,
-	stores.ItemTexture,
-	stores.Particle,
-	stores.RenderController,
-	stores.SoundDefinition,
-	stores.Sound,
-	stores.TerrainTexture,
-	stores.Texture,
-}
 
 func findProjectPaths(params any) (*core.Project, error) {
 	// try to get project paths from user settings
@@ -124,11 +68,11 @@ func indexWorkspace() {
 	skippedFiles := atomic.Uint32{}
 
 	var wg sync.WaitGroup
-	wg.Add(len(storeList))
-	for _, store := range storeList {
+	wg.Add(len(handlers.GetAll()))
+	for _, store := range handlers.GetAll() {
 		go func() {
 			defer wg.Done()
-			doublestar.GlobWalk(fsys, store.Pattern(), func(path string, d fs.DirEntry) error {
+			doublestar.GlobWalk(fsys, store.GetPattern(), func(path string, d fs.DirEntry) error {
 				if d.IsDir() {
 					return nil
 				}
@@ -151,22 +95,4 @@ func indexWorkspace() {
 	if count := skippedFiles.Load(); count > 0 {
 		log.Printf("Skipped %d files", count)
 	}
-}
-
-func findActions(document *textdocument.TextDocument, position protocol.Position) *handlers.HandlerActions {
-	for _, handler := range handlerList {
-		if doublestar.MatchUnvalidated("**/"+handler.Pattern(), string(document.URI)) {
-			return handler.GetActions(document, position)
-		}
-	}
-	return nil
-}
-
-func findStore(uri protocol.DocumentURI) stores.Store {
-	for _, store := range storeList {
-		if doublestar.MatchUnvalidated("**/"+store.Pattern(), string(uri)) {
-			return store
-		}
-	}
-	return nil
 }

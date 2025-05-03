@@ -5,28 +5,31 @@ import (
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 )
 
-var Animation = &jsonHandler{
-	pattern: shared.AnimationGlob,
-	entries: []jsonHandlerEntry{
+var Animation = &JsonHandler{Pattern: shared.AnimationGlob}
+
+func init() {
+	Animation.Entries = []JsonEntry{
 		{
+			Id:         "id",
 			Path:       []shared.JsonPath{shared.JsonKey("animations/*")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				filtered := []core.Reference{}
-				for _, ref := range stores.Entity.Get("animation_id") {
+			Source: func(ctx *JsonContext) []core.Symbol {
+				filtered := []core.Symbol{}
+				for _, ref := range Entity.Get("animation_id") {
 					if strings.HasPrefix(ref.Value, "animation.") {
 						filtered = append(filtered, ref)
 					}
 				}
 				return filtered
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Animation.Get("id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Animation.Get("id")
 			},
 		},
-	},
+	}
+	Animation.MolangLocations = []shared.JsonPath{
+		shared.JsonValue("animations/*/anim_time_update"),
+	}
 }

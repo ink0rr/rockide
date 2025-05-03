@@ -4,7 +4,6 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
-	"github.com/ink0rr/rockide/stores"
 )
 
 var biomeTags = [...]string{
@@ -82,7 +81,7 @@ var equipmentSlots = [...]string{
 var inputModes = [...]string{"keyboard_and_mouse", "touch", "gamepad", "motion_controller"}
 
 type molangValue struct {
-	references []core.Reference
+	references []core.Symbol
 	strings    []string
 }
 
@@ -97,24 +96,24 @@ var molangTypes = map[string]func() molangValue{
 		return molangValue{strings: inputModes[:]}
 	},
 	"BlockTag": func() molangValue {
-		return molangValue{references: stores.Block.Get("tag")}
+		return molangValue{references: Block.Get("tag")}
 	},
 	"BlockAndItemTag": func() molangValue {
-		return molangValue{references: slices.Concat(stores.Block.Get("tag"), stores.Item.Get("tag"))}
+		return molangValue{references: slices.Concat(Block.Get("tag"), Item.Get("tag"))}
 	},
 	"EntityIdentifier": func() molangValue {
-		return molangValue{references: stores.Entity.Get("id")}
+		return molangValue{references: Entity.Get("id")}
 	},
 	"EntityProperty": func() molangValue {
-		return molangValue{references: stores.Entity.Get("property")}
+		return molangValue{references: Entity.Get("property")}
 	},
 	"TypeFamily": func() molangValue {
-		return molangValue{references: stores.Entity.Get("family")}
+		return molangValue{references: Entity.Get("family")}
 	},
 	"ItemIdentifier": func() molangValue {
-		return molangValue{references: stores.Item.Get("id")}
+		return molangValue{references: Item.Get("id")}
 	},
 	"ItemTag": func() molangValue {
-		return molangValue{references: stores.Item.Get("tag")}
+		return molangValue{references: Item.Get("tag")}
 	},
 }

@@ -3,14 +3,15 @@ package handlers
 import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 	"github.com/ink0rr/rockide/vanilla"
 )
 
-var ClientSound = &jsonHandler{
-	pattern: shared.ClientSoundGlob,
-	entries: []jsonHandlerEntry{
+var ClientSound = &JsonHandler{Pattern: shared.ClientSoundGlob}
+
+func init() {
+	ClientSound.Entries = []JsonEntry{
 		{
+			Id: "sound_id",
 			Path: []shared.JsonPath{
 				shared.JsonValue("block_sounds/*/events/*"),
 				shared.JsonValue("block_sounds/*/events/*/sound"),
@@ -25,14 +26,13 @@ var ClientSound = &jsonHandler{
 				shared.JsonValue("interactive_sounds/*/*/events/*"),
 				shared.JsonValue("interactive_sounds/*/*/events/*/sound"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.SoundDefinition.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return SoundDefinition.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.ClientSound.Get("sound_id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return ClientSound.Get("sound_id")
 			},
 			VanillaData: vanilla.SoundDefinition,
 		},
-	},
+	}
 }

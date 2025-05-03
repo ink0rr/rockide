@@ -5,21 +5,25 @@ import (
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 )
 
-var FeatureRule = &jsonHandler{
-	pattern: shared.FeatureRuleGlob,
-	entries: []jsonHandlerEntry{
+var FeatureRule = &JsonHandler{Pattern: shared.FeatureRuleGlob}
+
+func init() {
+	FeatureRule.Entries = []JsonEntry{
 		{
-			Path:    []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/places_feature")},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Feature.Get("id")
+			Id:   "id",
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/identifier")},
+		},
+		{
+			Id:   "feature_id",
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/places_feature")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Feature.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Feature.Get("feature_id"), stores.FeatureRule.Get("feature_id"))
+			References: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Feature.Get("feature_id"), FeatureRule.Get("feature_id"))
 			},
 		},
-	},
+	}
 }

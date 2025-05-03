@@ -3,37 +3,38 @@ package handlers
 import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 	"github.com/ink0rr/rockide/vanilla"
 )
 
-var SoundDefinition = &jsonHandler{
-	pattern: shared.SoundDefinitionGlob,
-	entries: []jsonHandlerEntry{
+var SoundDefinition = &JsonHandler{Pattern: shared.SoundDefinitionGlob}
+
+func init() {
+	SoundDefinition.Entries = []JsonEntry{
 		{
+			Id:         "id",
 			Path:       []shared.JsonPath{shared.JsonKey("sound_definitions/*")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.ClientSound.Get("sound_id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return ClientSound.Get("sound_id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.SoundDefinition.Get("id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return SoundDefinition.Get("id")
 			},
 		},
 		{
+			Id: "sound_path",
 			Path: []shared.JsonPath{
 				shared.JsonValue("sound_definitions/*/sounds/*"),
 				shared.JsonValue("sound_definitions/*/sounds/*/name"),
 			},
-			Actions: completions | definitions,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Sound.GetPaths()
+			DisableRename: true,
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Sound.GetPaths()
 			},
-			References: func(params *jsonParams) []core.Reference {
+			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
 			VanillaData: vanilla.SoundPaths,
 		},
-	},
+	}
 }

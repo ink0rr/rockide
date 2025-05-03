@@ -6,24 +6,25 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 )
 
-var Feature = &jsonHandler{
-	pattern: shared.FeatureGlob,
-	entries: []jsonHandlerEntry{
+var Feature = &JsonHandler{Pattern: shared.FeatureGlob}
+
+func init() {
+	Feature.Entries = []JsonEntry{
 		{
+			Id:         "id",
 			Path:       []shared.JsonPath{shared.JsonValue("*/description/identifier")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Feature.Get("feature_id"), stores.FeatureRule.Get("feature_id"))
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Feature.Get("feature_id"), FeatureRule.Get("feature_id"))
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Feature.Get("id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Feature.Get("id")
 			},
 		},
 		{
+			Id: "block_id",
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:catalyst_feature/can_place_sculk_catalyst_on/*",
 				"minecraft:catalyst_feature/central_block",
@@ -79,15 +80,15 @@ var Feature = &jsonHandler{
 			}, func(value string) []shared.JsonPath {
 				return []shared.JsonPath{shared.JsonValue(value), shared.JsonValue(value + "/name")}
 			}),
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Block.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Block.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return slices.Concat(stores.Entity.Get("block_id"), stores.Feature.Get("block_id"))
+			References: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(Entity.Get("block_id"), Feature.Get("block_id"))
 			},
 		},
 		{
+			Id: "feature_id",
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:aggregate_feature/features/*"),
 				shared.JsonValue("minecraft:catalyst_feature/central_patch_feature"),
@@ -100,13 +101,16 @@ var Feature = &jsonHandler{
 				shared.JsonValue("minecraft:vegetation_patch_feature/vegetation_feature"),
 				shared.JsonValue("minecraft:weighted_random_feature/features/*/0"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				return stores.Feature.Get("id")
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Feature.Get("id")
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.Feature.Get("feature_id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Feature.Get("feature_id")
 			},
 		},
-	},
+	}
+	Feature.MolangLocations = []shared.JsonPath{
+		shared.JsonValue("minecraft:growing_plant_feature/age"),
+		shared.JsonValue("minecraft:growing_plant_feature/height_distribution/*/*"),
+	}
 }

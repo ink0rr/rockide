@@ -7,7 +7,7 @@ type Project struct {
 	RP string
 }
 
-type Reference struct {
+type Symbol struct {
 	Value string
 	URI   protocol.DocumentURI
 	Range *protocol.Range

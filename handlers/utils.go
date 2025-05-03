@@ -8,11 +8,24 @@ import (
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
-	"github.com/ink0rr/rockide/stores"
 )
 
-func animationControllerSources(id string, stores ...*stores.JsonStore) []core.Reference {
-	res := []core.Reference{}
+func difference(a []core.Symbol, b []core.Symbol) []core.Symbol {
+	result := []core.Symbol{}
+	set := map[string]bool{}
+	for _, ref := range b {
+		set[ref.Value] = true
+	}
+	for _, ref := range a {
+		if !set[ref.Value] {
+			result = append(result, ref)
+		}
+	}
+	return result
+}
+
+func animationControllerSources(id string, stores ...*JsonHandler) []core.Symbol {
+	res := []core.Symbol{}
 	matchedURIs := make(map[protocol.DocumentURI]bool)
 	for _, store := range stores {
 		for _, ref := range store.Get("animation_id") {
@@ -26,9 +39,9 @@ func animationControllerSources(id string, stores ...*stores.JsonStore) []core.R
 	return res
 }
 
-func animationControllerReferences(id string, source *stores.JsonStore, stores ...*stores.JsonStore) []core.Reference {
-	res := []core.Reference{}
-	referenceGroup := make(map[protocol.DocumentURI][]core.Reference)
+func animationControllerReferences(id string, source *JsonHandler, stores ...*JsonHandler) []core.Symbol {
+	res := []core.Symbol{}
+	referenceGroup := make(map[protocol.DocumentURI][]core.Symbol)
 	for _, store := range stores {
 		for _, ref := range store.Get("animation_id") {
 			referenceGroup[ref.URI] = append(referenceGroup[ref.URI], ref)
@@ -36,7 +49,7 @@ func animationControllerReferences(id string, source *stores.JsonStore, stores .
 	}
 	animationIds := []string{}
 	for _, refs := range referenceGroup {
-		if !slices.ContainsFunc(refs, func(ref core.Reference) bool { return ref.Value == id }) {
+		if !slices.ContainsFunc(refs, func(ref core.Symbol) bool { return ref.Value == id }) {
 			continue
 		}
 		for _, ref := range refs {

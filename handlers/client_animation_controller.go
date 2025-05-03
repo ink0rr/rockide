@@ -6,49 +6,57 @@ import (
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/stores"
 )
 
-var ClientAnimationController = &jsonHandler{
-	pattern: shared.ClientAnimationControllerGlob,
-	entries: []jsonHandlerEntry{
+var ClientAnimationController = &JsonHandler{Pattern: shared.ClientAnimationControllerGlob}
+
+func init() {
+	ClientAnimationController.Entries = []JsonEntry{
 		{
+			Id:         "id",
 			Path:       []shared.JsonPath{shared.JsonKey("animation_controllers/*")},
-			Actions:    completions | definitions | rename,
 			FilterDiff: true,
-			Source: func(params *jsonParams) []core.Reference {
-				filtered := []core.Reference{}
-				for _, ref := range slices.Concat(stores.Attachable.Get("animation_id"), stores.ClientEntity.Get("animation_id")) {
+			Source: func(ctx *JsonContext) []core.Symbol {
+				filtered := []core.Symbol{}
+				for _, ref := range slices.Concat(Attachable.Get("animation_id"), ClientEntity.Get("animation_id")) {
 					if strings.HasPrefix(ref.Value, "controller.") {
 						filtered = append(filtered, ref)
 					}
 				}
 				return filtered
 			},
-			References: func(params *jsonParams) []core.Reference {
-				return stores.ClientAnimationController.Get("id")
+			References: func(ctx *JsonContext) []core.Symbol {
+				return ClientAnimationController.Get("id")
 			},
 		},
 		{
+			Id: "animate_refs",
 			Path: []shared.JsonPath{
 				shared.JsonValue("animation_controllers/*/states/*/animations/*"),
 				shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
 			},
-			Actions: completions | definitions | rename,
-			Source: func(params *jsonParams) []core.Reference {
-				id, ok := params.Location.Path[1].(string)
+			Source: func(ctx *JsonContext) []core.Symbol {
+				id, ok := ctx.GetPath()[1].(string)
 				if !ok {
 					return nil
 				}
-				return animationControllerSources(id, stores.Attachable, stores.ClientEntity)
+				return animationControllerSources(id, Attachable, ClientEntity)
 			},
-			References: func(params *jsonParams) []core.Reference {
-				id, ok := params.Location.Path[1].(string)
+			References: func(ctx *JsonContext) []core.Symbol {
+				id, ok := ctx.GetPath()[1].(string)
 				if !ok {
 					return nil
 				}
-				return animationControllerReferences(id, stores.ClientAnimationController, stores.Attachable, stores.ClientEntity)
+				return animationControllerReferences(id, ClientAnimationController, Attachable, ClientEntity)
 			},
 		},
-	},
+	}
+	ClientAnimationController.MolangLocations = []shared.JsonPath{
+		shared.JsonValue("animation_controllers/*/states/*/animations/*/*"),
+		shared.JsonValue("animation_controllers/*/states/*/transitions/*/*"),
+		shared.JsonValue("animation_controllers/*/states/*/on_entry/*"),
+		shared.JsonValue("animation_controllers/*/states/*/on_exit/*"),
+		shared.JsonValue("animation_controllers/*/states/*/parameters/*"),
+		shared.JsonValue("animation_controllers/*/states/*/variables/*/input"),
+	}
 }
