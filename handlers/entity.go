@@ -44,6 +44,7 @@ func init() {
 			References: func(ctx *JsonContext) []core.Symbol {
 				return slices.Concat(ClientEntity.Get("id"), Entity.Get("id_refs"))
 			},
+			VanillaData: vanilla.EntityIdentifiers,
 		},
 		{
 			Id:         "animate",
