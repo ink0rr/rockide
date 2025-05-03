@@ -47,6 +47,7 @@ func init() {
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
+			VanillaData: vanilla.ItemTag,
 		},
 		{
 			Id:   "item_id",
