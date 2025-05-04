@@ -5,6 +5,7 @@ import (
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var Recipe = &JsonHandler{Pattern: shared.RecipeGlob}
@@ -28,11 +29,12 @@ func init() {
 				shared.JsonValue("minecraft:recipe_brewing_container/output"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Item.Get("id")
+				return slices.Concat(Block.Get("id"), Item.Get("id"))
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return slices.Concat(Attachable.Get("id"), ClientBlock.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
 			},
+			VanillaData: vanilla.ItemIdentifiers,
 		},
 	}
 }

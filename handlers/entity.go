@@ -297,6 +297,7 @@ func init() {
 				"minecraft:spawn_entity/entities/spawn_item",
 				"minecraft:spawn_entity/entities/*/spawn_item",
 				"minecraft:tameable/tame_items",
+				"minecraft:tameable/tame_items/*",
 				"minecraft:tamemount/auto_reject_items/*/item",
 				"minecraft:tamemount/feed_items/*/item",
 				"minecraft:trusting/trust_items",
@@ -307,10 +308,10 @@ func init() {
 				}
 			}),
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Item.Get("id")
+				return slices.Concat(Block.Get("id"), Item.Get("id"))
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return slices.Concat(Attachable.Get("id"), ClientBlock.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
 			},
 			VanillaData: vanilla.ItemIdentifiers,
 		},
@@ -328,7 +329,7 @@ func init() {
 				return Item.Get("id")
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return slices.Concat(Attachable.Get("id"), ClientBlock.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
 			},
 			VanillaData: vanilla.ItemIdentifiers,
 		},
