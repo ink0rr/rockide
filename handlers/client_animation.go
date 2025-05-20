@@ -39,6 +39,9 @@ func init() {
 		shared.JsonValue("animations/*/bones/*/scale/*/*"),
 		shared.JsonValue("animations/*/bones/*/position/*"),
 		shared.JsonValue("animations/*/bones/*/position/*/*"),
+		shared.JsonValue("animations/*/loop_delay"),
+		shared.JsonValue("animations/*/particle_effects/*/pre_effect_script"),
+		shared.JsonValue("animations/*/start_delay"),
 		shared.JsonValue("animations/*/timeline/*"),
 	}
 }

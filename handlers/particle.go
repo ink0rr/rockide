@@ -136,7 +136,7 @@ func init() {
 			"minecraft:particle_appearance_billboard/uv/flipbook/base_UV/*",
 			"minecraft:particle_appearance_billboard/uv/flipbook/max_frame",
 			"minecraft:particle_appearance_tinting/color/gradient/*/*",
-			"minecraft:particle_appearance/color/interpolant",
+			"minecraft:particle_appearance_tinting/color/interpolant",
 			"minecraft:particle_lifetime_expression/expiration_expression",
 			"minecraft:particle_lifetime_expression/max_lifetime",
 			"minecraft:particle_initialization/per_update_expression",

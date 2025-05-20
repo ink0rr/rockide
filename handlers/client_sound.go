@@ -35,4 +35,7 @@ func init() {
 			VanillaData: vanilla.SoundDefinition,
 		},
 	}
+	ClientSound.MolangLocations = []shared.JsonPath{
+		shared.JsonValue("entity_sounds/entities/*/variants/key"),
+	}
 }

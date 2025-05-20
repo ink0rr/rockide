@@ -35,7 +35,7 @@ func init() {
 		},
 	}
 	Geometry.MolangLocations = []shared.JsonPath{
-		shared.JsonValue("minecraft:geometry/bones/*/binding"),
+		shared.JsonValue("minecraft:geometry/*/bones/*/binding"),
 	}
 	Geometry.MolangSemanticLocations = []shared.JsonPath{
 		shared.JsonValue("minecraft:geometry/*/description/identifier"),
