@@ -75,8 +75,9 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 			Start: ctx.document.PositionAt(ctx.startOffset + token.Offset + 2),
 			End:   ctx.document.PositionAt(ctx.startOffset + token.Offset + token.Length),
 		}
+		res := []protocol.CompletionItem{}
 		if values.strings != nil {
-			return sliceutil.Map(values.strings, func(value string) protocol.CompletionItem {
+			res = sliceutil.Map(values.strings, func(value string) protocol.CompletionItem {
 				return protocol.CompletionItem{
 					Label: value,
 					TextEdit: &protocol.Or_CompletionItem_textEdit{
@@ -88,7 +89,6 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 				}
 			})
 		}
-		res := []protocol.CompletionItem{}
 		set := mapset.NewThreadUnsafeSet[string]()
 		for _, ref := range values.references {
 			if set.Contains(ref.Value) {

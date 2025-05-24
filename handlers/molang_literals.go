@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/vanilla"
 )
 
 var biomeTags = [...]string{
@@ -99,21 +100,21 @@ var molangTypes = map[string]func() molangValue{
 		return molangValue{references: Block.Get("tag")}
 	},
 	"BlockAndItemTag": func() molangValue {
-		return molangValue{references: slices.Concat(Block.Get("tag"), Item.Get("tag"))}
+		return molangValue{references: slices.Concat(Block.Get("tag"), Item.Get("tag")), strings: vanilla.ItemTag.ToSlice()}
 	},
 	"EntityIdentifier": func() molangValue {
-		return molangValue{references: Entity.Get("id")}
+		return molangValue{references: Entity.Get("id"), strings: vanilla.EntityIdentifiers.ToSlice()}
 	},
 	"EntityProperty": func() molangValue {
 		return molangValue{references: Entity.Get("property")}
 	},
 	"TypeFamily": func() molangValue {
-		return molangValue{references: Entity.Get("family")}
+		return molangValue{references: Entity.Get("family"), strings: vanilla.Family.ToSlice()}
 	},
 	"ItemIdentifier": func() molangValue {
-		return molangValue{references: Item.Get("id")}
+		return molangValue{references: Item.Get("id"), strings: vanilla.ItemIdentifiers.ToSlice()}
 	},
 	"ItemTag": func() molangValue {
-		return molangValue{references: Item.Get("tag")}
+		return molangValue{references: Item.Get("tag"), strings: vanilla.ItemTag.ToSlice()}
 	},
 }
