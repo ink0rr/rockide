@@ -91,7 +91,7 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 		}
 		set := mapset.NewThreadUnsafeSet[string]()
 		for _, ref := range values.references {
-			if set.Contains(ref.Value) {
+			if set.ContainsOne(ref.Value) {
 				continue
 			}
 			set.Add(ref.Value)

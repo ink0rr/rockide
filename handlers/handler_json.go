@@ -234,7 +234,7 @@ func (j *JsonHandler) Completions(document *textdocument.TextDocument, position 
 	}
 
 	for _, item := range items {
-		if set.Contains(item.Value) {
+		if set.ContainsOne(item.Value) {
 			continue
 		}
 		set.Add(item.Value)

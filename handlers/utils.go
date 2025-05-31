@@ -4,6 +4,7 @@ import (
 	"log"
 	"slices"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/protocol"
@@ -11,17 +12,17 @@ import (
 )
 
 func difference(a []core.Symbol, b []core.Symbol) []core.Symbol {
-	result := []core.Symbol{}
-	set := map[string]bool{}
+	res := []core.Symbol{}
+	set := mapset.NewThreadUnsafeSet[string]()
 	for _, ref := range b {
-		set[ref.Value] = true
+		set.Add(ref.Value)
 	}
 	for _, ref := range a {
-		if !set[ref.Value] {
-			result = append(result, ref)
+		if !set.ContainsOne(ref.Value) {
+			res = append(res, ref)
 		}
 	}
-	return result
+	return res
 }
 
 func animationControllerSources(id string, stores ...*JsonHandler) []core.Symbol {
