@@ -15,6 +15,8 @@ import (
 	"github.com/ink0rr/rockide/shared"
 )
 
+const defaultScope = "__default__"
+
 type JsonContext struct {
 	URI           protocol.DocumentURI
 	NodeValue     string
@@ -30,6 +32,8 @@ type JsonEntry struct {
 	DisableRename bool
 	// Filter completions to only show undeclared reference
 	FilterDiff bool
+	// Function to set the scope key. If omitted will use the `defaultScope` value
+	ScopeKey func(ctx *JsonContext) string
 	// Source for completions and definitions
 	Source func(ctx *JsonContext) []core.Symbol
 	// References that uses the same source
@@ -43,7 +47,7 @@ type JsonHandler struct {
 	Entries                 []JsonEntry
 	MolangLocations         []shared.JsonPath
 	MolangSemanticLocations []shared.JsonPath
-	store                   map[string][]core.Symbol
+	storeList               map[string]map[string][]core.Symbol
 	mu                      sync.Mutex
 }
 
@@ -54,8 +58,8 @@ func (j *JsonHandler) GetPattern() string {
 func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 	j.mu.Lock()
 	defer j.mu.Unlock()
-	if j.store == nil {
-		j.store = make(map[string][]core.Symbol)
+	if j.storeList == nil {
+		j.storeList = make(map[string]map[string][]core.Symbol)
 	}
 	if j.SavePath {
 		j.parsePath(uri)
@@ -66,14 +70,16 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 	}
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
 	for _, entry := range j.Entries {
-		data := j.store[entry.Id]
+		if j.storeList[entry.Id] == nil {
+			j.storeList[entry.Id] = make(map[string][]core.Symbol)
+		}
 		for _, jsonPath := range entry.Path {
 			for _, node := range jsonPath.GetNodes(root) {
 				nodeValue, ok := node.Value.(string)
 				if !ok {
 					continue
 				}
-				if entry.Matcher != nil && !entry.Matcher(&JsonContext{
+				ctx := JsonContext{
 					URI:       uri,
 					NodeValue: nodeValue,
 					GetPath: func() jsonc.Path {
@@ -83,13 +89,18 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 						path := jsonc.GetNodePath(node)
 						return jsonc.FindNodeAtLocation(root, path[:len(path)-1])
 					},
-				}) {
+				}
+				if entry.Matcher != nil && !entry.Matcher(&ctx) {
 					continue
 				}
 				if entry.Transform != nil {
 					nodeValue = entry.Transform(nodeValue)
 				}
-				data = append(data, core.Symbol{
+				var scope string
+				if entry.ScopeKey != nil {
+					scope = entry.ScopeKey(&ctx)
+				}
+				j.storeList[entry.Id][scope] = append(j.storeList[entry.Id][scope], core.Symbol{
 					Value: nodeValue,
 					URI:   uri,
 					Range: &protocol.Range{
@@ -99,7 +110,6 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 				})
 			}
 		}
-		j.store[entry.Id] = data
 	}
 	return nil
 }
@@ -115,20 +125,34 @@ func (j *JsonHandler) parsePath(uri protocol.DocumentURI) {
 	if !found {
 		panic("invalid project path")
 	}
-	j.store["path"] = append(j.store["path"], core.Symbol{Value: path, URI: uri})
+	if j.storeList["path"] == nil {
+		j.storeList["path"] = make(map[string][]core.Symbol)
+	}
+	j.storeList["path"][defaultScope] = append(j.storeList["path"][defaultScope], core.Symbol{Value: path, URI: uri})
 }
 
-func (j *JsonHandler) Get(id string) []core.Symbol {
+func (j *JsonHandler) Get(id string, scopes ...string) []core.Symbol {
 	j.mu.Lock()
 	defer j.mu.Unlock()
-	return j.store[id]
+
+	res := []core.Symbol{}
+	if len(scopes) > 0 {
+		for _, scope := range scopes {
+			res = append(res, j.storeList[id][scope]...)
+		}
+	} else {
+		for _, symbols := range j.storeList[id] {
+			res = append(res, symbols...)
+		}
+	}
+	return res
 }
 
-func (j *JsonHandler) GetFrom(uri protocol.DocumentURI, id string) []core.Symbol {
+func (j *JsonHandler) GetFrom(uri protocol.DocumentURI, id string, scopes ...string) []core.Symbol {
 	res := []core.Symbol{}
-	for _, ref := range j.Get(id) {
-		if ref.URI == uri {
-			res = append(res, ref)
+	for _, symbol := range j.Get(id, scopes...) {
+		if symbol.URI == uri {
+			res = append(res, symbol)
 		}
 	}
 	return res
@@ -137,14 +161,12 @@ func (j *JsonHandler) GetFrom(uri protocol.DocumentURI, id string) []core.Symbol
 func (j *JsonHandler) Delete(uri protocol.DocumentURI) {
 	j.mu.Lock()
 	defer j.mu.Unlock()
-	for id, refs := range j.store {
-		filtered := []core.Symbol{}
-		for _, ref := range refs {
-			if ref.URI != uri {
-				filtered = append(filtered, ref)
-			}
+	for _, store := range j.storeList {
+		for scope, symbols := range store {
+			store[scope] = slices.DeleteFunc(symbols, func(symbol core.Symbol) bool {
+				return symbol.URI == uri
+			})
 		}
-		j.store[id] = filtered
 	}
 }
 
@@ -209,15 +231,16 @@ func (j *JsonHandler) Completions(document *textdocument.TextDocument, position 
 	offset := document.OffsetAt(position)
 	location := jsonc.GetLocation(document.GetText(), offset)
 	node := location.PreviousNode
+
+	res := []protocol.CompletionItem{}
 	if j.isMolangLocation(location) {
 		if ctx := NewMolangContext(document, location, offset); ctx != nil {
-			return MolangCompletions(ctx)
+			res = MolangCompletions(ctx)
 		}
-		return nil
 	}
 	entry, ctx := j.prepareContext(document, location)
 	if entry == nil || entry.Source == nil || entry.References == nil {
-		return nil
+		return res
 	}
 
 	var items []core.Symbol
@@ -227,7 +250,6 @@ func (j *JsonHandler) Completions(document *textdocument.TextDocument, position 
 		items = entry.Source(ctx)
 	}
 
-	res := []protocol.CompletionItem{}
 	set := mapset.NewThreadUnsafeSet[string]()
 	if entry.VanillaData != nil {
 		set = entry.VanillaData.Clone()
@@ -265,26 +287,26 @@ func (j *JsonHandler) Definitions(document *textdocument.TextDocument, position 
 	if node == nil {
 		return nil
 	}
+
+	res := []protocol.LocationLink{}
 	if j.isMolangLocation(location) {
 		if ctx := NewMolangContext(document, location, offset); ctx != nil {
-			return MolangDefinitions(ctx)
+			res = MolangDefinitions(ctx)
 		}
-		return nil
 	}
 	entry, ctx := j.prepareContext(document, location)
 	if entry == nil || entry.Source == nil || entry.References == nil {
-		return nil
+		return res
 	}
 
 	nodeValue, ok := node.Value.(string)
 	if !ok {
-		return nil
+		return res
 	}
 	if entry.Transform != nil {
 		nodeValue = entry.Transform(nodeValue)
 	}
 
-	res := []protocol.LocationLink{}
 	for _, item := range entry.Source(ctx) {
 		if item.Value != nodeValue {
 			continue

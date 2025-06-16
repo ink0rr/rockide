@@ -130,6 +130,130 @@ func init() {
 			},
 		},
 		{
+			Id:         "property_value",
+			Path:       []shared.JsonPath{shared.JsonValue("minecraft:entity/description/properties/*/values/*")},
+			FilterDiff: true,
+			ScopeKey: func(ctx *JsonContext) string {
+				if id, ok := ctx.GetPath()[3].(string); ok {
+					return id
+				}
+				return defaultScope
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				if id, ok := ctx.GetPath()[3].(string); ok {
+					return Entity.GetFrom(ctx.URI, "property_value_refs", id)
+				}
+				return nil
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				if id, ok := ctx.GetPath()[3].(string); ok {
+					return Entity.GetFrom(ctx.URI, "property_value", id)
+				}
+				return nil
+			},
+		},
+		{
+			Id:   "property_value_refs",
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:entity/description/properties/*/default")},
+			ScopeKey: func(ctx *JsonContext) string {
+				if id, ok := ctx.GetPath()[3].(string); ok {
+					return id
+				}
+				return defaultScope
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				if id, ok := ctx.GetPath()[3].(string); ok {
+					return Entity.GetFrom(ctx.URI, "property_value", id)
+				}
+				return nil
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				if id, ok := ctx.GetPath()[3].(string); ok {
+					return Entity.GetFrom(ctx.URI, "property_value_refs", id)
+				}
+				return nil
+			},
+		},
+		{
+			Id:   "property_value_refs",
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:entity/events/**/set_property/*")},
+			ScopeKey: func(ctx *JsonContext) string {
+				path := ctx.GetPath()
+				if id, ok := path[len(path)-1].(string); ok {
+					return id
+				}
+				return defaultScope
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				path := ctx.GetPath()
+				if id, ok := path[len(path)-1].(string); ok {
+					return Entity.GetFrom(ctx.URI, "property_value", id)
+				}
+				return nil
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				path := ctx.GetPath()
+				if id, ok := path[len(path)-1].(string); ok {
+					return Entity.GetFrom(ctx.URI, "property_value_refs", id)
+				}
+				return nil
+			},
+		},
+		{
+			Id: "property_value_refs",
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "enum_property"
+			},
+			ScopeKey: func(ctx *JsonContext) string {
+				parent := ctx.GetParentNode()
+				domain := jsonc.FindNodeAtLocation(parent, jsonc.Path{"domain"})
+				if domain == nil {
+					return defaultScope
+				}
+				if id, ok := domain.Value.(string); ok {
+					return id
+				}
+				return defaultScope
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				parent := ctx.GetParentNode()
+				domain := jsonc.FindNodeAtLocation(parent, jsonc.Path{"domain"})
+				if domain == nil {
+					return nil
+				}
+				id, ok := domain.Value.(string)
+				if !ok {
+					return nil
+				}
+				subject := jsonc.FindNodeAtLocation(parent, jsonc.Path{"subject"})
+				if subject == nil || subject.Value == "self" {
+					return Entity.GetFrom(ctx.URI, "property_value", id)
+				}
+				return Entity.Get("property_value", id)
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				parent := ctx.GetParentNode()
+				domain := jsonc.FindNodeAtLocation(parent, jsonc.Path{"domain"})
+				if domain == nil {
+					return nil
+				}
+				id, ok := domain.Value.(string)
+				if !ok {
+					return nil
+				}
+				subject := jsonc.FindNodeAtLocation(parent, jsonc.Path{"subject"})
+				if subject == nil || subject.Value == "self" {
+					return Entity.GetFrom(ctx.URI, "property_value_refs", id)
+				}
+				return Entity.Get("property_value_refs", id)
+			},
+		},
+		{
 			Id:         "component_group",
 			Path:       []shared.JsonPath{shared.JsonKey("minecraft:entity/component_groups/*")},
 			FilterDiff: true,
