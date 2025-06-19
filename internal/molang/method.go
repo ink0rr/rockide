@@ -900,6 +900,11 @@ var molangQueries = []Method{
 		Description: "Returns 1.0 if the entity is riding, else it returns 0.0.",
 	},
 	{
+		Name:        "is_riding_any_entity_of_type",
+		Signature:   "(...identifiers: EntityIdentifier[]): boolean",
+		Description: "Returns whether or not the entity is currently riding an entity of any of the designated types.",
+	},
+	{
 		Name:        "is_rising",
 		Signature:   ": boolean",
 		Description: "(No longer available in pack min_engine_version 1.20.50.) DEPRECATED after 1.20.40. Returns 1.0 if behavior.timer_flag_2 is running, else it returns 0.0.",
