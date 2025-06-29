@@ -22,12 +22,14 @@ func NewParser(source string) (*Parser, error) {
 			match := tp.pattern.FindString(current)
 			if match != "" {
 				length := uint32(len(match))
-				parser.Tokens = append(parser.Tokens, Token{
-					Kind:   tp.kind,
-					Value:  match,
-					Offset: offset,
-					Length: length,
-				})
+				if tp.kind != KindUnknown {
+					parser.Tokens = append(parser.Tokens, Token{
+						Kind:   tp.kind,
+						Value:  match,
+						Offset: offset,
+						Length: length,
+					})
+				}
 				current = current[length:]
 				offset += length
 				matched = true

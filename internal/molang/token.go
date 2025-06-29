@@ -5,17 +5,16 @@ import "regexp"
 type TokenKind string
 
 const (
-	KindNumber     TokenKind = "NUMBER"
-	KindString     TokenKind = "STRING"
-	KindMacro      TokenKind = "THIS"
-	KindMethod     TokenKind = "METHOD"
-	KindPrefix     TokenKind = "PREFIX"
-	KindKeyword    TokenKind = "KEYWORD"
-	KindOperator   TokenKind = "OPERATOR"
-	KindParen      TokenKind = "PAREN"
-	KindComma      TokenKind = "COMMA"
-	KindWhitespace TokenKind = "WHITESPACE"
-	KindUnknown    TokenKind = "UNKNOWN"
+	KindNumber   TokenKind = "NUMBER"
+	KindString   TokenKind = "STRING"
+	KindMacro    TokenKind = "THIS"
+	KindMethod   TokenKind = "METHOD"
+	KindPrefix   TokenKind = "PREFIX"
+	KindKeyword  TokenKind = "KEYWORD"
+	KindOperator TokenKind = "OPERATOR"
+	KindParen    TokenKind = "PAREN"
+	KindComma    TokenKind = "COMMA"
+	KindUnknown  TokenKind = "UNKNOWN"
 )
 
 type Token struct {
@@ -40,7 +39,7 @@ var tokenPatterns = []tokenPattern{
 	{KindOperator, regexp.MustCompile(`^[+\-*/%><=!&|;:?]+`)},
 	{KindParen, regexp.MustCompile(`^[\(\)\{\}\[\]]`)},
 	{KindComma, regexp.MustCompile(`^,`)},
-	{KindWhitespace, regexp.MustCompile(`^\s+`)},
+	{KindUnknown, regexp.MustCompile(`^\s+`)},
 	{KindUnknown, regexp.MustCompile(`^\w+`)},
 	{KindUnknown, regexp.MustCompile(`^.`)},
 }
