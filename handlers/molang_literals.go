@@ -79,6 +79,8 @@ var equipmentSlots = [...]string{
 	"slot.equippable",
 }
 
+var graphicsModes = [...]string{"simple", "fancy", "deferred", "raytraced"}
+
 var inputModes = [...]string{"keyboard_and_mouse", "touch", "gamepad", "motion_controller"}
 
 type molangValue struct {
@@ -92,6 +94,9 @@ var molangTypes = map[string]func() molangValue{
 	},
 	"EquipmentSlot": func() molangValue {
 		return molangValue{strings: equipmentSlots[:]}
+	},
+	"GraphicsMode": func() molangValue {
+		return molangValue{strings: graphicsModes[:]}
 	},
 	"InputMode": func() molangValue {
 		return molangValue{strings: inputModes[:]}

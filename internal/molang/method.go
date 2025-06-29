@@ -398,6 +398,11 @@ var molangQueries = []Method{
 		Description: "Gets specified axis of the specified locator offset of the root model.",
 	},
 	{
+		Name:        "graphics_mode_is_any",
+		Signature:   "(...graphicsModes: GraphicsMode[]): boolean",
+		Description: "Takes in one or more arguments ('simple', 'fancy', 'deferred', 'raytraced'). If the graphics mode of the client matches any of the arguments, return 1.0. Available on the Client (Resource Packs) only.",
+	},
+	{
 		Name:        "ground_speed",
 		Signature:   ": number",
 		Description: "Returns the ground speed of the entity in meters/second.",
@@ -411,6 +416,11 @@ var molangQueries = []Method{
 		Name:        "has_any_family",
 		Signature:   "(...families: TypeFamily[]): boolean",
 		Description: "Returns 1 if the entity has any of the specified families, else 0.",
+	},
+	{
+		Name:        "has_any_leashed_entity_of_type",
+		Signature:   "(...identifiers: EntityIdentifier[]): boolean",
+		Description: "Returns whether or not the entity is currently leashing other entities of the designated types.",
 	},
 	{
 		Name:        "has_armor_slot",
@@ -1100,6 +1110,11 @@ var molangQueries = []Method{
 		Name:        "last_input_mode_is_any",
 		Signature:   "(...inputModes: InputMode[]): boolean",
 		Description: "Takes one or more arguments ('keyboard_and_mouse', 'touch', 'gamepad', or 'motion_controller'). If the last input used is any of the specified string values, returns 1.0. Otherwise returns 0.0. Available on the Client (Resource Packs) only.",
+	},
+	{
+		Name:        "leashed_entity_count",
+		Signature:   ": number",
+		Description: "Returns the number of entities for which this entity is the leash holder.",
 	},
 	{
 		Name:        "lie_amount",
