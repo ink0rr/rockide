@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
@@ -34,6 +35,12 @@ func init() {
 				shared.JsonValue("animation_controllers/*/states/*/animations/*"),
 				shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
 			},
+			ScopeKey: func(ctx *JsonContext) string {
+				if id, ok := ctx.GetPath()[1].(string); ok {
+					return id
+				}
+				return defaultScope
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				id, ok := ctx.GetPath()[1].(string)
 				if !ok {
@@ -46,7 +53,10 @@ func init() {
 				if !ok {
 					return nil
 				}
-				return animationControllerReferences(id, AnimationController, Entity)
+				return slices.Concat(
+					AnimationController.GetFrom(ctx.URI, "animate_refs", id),
+					animationControllerReferences(id, Entity),
+				)
 			},
 		},
 	}

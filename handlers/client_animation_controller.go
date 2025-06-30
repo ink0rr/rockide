@@ -35,6 +35,12 @@ func init() {
 				shared.JsonValue("animation_controllers/*/states/*/animations/*"),
 				shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
 			},
+			ScopeKey: func(ctx *JsonContext) string {
+				if id, ok := ctx.GetPath()[1].(string); ok {
+					return id
+				}
+				return defaultScope
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				id, ok := ctx.GetPath()[1].(string)
 				if !ok {
@@ -47,7 +53,10 @@ func init() {
 				if !ok {
 					return nil
 				}
-				return animationControllerReferences(id, ClientAnimationController, Attachable, ClientEntity)
+				return slices.Concat(
+					ClientAnimationController.GetFrom(ctx.URI, "animate_refs", id),
+					animationControllerReferences(id, Attachable, ClientEntity),
+				)
 			},
 		},
 	}

@@ -37,6 +37,9 @@ func init() {
 		{
 			Id:   "animation_id",
 			Path: []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/animations/*")},
+			ScopeKey: func(ctx *JsonContext) string {
+				return ctx.NodeValue
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return slices.Concat(ClientAnimationController.Get("id"), ClientAnimation.Get("id"))
 			},
