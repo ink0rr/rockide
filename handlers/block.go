@@ -67,7 +67,9 @@ func init() {
 		},
 	}
 	Block.MolangLocations = []shared.JsonPath{
+		shared.JsonValue("minecraft:block/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),
 		shared.JsonValue("minecraft:block/components/minecraft:geometry/bone_visibility/*"),
+		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/bone_visibility/*"),
 		shared.JsonValue("minecraft:block/permutations/*/condition"),
 	}

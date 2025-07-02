@@ -32,6 +32,7 @@ func init() {
 	}
 	ClientAnimation.MolangLocations = []shared.JsonPath{
 		shared.JsonValue("animations/*/anim_time_update"),
+		shared.JsonValue("animations/*/blend_weight"),
 		shared.JsonValue("animations/*/bones/*/rotation/*"),
 		shared.JsonValue("animations/*/bones/*/rotation/*/*"),
 		shared.JsonValue("animations/*/bones/*/scale"),
