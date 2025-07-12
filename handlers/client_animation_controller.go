@@ -66,6 +66,7 @@ func init() {
 		shared.JsonValue("animation_controllers/*/states/*/on_entry/*"),
 		shared.JsonValue("animation_controllers/*/states/*/on_exit/*"),
 		shared.JsonValue("animation_controllers/*/states/*/parameters/*"),
+		shared.JsonValue("animation_controllers/*/states/*/particle_effects/*/pre_effect_script"),
 		shared.JsonValue("animation_controllers/*/states/*/variables/*/input"),
 	}
 }

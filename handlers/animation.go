@@ -31,5 +31,6 @@ func init() {
 	}
 	Animation.MolangLocations = []shared.JsonPath{
 		shared.JsonValue("animations/*/anim_time_update"),
+		shared.JsonValue("animations/*/timeline/*/*"),
 	}
 }
