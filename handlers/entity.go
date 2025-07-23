@@ -28,6 +28,7 @@ func init() {
 		{
 			Id: "id_refs",
 			Path: sliceutil.FlatMap([]string{
+				"minecraft:behavior.follow_mob/preferred_actor_type",
 				"minecraft:behavior.mingle/mingle_partner_type",
 				"minecraft:breedable/breeds_with/baby_type",
 				"minecraft:breedable/breeds_with/mate_type",
@@ -296,6 +297,24 @@ func init() {
 				shared.JsonValue("minecraft:entity/events/**/trigger"),
 				shared.JsonValue("minecraft:entity/events/**/trigger/event"),
 			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "event")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return Entity.GetFrom(ctx.URI, "event_refs")
+			},
+		},
+		{
+			Id: "event_refs",
+			Path: sliceutil.FlatMap([]string{
+				"minecraft:rideable/on_rider_enter_event",
+				"minecraft:rideable/on_rider_exit_event",
+			}, func(value string) []shared.JsonPath {
+				return []shared.JsonPath{
+					shared.JsonValue("minecraft:entity/components/" + value),
+					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
+				}
+			}),
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return Entity.GetFrom(ctx.URI, "event")
 			},
