@@ -3,6 +3,7 @@ package molang
 import (
 	"fmt"
 	"slices"
+	"strconv"
 )
 
 type Parser struct {
@@ -11,6 +12,8 @@ type Parser struct {
 }
 
 func NewParser(source string) (*Parser, error) {
+	escaped := strconv.QuoteToASCII(source)
+	source = escaped[1 : len(escaped)-1]
 	parser := &Parser{Source: source}
 
 	current := source
