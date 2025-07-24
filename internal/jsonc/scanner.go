@@ -57,17 +57,17 @@ func CreateScanner(text string, ignoreTrivia bool) Scanner {
 	}
 }
 
-func (s *scanner) scanHexDigits(count uint32, exact bool) (byte, error) {
+func (s *scanner) scanHexDigits(count uint32, exact bool) (rune, error) {
 	digits := uint32(0)
-	value := byte(0)
+	value := rune(0)
 	for digits < count || !exact {
 		ch := charAt(s.text, s.pos)
 		if ch >= '0' && ch <= '9' {
-			value = value*16 + ch - '0'
+			value = value*16 + rune(ch-'0')
 		} else if ch >= 'A' && ch <= 'F' {
-			value = value*16 + ch - 'A' + 10
+			value = value*16 + rune(ch-'A'+10)
 		} else if ch >= 'a' && ch <= 'f' {
-			value = value*16 + ch - 'a' + 10
+			value = value*16 + rune(ch-'a'+10)
 		} else {
 			break
 		}
