@@ -8,7 +8,7 @@ type Location struct {
 
 // For a given offset, evaluate the location in the JSON document. Each segment in the location path is either a property name or an array index.
 func GetLocation(text string, position uint32) *Location {
-	isError := false
+	earlyReturn := false
 	segments := Path{}
 	previousNode := &Node{Type: NodeTypeNull}
 	previousNodeInst := &Node{Type: NodeTypeNull}
@@ -25,11 +25,11 @@ func GetLocation(text string, position uint32) *Location {
 
 	Visit(text, &Visitor{
 		OnObjectBegin: func(offset, length, startLine, startCharacter uint32, pathSupplier func() Path) bool {
-			if isError {
+			if earlyReturn {
 				return false
 			}
 			if position <= offset {
-				isError = true
+				earlyReturn = true
 				return false
 			}
 			previousNode = nil
@@ -38,26 +38,26 @@ func GetLocation(text string, position uint32) *Location {
 			return true
 		},
 		OnObjectProperty: func(name string, offset, length, startLine, startCharacter uint32, pathSupplier func() Path) {
-			if isError {
+			if earlyReturn {
 				return
 			}
 			if position < offset {
-				isError = true
+				earlyReturn = true
 				return
 			}
 			setPreviousNode(name, offset, length, NodeTypeProperty)
 			segments[len(segments)-1] = name
 			if position <= offset+length {
-				isError = true
+				earlyReturn = true
 				return
 			}
 		},
 		OnObjectEnd: func(offset, length, startLine, startCharacter uint32) {
-			if isError {
+			if earlyReturn {
 				return
 			}
 			if position <= offset {
-				isError = true
+				earlyReturn = true
 				return
 			}
 			previousNode = nil
@@ -66,11 +66,11 @@ func GetLocation(text string, position uint32) *Location {
 			}
 		},
 		OnArrayBegin: func(offset, length, startLine, startCharacter uint32, pathSupplier func() Path) bool {
-			if isError {
+			if earlyReturn {
 				return false
 			}
 			if position <= offset {
-				isError = true
+				earlyReturn = true
 				return false
 			}
 			previousNode = nil
@@ -78,36 +78,36 @@ func GetLocation(text string, position uint32) *Location {
 			return true
 		},
 		OnArrayEnd: func(offset, length, startLine, startCharacter uint32) {
-			if isError {
+			if earlyReturn {
 				return
 			}
 			if position <= offset {
-				isError = true
+				earlyReturn = true
 				return
 			}
 			previousNode = nil
 			segments = segments[:len(segments)-1]
 		},
 		OnLiteralValue: func(value any, offset, length, startLine, startCharacter uint32, pathSupplier func() Path) {
-			if isError {
+			if earlyReturn {
 				return
 			}
 			if position < offset {
-				isError = true
+				earlyReturn = true
 				return
 			}
 			setPreviousNode(value, offset, length, getNodeType(value))
 			if position <= offset+length {
-				isError = true
+				earlyReturn = true
 				return
 			}
 		},
 		OnSeparator: func(sep string, offset, length, startLine, startCharacter uint32) {
-			if isError {
+			if earlyReturn {
 				return
 			}
 			if position <= offset {
-				isError = true
+				earlyReturn = true
 				return
 			}
 			if sep == ":" && previousNode != nil && previousNode.Type == NodeTypeProperty {
@@ -127,6 +127,11 @@ func GetLocation(text string, position uint32) *Location {
 			}
 		},
 	}, nil)
+
+	if previousNode != nil && !(position >= previousNode.Offset && position <= previousNode.Offset+previousNode.Length) {
+		previousNode = nil
+	}
+
 	return &Location{
 		Path:            segments,
 		PreviousNode:    previousNode,
