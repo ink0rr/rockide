@@ -73,6 +73,55 @@ var ClientAnimationController = &JsonHandler{
 				return res
 			},
 		},
+		{
+			Store:      stores.ClientControllerState.Source,
+			Path:       []shared.JsonPath{shared.JsonKey("animation_controllers/*/states/*")},
+			FilterDiff: true,
+			ScopeKey: func(ctx *JsonContext) string {
+				if id, ok := ctx.GetPath()[1].(string); ok {
+					return id
+				}
+				return defaultScope
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				id, ok := ctx.GetPath()[1].(string)
+				if !ok {
+					return nil
+				}
+				return stores.ClientControllerState.References.GetFrom(ctx.URI, id)
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				id, ok := ctx.GetPath()[1].(string)
+				if !ok {
+					return nil
+				}
+				return stores.ClientControllerState.Source.GetFrom(ctx.URI, id)
+			},
+		},
+		{
+			Store: stores.ClientControllerState.References,
+			Path:  []shared.JsonPath{shared.JsonKey("animation_controllers/*/states/*/transitions/*/*")},
+			ScopeKey: func(ctx *JsonContext) string {
+				if id, ok := ctx.GetPath()[1].(string); ok {
+					return id
+				}
+				return defaultScope
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				id, ok := ctx.GetPath()[1].(string)
+				if !ok {
+					return nil
+				}
+				return stores.ClientControllerState.Source.GetFrom(ctx.URI, id)
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				id, ok := ctx.GetPath()[1].(string)
+				if !ok {
+					return nil
+				}
+				return stores.ClientControllerState.References.GetFrom(ctx.URI, id)
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("animation_controllers/*/states/*/animations/*/*"),
