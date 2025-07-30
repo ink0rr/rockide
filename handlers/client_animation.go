@@ -1,24 +1,23 @@
 package handlers
 
 import (
-	"slices"
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var ClientAnimation = &JsonHandler{Pattern: shared.ClientAnimationGlob}
-
-func init() {
-	ClientAnimation.Entries = []JsonEntry{
+var ClientAnimation = &JsonHandler{
+	Pattern: shared.ClientAnimationGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.ClientAnimation.Source,
 			Path:       []shared.JsonPath{shared.JsonKey("animations/*")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
 				filtered := []core.Symbol{}
-				for _, ref := range slices.Concat(Attachable.Get("animation_id"), ClientEntity.Get("animation_id")) {
+				for _, ref := range stores.ClientAnimation.References.Get() {
 					if strings.HasPrefix(ref.Value, "animation.") {
 						filtered = append(filtered, ref)
 					}
@@ -26,11 +25,11 @@ func init() {
 				return filtered
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return ClientAnimation.Get("id")
+				return stores.ClientAnimation.Source.Get()
 			},
 		},
-	}
-	ClientAnimation.MolangLocations = []shared.JsonPath{
+	},
+	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("animations/*/anim_time_update"),
 		shared.JsonValue("animations/*/blend_weight"),
 		shared.JsonValue("animations/*/bones/*/rotation/*"),
@@ -44,5 +43,5 @@ func init() {
 		shared.JsonValue("animations/*/particle_effects/*/pre_effect_script"),
 		shared.JsonValue("animations/*/start_delay"),
 		shared.JsonValue("animations/*/timeline/*"),
-	}
+	},
 }

@@ -1,29 +1,23 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var FeatureRule = &JsonHandler{Pattern: shared.FeatureRuleGlob}
-
-func init() {
-	FeatureRule.Entries = []JsonEntry{
+var FeatureRule = &JsonHandler{
+	Pattern: shared.FeatureRuleGlob,
+	Entries: []JsonEntry{
 		{
-			Id:   "id",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/identifier")},
-		},
-		{
-			Id:   "feature_id",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/places_feature")},
+			Store: stores.FeatureId.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:feature_rules/description/places_feature")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Feature.Get("id")
+				return stores.FeatureId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Feature.Get("feature_id"), FeatureRule.Get("feature_id"))
+				return stores.FeatureId.References.Get()
 			},
 		},
-	}
+	},
 }

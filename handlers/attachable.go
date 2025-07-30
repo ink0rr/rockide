@@ -1,170 +1,155 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Attachable = &JsonHandler{Pattern: shared.AttachableGlob}
-
-func init() {
-	Attachable.Entries = []JsonEntry{
+var Attachable = &JsonHandler{
+	Pattern: shared.AttachableGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.ItemId.References,
 			Path:       []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/identifier")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Item.Get("id")
+				return stores.ItemId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return stores.ItemId.References.Get()
 			},
 		},
 		{
-			Id:         "animate",
+			Store:      stores.ClientAnimate.Source,
 			Path:       []shared.JsonPath{shared.JsonKey("minecraft:attachable/description/animations/*")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Attachable.GetFrom(ctx.URI, "animate_refs")
+				return stores.ClientAnimate.References.GetFrom(ctx.URI)
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Attachable.GetFrom(ctx.URI, "animate")
+				return stores.ClientAnimate.Source.GetFrom(ctx.URI)
 			},
 		},
 		{
-			Id:   "animation_id",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/animations/*")},
-			ScopeKey: func(ctx *JsonContext) string {
-				return ctx.NodeValue
-			},
-			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(ClientAnimationController.Get("id"), ClientAnimation.Get("id"))
-			},
-			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("animation_id"), ClientEntity.Get("animation_id"))
-			},
-			VanillaData: vanilla.AnimationAndController,
-		},
-		{
-			Id: "animate_refs",
+			Store: stores.ClientAnimate.References,
 			Path: []shared.JsonPath{
 				shared.JsonKey("minecraft:attachable/description/scripts/animate/*/*"),
 				shared.JsonValue("minecraft:attachable/description/scripts/animate/*"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Attachable.GetFrom(ctx.URI, "animate")
+				return stores.ClientAnimate.Source.GetFrom(ctx.URI)
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Attachable.GetFrom(ctx.URI, "animate_refs")
+				return stores.ClientAnimate.References.GetFrom(ctx.URI)
 			},
 		},
 		{
-			Id:   "material",
+			Store: stores.ClientAnimation.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/animations/*")},
+			ScopeKey: func(ctx *JsonContext) string {
+				return ctx.NodeValue
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ClientAnimation.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ClientAnimation.References.Get()
+			},
+		},
+		{
 			Path: []shared.JsonPath{shared.JsonKey("minecraft:attachable/description/materials/*")},
 			// TODO
 		},
 		{
-			Id:   "material_id",
 			Path: []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/materials/*")},
 			// TODO
 		},
 		{
-			Id:   "texture",
 			Path: []shared.JsonPath{shared.JsonKey("minecraft:attachable/description/textures/*")},
 			// TODO
 		},
 		{
-			Id:            "texture_path",
 			Path:          []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/textures/*")},
 			DisableRename: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Texture.GetPaths()
+				return stores.TexturePath.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
-			VanillaData: vanilla.TexturePaths,
 		},
 		{
-			Id:   "geometry",
 			Path: []shared.JsonPath{shared.JsonKey("minecraft:attachable/description/geometry/*")},
 			// TODO
 		},
 		{
-			Id:   "geometry_id",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/geometry/*")},
+			Store: stores.Geometry.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/geometry/*")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Geometry.Get("id")
+				return stores.Geometry.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("geometry_id"), Block.Get("geometry_id"), ClientEntity.Get("geometry_id"))
+				return stores.Geometry.References.Get()
 			},
-			VanillaData: vanilla.Geometry,
 		},
 		{
-			Id: "render_controller_id",
+			Store: stores.RenderControllerId.References,
 			Path: []shared.JsonPath{
 				shared.JsonKey("minecraft:attachable/description/render_controllers/*/*"),
 				shared.JsonValue("minecraft:attachable/description/render_controllers/*"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return RenderController.Get("id")
+				return stores.RenderControllerId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("render_controller_id"), ClientEntity.Get("render_controller_id"))
+				return stores.RenderControllerId.References.Get()
 			},
-			VanillaData: vanilla.RenderController,
 		},
 		{
-			Id: "particle",
 			Path: []shared.JsonPath{
 				shared.JsonKey("minecraft:attachable/description/particle_effects/*"),
 				shared.JsonKey("minecraft:attachable/description/particle_emitters/*"),
 			},
+			// TODO
 		},
 		{
-			Id: "particle_id",
+			Store: stores.ParticleId.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:attachable/description/particle_effects/*"),
 				shared.JsonValue("minecraft:attachable/description/particle_emitters/*"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Particle.Get("id")
+				return stores.ParticleId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("particle_id"), ClientEntity.Get("particle_id"), Particle.Get("particle_id"))
+				return stores.ParticleId.References.Get()
 			},
-			VanillaData: vanilla.ParticleIdentifiers,
 		},
 		{
-			Id:   "sound_definition",
 			Path: []shared.JsonPath{shared.JsonKey("minecraft:attachable/description/sound_effects/*")},
 			// TODO
 		},
 		{
-			Id:   "sound_definition_id",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/sound_effects/*")},
+			Store: stores.SoundDefinition.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:attachable/description/sound_effects/*")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return SoundDefinition.Get("id")
+				return stores.SoundDefinition.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("sound_definition_id"), ClientEntity.Get("sound_definition_id"))
+				return stores.SoundDefinition.References.Get()
 			},
-			VanillaData: vanilla.SoundDefinition,
 		},
-	}
-	Attachable.MolangLocations = []shared.JsonPath{
+	},
+	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:attachable/description/scripts/animate/*/*"),
 		shared.JsonValue("minecraft:attachable/description/scripts/initialize/*"),
 		shared.JsonValue("minecraft:attachable/description/scripts/parent_setup"),
 		shared.JsonValue("minecraft:attachable/description/scripts/pre_animation/*"),
 		shared.JsonValue("minecraft:attachable/description/scripts/scale"),
 		shared.JsonValue("minecraft:attachable/description/render_controllers/*/*"),
-	}
-	Attachable.MolangSemanticLocations = []shared.JsonPath{
+	},
+	MolangSemanticLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:attachable/description/geometry/*"),
-	}
+	},
 }

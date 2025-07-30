@@ -1,19 +1,17 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var TradeTable = &JsonHandler{Pattern: shared.TradeTableGlob, SavePath: true}
-
-func init() {
-	TradeTable.Entries = []JsonEntry{
+var TradeTable = &JsonHandler{
+	Pattern:   shared.TradeTableGlob,
+	PathStore: stores.TradeTablePath,
+	Entries: []JsonEntry{
 		{
-			Id: "item_id",
+			Store: stores.ItemId.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("tiers/*/groups/*/trades/*/gives/*/item"),
 				shared.JsonValue("tiers/*/groups/*/trades/*/wants/*/item"),
@@ -21,12 +19,11 @@ func init() {
 				shared.JsonValue("tiers/*/trades/*/wants/*/item"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Block.Get("id"), Item.Get("id"))
+				return stores.ItemId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), ClientBlock.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return stores.ItemId.References.Get()
 			},
-			VanillaData: vanilla.ItemIdentifiers,
 		},
-	}
+	},
 }

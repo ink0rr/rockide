@@ -1,70 +1,64 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Item = &JsonHandler{Pattern: shared.ItemGlob}
-
-func init() {
-	Item.Entries = []JsonEntry{
+var Item = &JsonHandler{
+	Pattern: shared.ItemGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.ItemId.Source,
 			Path:       []shared.JsonPath{shared.JsonValue("minecraft:item/description/identifier")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return stores.ItemId.References.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Item.Get("id")
+				return stores.ItemId.Source.Get()
 			},
 		},
 		{
-			Id: "icon",
+			Store: stores.ItemTexture.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:item/components/minecraft:icon"),
 				shared.JsonValue("minecraft:item/components/minecraft:icon/texture"),
 				shared.JsonValue("minecraft:item/components/minecraft:icon/textures/*"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return ItemTexture.Get("id")
+				return stores.ItemTexture.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Item.Get("icon"), ClientEntity.Get("spawn_egg"))
+				return stores.ItemTexture.References.Get()
 			},
-			VanillaData: vanilla.ItemTexture,
 		},
 		{
-			Id:   "tag",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:tags/tags/*")},
+			Store: stores.ItemTag.Source,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:tags/tags/*")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Item.Get("tag")
+				return stores.ItemTag.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
-			VanillaData: vanilla.ItemTag,
 		},
 		{
-			Id:   "item_id",
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:repairable/repair_items/*/items/*")},
+			Store: stores.ItemId.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:repairable/repair_items/*/items/*")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Block.Get("id"), Item.Get("id"))
+				return stores.ItemId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), ClientBlock.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return stores.ItemId.References.Get()
 			},
-			VanillaData: vanilla.ItemIdentifiers,
 		},
-	}
-	Item.MolangLocations = []shared.JsonPath{
+	},
+	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:item/components/**/condition"),
 		shared.JsonValue("minecraft:item/components/minecraft:repairable/repair_items/*/repair_amount"),
 		shared.JsonValue("minecraft:item/components/minecraft:icon/frame"),
 		shared.JsonValue("minecraft:item/events/**/sequence/*/condition"),
-	}
+	},
 }

@@ -1,30 +1,28 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Feature = &JsonHandler{Pattern: shared.FeatureGlob}
-
-func init() {
-	Feature.Entries = []JsonEntry{
+var Feature = &JsonHandler{
+	Pattern: shared.FeatureGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.FeatureId.Source,
 			Path:       []shared.JsonPath{shared.JsonValue("*/description/identifier")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Feature.Get("feature_id"), FeatureRule.Get("feature_id"))
+				return stores.FeatureId.References.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Feature.Get("id")
+				return stores.FeatureId.Source.Get()
 			},
 		},
 		{
-			Id: "block_id",
+			Store: stores.ItemId.References,
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:catalyst_feature/can_place_sculk_catalyst_on/*",
 				"minecraft:catalyst_feature/central_block",
@@ -80,15 +78,18 @@ func init() {
 			}, func(value string) []shared.JsonPath {
 				return []shared.JsonPath{shared.JsonValue(value), shared.JsonValue(value + "/name")}
 			}),
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Block.Get("id")
+				return stores.ItemId.Source.Get("block")
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Entity.Get("block_id"), Feature.Get("block_id"))
+				return stores.ItemId.References.Get("block")
 			},
 		},
 		{
-			Id: "feature_id",
+			Store: stores.FeatureId.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:aggregate_feature/features/*"),
 				shared.JsonValue("minecraft:catalyst_feature/central_patch_feature"),
@@ -102,15 +103,15 @@ func init() {
 				shared.JsonValue("minecraft:weighted_random_feature/features/*/0"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Feature.Get("id")
+				return stores.FeatureId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Feature.Get("feature_id")
+				return stores.FeatureId.References.Get()
 			},
 		},
-	}
-	Feature.MolangLocations = []shared.JsonPath{
+	},
+	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:growing_plant_feature/age"),
 		shared.JsonValue("minecraft:growing_plant_feature/height_distribution/*/*"),
-	}
+	},
 }

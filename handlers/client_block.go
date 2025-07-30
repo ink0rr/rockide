@@ -1,44 +1,43 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var ClientBlock = &JsonHandler{Pattern: shared.ClientBlockGlob}
-
-func init() {
-	ClientBlock.Entries = []JsonEntry{
+var ClientBlock = &JsonHandler{
+	Pattern: shared.ClientBlockGlob,
+	Entries: []JsonEntry{
 		{
-			Id:   "id",
-			Path: []shared.JsonPath{shared.JsonKey("*")},
+			Store: stores.ItemId.References,
+			Path:  []shared.JsonPath{shared.JsonKey("*")},
 			Matcher: func(ctx *JsonContext) bool {
 				return ctx.NodeValue != "format_version"
 			},
 			FilterDiff: true,
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Block.Get("id")
+				return stores.ItemId.Source.Get("block")
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return ClientBlock.Get("id")
+				return stores.ItemId.References.Get("block")
 			},
 		},
 		{
-			Id: "texture_id",
+			Store: stores.TerrainTexture.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("*/textures"),
 				shared.JsonValue("*/textures/*"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return TerrainTexture.Get("id")
+				return stores.TerrainTexture.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Block.Get("texture_id"), ClientBlock.Get("texture_id"))
+				return stores.TerrainTexture.References.Get()
 			},
-			VanillaData: vanilla.TexturePaths,
 		},
-	}
+	},
 }

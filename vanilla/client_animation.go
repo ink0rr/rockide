@@ -2,7 +2,7 @@ package vanilla
 
 import mapset "github.com/deckarep/golang-set/v2"
 
-var AnimationAndController = mapset.NewThreadUnsafeSet(
+var ClientAnimation = mapset.NewThreadUnsafeSet(
 	// Controllers
 	"controller.animation.agent.move",
 	"controller.animation.allay.dancing",

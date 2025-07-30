@@ -1,10 +1,7 @@
 package handlers
 
 import (
-	"path/filepath"
 	"slices"
-	"strings"
-	"sync"
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/ink0rr/rockide/core"
@@ -13,6 +10,7 @@ import (
 	"github.com/ink0rr/rockide/internal/protocol/semtok"
 	"github.com/ink0rr/rockide/internal/textdocument"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
 const defaultScope = "__default__"
@@ -25,7 +23,7 @@ type JsonContext struct {
 }
 
 type JsonEntry struct {
-	Id            string
+	Store         *stores.SymbolStore
 	Path          []shared.JsonPath
 	Matcher       func(ctx *JsonContext) bool
 	Transform     func(value string) string
@@ -37,18 +35,15 @@ type JsonEntry struct {
 	// Source for completions and definitions
 	Source func(ctx *JsonContext) []core.Symbol
 	// References that uses the same source
-	References  func(ctx *JsonContext) []core.Symbol
-	VanillaData mapset.Set[string]
+	References func(ctx *JsonContext) []core.Symbol
 }
 
 type JsonHandler struct {
 	Pattern                 shared.Pattern
-	SavePath                bool
+	PathStore               *stores.PathStore
 	Entries                 []JsonEntry
 	MolangLocations         []shared.JsonPath
 	MolangSemanticLocations []shared.JsonPath
-	storeList               map[string]map[string][]core.Symbol
-	mu                      sync.Mutex
 }
 
 func (j *JsonHandler) GetPattern() string {
@@ -56,13 +51,8 @@ func (j *JsonHandler) GetPattern() string {
 }
 
 func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
-	j.mu.Lock()
-	defer j.mu.Unlock()
-	if j.storeList == nil {
-		j.storeList = make(map[string]map[string][]core.Symbol)
-	}
-	if j.SavePath {
-		j.parsePath(uri)
+	if j.PathStore != nil {
+		j.PathStore.Insert(j.Pattern, uri)
 	}
 	document, err := textdocument.GetOrReadFile(uri)
 	if err != nil {
@@ -70,8 +60,8 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 	}
 	root, _ := jsonc.ParseTree(document.GetText(), nil)
 	for _, entry := range j.Entries {
-		if j.storeList[entry.Id] == nil {
-			j.storeList[entry.Id] = make(map[string][]core.Symbol)
+		if entry.Store == nil {
+			continue
 		}
 		for _, jsonPath := range entry.Path {
 			for _, node := range jsonPath.GetNodes(root) {
@@ -96,11 +86,11 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 				if entry.Transform != nil {
 					nodeValue = entry.Transform(nodeValue)
 				}
-				var scope string
+				scope := defaultScope
 				if entry.ScopeKey != nil {
 					scope = entry.ScopeKey(&ctx)
 				}
-				j.storeList[entry.Id][scope] = append(j.storeList[entry.Id][scope], core.Symbol{
+				entry.Store.Insert(scope, core.Symbol{
 					Value: nodeValue,
 					URI:   uri,
 					Range: &protocol.Range{
@@ -114,58 +104,10 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 	return nil
 }
 
-func (j *JsonHandler) parsePath(uri protocol.DocumentURI) {
-	path, err := filepath.Rel(shared.Getwd(), uri.Path())
-	if err != nil {
-		panic(err)
-	}
-	packType := j.Pattern.PackType()
-	path = filepath.ToSlash(path)
-	_, path, found := strings.Cut(path, packType+"/")
-	if !found {
-		panic("invalid project path")
-	}
-	if j.storeList["path"] == nil {
-		j.storeList["path"] = make(map[string][]core.Symbol)
-	}
-	j.storeList["path"][defaultScope] = append(j.storeList["path"][defaultScope], core.Symbol{Value: path, URI: uri})
-}
-
-func (j *JsonHandler) Get(id string, scopes ...string) []core.Symbol {
-	j.mu.Lock()
-	defer j.mu.Unlock()
-
-	res := []core.Symbol{}
-	if len(scopes) > 0 {
-		for _, scope := range scopes {
-			res = append(res, j.storeList[id][scope]...)
-		}
-	} else {
-		for _, symbols := range j.storeList[id] {
-			res = append(res, symbols...)
-		}
-	}
-	return res
-}
-
-func (j *JsonHandler) GetFrom(uri protocol.DocumentURI, id string, scopes ...string) []core.Symbol {
-	res := []core.Symbol{}
-	for _, symbol := range j.Get(id, scopes...) {
-		if symbol.URI == uri {
-			res = append(res, symbol)
-		}
-	}
-	return res
-}
-
 func (j *JsonHandler) Delete(uri protocol.DocumentURI) {
-	j.mu.Lock()
-	defer j.mu.Unlock()
-	for _, store := range j.storeList {
-		for scope, symbols := range store {
-			store[scope] = slices.DeleteFunc(symbols, func(symbol core.Symbol) bool {
-				return symbol.URI == uri
-			})
+	for _, entry := range j.Entries {
+		if entry.Store != nil {
+			entry.Store.Delete(uri)
 		}
 	}
 }
@@ -245,14 +187,14 @@ func (j *JsonHandler) Completions(document *textdocument.TextDocument, position 
 
 	var items []core.Symbol
 	if entry.FilterDiff {
-		items = difference(entry.Source(ctx), entry.References(ctx))
+		items = difference(j.Pattern, entry.Source(ctx), entry.References(ctx))
 	} else {
 		items = entry.Source(ctx)
 	}
 
 	set := mapset.NewThreadUnsafeSet[string]()
-	if entry.VanillaData != nil {
-		set = entry.VanillaData.Clone()
+	if entry.Store != nil && entry.Store.VanillaData != nil {
+		set = entry.Store.VanillaData.Clone()
 	}
 
 	for _, item := range items {

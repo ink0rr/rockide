@@ -1,30 +1,32 @@
 package handlers
 
 import (
-	"slices"
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Block = &JsonHandler{Pattern: shared.BlockGlob}
-
-func init() {
-	Block.Entries = []JsonEntry{
+var Block = &JsonHandler{
+	Pattern: shared.BlockGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.ItemId.Source,
 			Path:       []shared.JsonPath{shared.JsonValue("minecraft:block/description/identifier")},
 			FilterDiff: true,
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(ClientBlock.Get("id"), Feature.Get("block_id"))
+				return stores.ItemId.References.Get("block")
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Block.Get("id")
+				return stores.ItemId.Source.Get("block")
 			},
 		},
 		{
-			Id: "tag",
+			Store: stores.BlockTag.References,
 			Path: []shared.JsonPath{
 				shared.JsonKey("minecraft:block/components/*"),
 				shared.JsonKey("minecraft:block/permutations/*/components/*"),
@@ -38,7 +40,7 @@ func init() {
 			},
 		},
 		{
-			Id: "geometry_id",
+			Store: stores.Geometry.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:geometry"),
 				shared.JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
@@ -46,37 +48,37 @@ func init() {
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Geometry.Get("id")
+				return stores.Geometry.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("geometry_id"), Block.Get("geometry_id"), ClientEntity.Get("geometry_id"))
+				return stores.Geometry.References.Get()
 			},
 		},
 		{
-			Id: "texture_id",
+			Store: stores.TerrainTexture.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:material_instances/*/texture"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:material_instances/*/texture"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return TerrainTexture.Get("id")
+				return stores.TerrainTexture.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Block.Get("texture_id"), ClientBlock.Get("texture_id"))
+				return stores.TerrainTexture.References.Get()
 			},
 		},
-	}
-	Block.MolangLocations = []shared.JsonPath{
+	},
+	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:block/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),
 		shared.JsonValue("minecraft:block/components/minecraft:geometry/bone_visibility/*"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/bone_visibility/*"),
 		shared.JsonValue("minecraft:block/permutations/*/condition"),
-	}
-	Block.MolangSemanticLocations = []shared.JsonPath{
+	},
+	MolangSemanticLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:block/components/minecraft:geometry"),
 		shared.JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
-	}
+	},
 }

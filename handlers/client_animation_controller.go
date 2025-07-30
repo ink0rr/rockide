@@ -1,24 +1,25 @@
 package handlers
 
 import (
-	"slices"
 	"strings"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var ClientAnimationController = &JsonHandler{Pattern: shared.ClientAnimationControllerGlob}
-
-func init() {
-	ClientAnimationController.Entries = []JsonEntry{
+var ClientAnimationController = &JsonHandler{
+	Pattern: shared.ClientAnimationControllerGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.ClientAnimation.Source,
 			Path:       []shared.JsonPath{shared.JsonKey("animation_controllers/*")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
 				filtered := []core.Symbol{}
-				for _, ref := range slices.Concat(Attachable.Get("animation_id"), ClientEntity.Get("animation_id")) {
+				for _, ref := range stores.ClientAnimation.References.Get() {
 					if strings.HasPrefix(ref.Value, "controller.") {
 						filtered = append(filtered, ref)
 					}
@@ -26,11 +27,11 @@ func init() {
 				return filtered
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return ClientAnimationController.Get("id")
+				return stores.ClientAnimation.Source.Get()
 			},
 		},
 		{
-			Id: "animate_refs",
+			Store: stores.ClientAnimate.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("animation_controllers/*/states/*/animations/*"),
 				shared.JsonKey("animation_controllers/*/states/*/animations/*/*"),
@@ -46,21 +47,34 @@ func init() {
 				if !ok {
 					return nil
 				}
-				return animationControllerSources(id, Attachable, ClientEntity)
+				res := []core.Symbol{}
+				set := mapset.NewThreadUnsafeSet[protocol.DocumentURI]()
+				for _, symbol := range stores.ClientAnimation.References.Get(id) {
+					if !set.ContainsOne(symbol.URI) {
+						set.Add(symbol.URI)
+						res = append(res, stores.ClientAnimate.Source.GetFrom(ctx.URI)...)
+					}
+				}
+				return res
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				id, ok := ctx.GetPath()[1].(string)
 				if !ok {
 					return nil
 				}
-				return slices.Concat(
-					ClientAnimationController.GetFrom(ctx.URI, "animate_refs", id),
-					animationControllerReferences(id, Attachable, ClientEntity),
-				)
+				res := []core.Symbol{}
+				set := mapset.NewThreadUnsafeSet[protocol.DocumentURI]()
+				for _, symbol := range stores.ClientAnimation.References.Get(id) {
+					if !set.ContainsOne(symbol.URI) {
+						set.Add(symbol.URI)
+						res = append(res, stores.ClientAnimate.References.GetFrom(ctx.URI)...)
+					}
+				}
+				return res
 			},
 		},
-	}
-	ClientAnimationController.MolangLocations = []shared.JsonPath{
+	},
+	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("animation_controllers/*/states/*/animations/*/*"),
 		shared.JsonValue("animation_controllers/*/states/*/transitions/*/*"),
 		shared.JsonValue("animation_controllers/*/states/*/on_entry/*"),
@@ -68,5 +82,5 @@ func init() {
 		shared.JsonValue("animation_controllers/*/states/*/parameters/*"),
 		shared.JsonValue("animation_controllers/*/states/*/particle_effects/*/pre_effect_script"),
 		shared.JsonValue("animation_controllers/*/states/*/variables/*/input"),
-	}
+	},
 }

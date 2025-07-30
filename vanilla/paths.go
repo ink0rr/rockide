@@ -2,7 +2,7 @@ package vanilla
 
 import mapset "github.com/deckarep/golang-set/v2"
 
-var TexturePaths = mapset.NewThreadUnsafeSet(
+var TexturePath = mapset.NewThreadUnsafeSet(
 	// Blocks
 	"textures/blocks/acacia_trapdoor",
 	"textures/blocks/acacia_trapdoor.texture_set",
@@ -8155,7 +8155,7 @@ var TexturePaths = mapset.NewThreadUnsafeSet(
 	"textures/particle/vibration_signal_mers",
 )
 
-var SoundPaths = mapset.NewThreadUnsafeSet(
+var SoundPath = mapset.NewThreadUnsafeSet(
 	"sounds/ambient/nether/basalt_deltas/ambience",
 	"sounds/ambient/nether/basalt_deltas/basaltground1",
 	"sounds/ambient/nether/basalt_deltas/basaltground2",
@@ -12130,7 +12130,7 @@ var SoundPaths = mapset.NewThreadUnsafeSet(
 	"sounds/vr/turn5",
 )
 
-var LootTablePaths = mapset.NewThreadUnsafeSet(
+var LootTablePath = mapset.NewThreadUnsafeSet(
 	"loot_tables/chests/abandoned_mineshaft.json",
 	"loot_tables/chests/ancient_city.json",
 	"loot_tables/chests/ancient_city_ice_box.json",
@@ -12328,7 +12328,7 @@ var LootTablePaths = mapset.NewThreadUnsafeSet(
 	"loot_tables/spawners/trial_chamber/key.json",
 )
 
-var TradeTablePaths = mapset.NewThreadUnsafeSet(
+var TradeTablePath = mapset.NewThreadUnsafeSet(
 	"trading/armorer_trades.json",
 	"trading/butcher_trades.json",
 	"trading/cartographer_trades.json",

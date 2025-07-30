@@ -6,60 +6,56 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Particle = &JsonHandler{Pattern: shared.ParticleGlob}
-
-func init() {
-	Particle.Entries = []JsonEntry{
+var Particle = &JsonHandler{
+	Pattern: shared.ParticleGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.ParticleId.Source,
 			Path:       []shared.JsonPath{shared.JsonValue("particle_effect/description/identifier")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("particle_id"), ClientEntity.Get("particle_id"), Particle.Get("particle_id"))
+				return stores.ParticleId.References.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Particle.Get("id")
+				return stores.ParticleId.Source.Get()
 			},
 		},
 		{
-			Id:   "particle_id",
-			Path: []shared.JsonPath{shared.JsonValue("particle_effect/events/**/particle_effect/effect")},
+			Store: stores.ParticleId.References,
+			Path:  []shared.JsonPath{shared.JsonValue("particle_effect/events/**/particle_effect/effect")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Particle.Get("id")
+				return stores.ParticleId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("particle_id"), ClientEntity.Get("particle_id"), Particle.Get("particle_id"))
+				return stores.ParticleId.References.Get()
 			},
-			VanillaData: vanilla.ParticleIdentifiers,
 		},
 		{
-			Id:            "texture_path",
 			Path:          []shared.JsonPath{shared.JsonValue("particle_effect/description/basic_render_parameters/texture")},
 			DisableRename: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Texture.GetPaths()
+				return stores.TexturePath.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
-			VanillaData: vanilla.TexturePaths,
 		},
 		{
-			Id:         "event",
+			Store:      stores.ParticleEvent.Source,
 			Path:       []shared.JsonPath{shared.JsonKey("particle_effect/events/*")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Particle.GetFrom(ctx.URI, "event_refs")
+				return stores.ParticleEvent.References.GetFrom(ctx.URI)
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Particle.GetFrom(ctx.URI, "event")
+				return stores.ParticleEvent.Source.GetFrom(ctx.URI)
 			},
 		},
 		{
-			Id: "event_refs",
+			Store: stores.ParticleEvent.References,
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:emitter_lifetime_events/creation_event",
 				"minecraft:emitter_lifetime_events/expiration_event",
@@ -78,14 +74,14 @@ func init() {
 				}
 			}),
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Particle.GetFrom(ctx.URI, "event")
+				return stores.ParticleEvent.Source.GetFrom(ctx.URI)
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Particle.GetFrom(ctx.URI, "event_refs")
+				return stores.ParticleEvent.References.GetFrom(ctx.URI)
 			},
 		},
-	}
-	Particle.MolangLocations = slices.Concat(
+	},
+	MolangLocations: slices.Concat(
 		[]shared.JsonPath{
 			shared.JsonValue("particle_effect/curves/*/input"),
 			shared.JsonValue("particle_effect/curves/*/horizontal_range"),
@@ -147,5 +143,5 @@ func init() {
 				shared.JsonValue("particle_effect/events/**/components/" + value),
 			}
 		}),
-	)
+	),
 }

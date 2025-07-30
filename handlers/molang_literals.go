@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/stores"
 	"github.com/ink0rr/rockide/vanilla"
 )
 
@@ -102,24 +103,24 @@ var molangTypes = map[string]func() molangValue{
 		return molangValue{strings: inputModes[:]}
 	},
 	"BlockTag": func() molangValue {
-		return molangValue{references: Block.Get("tag")}
+		return molangValue{references: stores.BlockTag.Source.Get()}
 	},
 	"BlockAndItemTag": func() molangValue {
-		return molangValue{references: slices.Concat(Block.Get("tag"), Item.Get("tag")), strings: vanilla.ItemTag.ToSlice()}
+		return molangValue{references: slices.Concat(stores.BlockTag.Source.Get(), stores.ItemTag.Source.Get()), strings: vanilla.ItemTag.ToSlice()}
 	},
 	"EntityIdentifier": func() molangValue {
-		return molangValue{references: Entity.Get("id"), strings: vanilla.EntityIdentifiers.ToSlice()}
+		return molangValue{references: stores.EntityId.Source.Get(), strings: vanilla.EntityId.ToSlice()}
 	},
 	"EntityProperty": func() molangValue {
-		return molangValue{references: Entity.Get("property")}
+		return molangValue{references: stores.EntityProperty.Source.Get()}
 	},
 	"TypeFamily": func() molangValue {
-		return molangValue{references: Entity.Get("family"), strings: vanilla.Family.ToSlice()}
+		return molangValue{references: stores.EntityFamily.Source.Get(), strings: vanilla.Family.ToSlice()}
 	},
 	"ItemIdentifier": func() molangValue {
-		return molangValue{references: Item.Get("id"), strings: vanilla.ItemIdentifiers.ToSlice()}
+		return molangValue{references: stores.ItemId.Source.Get(), strings: vanilla.ItemId.ToSlice()}
 	},
 	"ItemTag": func() molangValue {
-		return molangValue{references: Item.Get("tag"), strings: vanilla.ItemTag.ToSlice()}
+		return molangValue{references: stores.ItemTag.Source.Get(), strings: vanilla.ItemTag.ToSlice()}
 	},
 }

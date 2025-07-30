@@ -1,19 +1,16 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Recipe = &JsonHandler{Pattern: shared.RecipeGlob}
-
-func init() {
-	Recipe.Entries = []JsonEntry{
+var Recipe = &JsonHandler{
+	Pattern: shared.RecipeGlob,
+	Entries: []JsonEntry{
 		{
-			Id: "item_id",
+			Store: stores.ItemId.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:recipe_furnace/input"),
 				shared.JsonValue("minecraft:recipe_furnace/output"),
@@ -29,12 +26,11 @@ func init() {
 				shared.JsonValue("minecraft:recipe_brewing_container/output"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Block.Get("id"), Item.Get("id"))
+				return stores.ItemId.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("id"), ClientBlock.Get("id"), Entity.Get("item_id"), Item.Get("item_id"), LootTable.Get("item_id"), Recipe.Get("item_id"), TradeTable.Get("item_id"))
+				return stores.ItemId.References.Get()
 			},
-			VanillaData: vanilla.ItemIdentifiers,
 		},
-	}
+	},
 }

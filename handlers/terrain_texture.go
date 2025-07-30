@@ -1,39 +1,34 @@
 package handlers
 
 import (
-	"slices"
-
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var TerrainTexture = &JsonHandler{Pattern: shared.TerrainTextureGlob}
-
-func init() {
-	TerrainTexture.Entries = []JsonEntry{
+var TerrainTexture = &JsonHandler{
+	Pattern: shared.TerrainTextureGlob,
+	Entries: []JsonEntry{
 		{
-			Id:         "id",
+			Store:      stores.TerrainTexture.Source,
 			Path:       []shared.JsonPath{shared.JsonKey("texture_data/*")},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Block.Get("texture_id"), ClientBlock.Get("texture_id"))
+				return stores.TerrainTexture.References.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return TerrainTexture.Get("id")
+				return stores.TerrainTexture.Source.Get()
 			},
 		},
 		{
-			Id:            "texture_path",
 			Path:          []shared.JsonPath{shared.JsonValue("texture_data/*/textures")},
 			DisableRename: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return Texture.GetPaths()
+				return stores.TexturePath.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
 			},
-			VanillaData: vanilla.TexturePaths,
 		},
-	}
+	},
 }

@@ -1,19 +1,18 @@
 package handlers
 
 import (
-	"slices"
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
+	"github.com/ink0rr/rockide/stores"
 )
 
-var Geometry = &JsonHandler{Pattern: shared.GeometryGlob}
-
-func init() {
-	Geometry.Entries = []JsonEntry{
+var Geometry = &JsonHandler{
+	Pattern: shared.GeometryGlob,
+	Entries: []JsonEntry{
 		{
-			Id: "id",
+			Store: stores.Geometry.Source,
 			Path: []shared.JsonPath{
 				shared.JsonKey("*"),
 				shared.JsonValue("minecraft:geometry/*/description/identifier"),
@@ -27,17 +26,17 @@ func init() {
 			},
 			FilterDiff: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(Attachable.Get("geometry_id"), Block.Get("geometry_id"), ClientEntity.Get("geometry_id"))
+				return stores.Geometry.References.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return Geometry.Get("id")
+				return stores.Geometry.Source.Get()
 			},
 		},
-	}
-	Geometry.MolangLocations = []shared.JsonPath{
+	},
+	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:geometry/*/bones/*/binding"),
-	}
-	Geometry.MolangSemanticLocations = []shared.JsonPath{
+	},
+	MolangSemanticLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:geometry/*/description/identifier"),
-	}
+	},
 }
