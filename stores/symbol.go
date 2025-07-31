@@ -82,7 +82,7 @@ func NewSymbolBinding(vanillaData mapset.Set[string]) *SymbolBinding {
 var (
 	Animation            = NewSymbolBinding(nil)
 	Animate              = NewSymbolBinding(nil)
-	BlockTag             = NewSymbolBinding(nil)
+	BlockTag             = NewSymbolBinding(vanilla.BlockTag)
 	ControllerState      = NewSymbolBinding(nil)
 	EntityId             = NewSymbolBinding(vanilla.EntityId)
 	EntityProperty       = NewSymbolBinding(nil)
