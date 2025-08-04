@@ -76,8 +76,8 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 			End:   ctx.document.PositionAt(ctx.startOffset + token.Offset + token.Length),
 		}
 		res := []protocol.CompletionItem{}
-		if values.strings != nil {
-			res = sliceutil.Map(values.strings, func(value string) protocol.CompletionItem {
+		if values.literals != nil {
+			res = sliceutil.Map(values.literals, func(value string) protocol.CompletionItem {
 				return protocol.CompletionItem{
 					Label: value,
 					TextEdit: &protocol.Or_CompletionItem_textEdit{
@@ -90,20 +90,22 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 			})
 		}
 		set := mapset.NewThreadUnsafeSet[string]()
-		for _, ref := range values.references {
-			if set.ContainsOne(ref.Value) {
-				continue
-			}
-			set.Add(ref.Value)
-			res = append(res, protocol.CompletionItem{
-				Label: ref.Value,
-				TextEdit: &protocol.Or_CompletionItem_textEdit{
-					Value: protocol.TextEdit{
-						NewText: ref.Value,
-						Range:   editRange,
+		for _, binding := range values.bindings {
+			for _, ref := range binding.Source.Get() {
+				if set.ContainsOne(ref.Value) {
+					continue
+				}
+				set.Add(ref.Value)
+				res = append(res, protocol.CompletionItem{
+					Label: ref.Value,
+					TextEdit: &protocol.Or_CompletionItem_textEdit{
+						Value: protocol.TextEdit{
+							NewText: ref.Value,
+							Range:   editRange,
+						},
 					},
-				},
-			})
+				})
+			}
 		}
 		return res
 	case molang.KindPrefix, molang.KindUnknown:
@@ -177,7 +179,7 @@ func MolangDefinitions(ctx *MolangContext) []protocol.LocationLink {
 	}
 	res := []protocol.LocationLink{}
 	values := getTypeValues()
-	if values.references == nil {
+	if values.bindings == nil {
 		return nil
 	}
 	selectionRange := protocol.Range{
@@ -185,19 +187,21 @@ func MolangDefinitions(ctx *MolangContext) []protocol.LocationLink {
 		End:   ctx.document.PositionAt(ctx.startOffset + token.Offset + token.Length + 1),
 	}
 	molangValue := token.Value[1 : len(token.Value)-1] // Exclude quotes
-	for _, ref := range values.references {
-		if ref.Value != molangValue {
-			continue
+	for _, binding := range values.bindings {
+		for _, ref := range binding.Source.Get() {
+			if ref.Value != molangValue {
+				continue
+			}
+			location := protocol.LocationLink{
+				OriginSelectionRange: &selectionRange,
+				TargetURI:            ref.URI,
+			}
+			if ref.Range != nil {
+				location.TargetRange = *ref.Range
+				location.TargetSelectionRange = *ref.Range
+			}
+			res = append(res, location)
 		}
-		location := protocol.LocationLink{
-			OriginSelectionRange: &selectionRange,
-			TargetURI:            ref.URI,
-		}
-		if ref.Range != nil {
-			location.TargetRange = *ref.Range
-			location.TargetSelectionRange = *ref.Range
-		}
-		res = append(res, location)
 	}
 	return res
 }

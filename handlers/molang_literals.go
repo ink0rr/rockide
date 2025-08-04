@@ -1,11 +1,7 @@
 package handlers
 
 import (
-	"slices"
-
-	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/stores"
-	"github.com/ink0rr/rockide/vanilla"
 )
 
 var biomeTags = [...]string{
@@ -85,42 +81,42 @@ var graphicsModes = [...]string{"simple", "fancy", "deferred", "raytraced"}
 var inputModes = [...]string{"keyboard_and_mouse", "touch", "gamepad", "motion_controller"}
 
 type molangValue struct {
-	references []core.Symbol
-	strings    []string
+	bindings []*stores.SymbolBinding
+	literals []string
 }
 
 var molangTypes = map[string]func() molangValue{
 	"BiomeTag": func() molangValue {
-		return molangValue{strings: biomeTags[:]}
+		return molangValue{literals: biomeTags[:]}
 	},
 	"EquipmentSlot": func() molangValue {
-		return molangValue{strings: equipmentSlots[:]}
+		return molangValue{literals: equipmentSlots[:]}
 	},
 	"GraphicsMode": func() molangValue {
-		return molangValue{strings: graphicsModes[:]}
+		return molangValue{literals: graphicsModes[:]}
 	},
 	"InputMode": func() molangValue {
-		return molangValue{strings: inputModes[:]}
+		return molangValue{literals: inputModes[:]}
 	},
 	"BlockTag": func() molangValue {
-		return molangValue{references: stores.BlockTag.Source.Get()}
+		return molangValue{bindings: []*stores.SymbolBinding{stores.BlockTag}}
 	},
 	"BlockAndItemTag": func() molangValue {
-		return molangValue{references: slices.Concat(stores.BlockTag.Source.Get(), stores.ItemTag.Source.Get()), strings: vanilla.ItemTag.ToSlice()}
+		return molangValue{bindings: []*stores.SymbolBinding{stores.BlockTag, stores.ItemTag}}
 	},
 	"EntityIdentifier": func() molangValue {
-		return molangValue{references: stores.EntityId.Source.Get(), strings: vanilla.EntityId.ToSlice()}
+		return molangValue{bindings: []*stores.SymbolBinding{stores.EntityId}}
 	},
 	"EntityProperty": func() molangValue {
-		return molangValue{references: stores.EntityProperty.Source.Get()}
+		return molangValue{bindings: []*stores.SymbolBinding{stores.EntityProperty}}
 	},
 	"TypeFamily": func() molangValue {
-		return molangValue{references: stores.EntityFamily.Source.Get(), strings: vanilla.Family.ToSlice()}
+		return molangValue{bindings: []*stores.SymbolBinding{stores.EntityFamily}}
 	},
 	"ItemIdentifier": func() molangValue {
-		return molangValue{references: stores.ItemId.Source.Get(), strings: vanilla.ItemId.ToSlice()}
+		return molangValue{bindings: []*stores.SymbolBinding{stores.ItemId}}
 	},
 	"ItemTag": func() molangValue {
-		return molangValue{references: stores.ItemTag.Source.Get(), strings: vanilla.ItemTag.ToSlice()}
+		return molangValue{bindings: []*stores.SymbolBinding{stores.ItemTag}}
 	},
 }
