@@ -52,7 +52,7 @@ var ClientAnimationController = &JsonHandler{
 				for _, symbol := range stores.ClientAnimation.References.Get(id) {
 					if !set.ContainsOne(symbol.URI) {
 						set.Add(symbol.URI)
-						res = append(res, stores.ClientAnimate.Source.GetFrom(ctx.URI)...)
+						res = append(res, stores.ClientAnimate.Source.GetFrom(symbol.URI)...)
 					}
 				}
 				return res
@@ -67,7 +67,7 @@ var ClientAnimationController = &JsonHandler{
 				for _, symbol := range stores.ClientAnimation.References.Get(id) {
 					if !set.ContainsOne(symbol.URI) {
 						set.Add(symbol.URI)
-						res = append(res, stores.ClientAnimate.References.GetFrom(ctx.URI)...)
+						res = append(res, stores.ClientAnimate.References.GetFrom(symbol.URI)...)
 					}
 				}
 				return res
