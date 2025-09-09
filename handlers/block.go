@@ -67,12 +67,27 @@ var Block = &JsonHandler{
 				return stores.TerrainTexture.References.Get()
 			},
 		},
+		{
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:loot"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:loot"),
+			},
+			DisableRename: true,
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.LootTablePath.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:block/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),
 		shared.JsonValue("minecraft:block/components/minecraft:geometry/bone_visibility/*"),
+		shared.JsonValue("minecraft:block/components/minecraft:placement_filter/conditions/*/block_filter/*/tags"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/bone_visibility/*"),
+		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:placement_filter/conditions/*/block_filter/*/tags"),
 		shared.JsonValue("minecraft:block/permutations/*/condition"),
 	},
 	MolangSemanticLocations: []shared.JsonPath{
