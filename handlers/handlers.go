@@ -55,6 +55,7 @@ var handlerList = []Handler{
 	TradeTable,
 	// RP
 	Attachable,
+	Atmosphere,
 	ClientAnimation,
 	ClientAnimationController,
 	ClientBlock,

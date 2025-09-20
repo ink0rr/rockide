@@ -83,6 +83,7 @@ var (
 
 var (
 	AttachableGlob                = resourcePattern("/attachables/**/*.json")
+	AtmosphereGlob                = resourcePattern("/atmospherics/**/*.json")
 	ClientAnimationControllerGlob = resourcePattern("/animation_controllers/**/*.json")
 	ClientAnimationGlob           = resourcePattern("/animations/**/*.json")
 	ClientBlockGlob               = resourcePattern("/blocks.json")

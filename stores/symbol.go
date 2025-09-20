@@ -102,6 +102,7 @@ var (
 
 // RP
 var (
+	Atmosphere            = NewSymbolBinding(vanilla.Atmospheric)
 	ClientAnimation       = NewSymbolBinding(vanilla.ClientAnimation)
 	ClientAnimate         = NewSymbolBinding(nil)
 	ClientControllerState = NewSymbolBinding(nil)
