@@ -46,6 +46,7 @@ var handlerList = []Handler{
 	Biome,
 	Block,
 	Camera,
+	CraftingItemCatalog,
 	Dialogue,
 	Entity,
 	Feature,
