@@ -110,6 +110,7 @@ var (
 	Fog                   = NewSymbolBinding(vanilla.Fog)
 	Geometry              = NewSymbolBinding(vanilla.Geometry)
 	ItemTexture           = NewSymbolBinding(vanilla.ItemTexture)
+	Lighting              = NewSymbolBinding(vanilla.Lighting)
 	ParticleId            = NewSymbolBinding(vanilla.ParticleId)
 	ParticleEvent         = NewSymbolBinding(nil)
 	RenderControllerId    = NewSymbolBinding(vanilla.RenderController)

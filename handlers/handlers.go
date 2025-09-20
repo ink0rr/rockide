@@ -65,6 +65,7 @@ var handlerList = []Handler{
 	Fog,
 	Geometry,
 	ItemTexture,
+	Lighting,
 	MusicDefintion,
 	Particle,
 	RenderController,
