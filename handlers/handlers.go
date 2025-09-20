@@ -42,6 +42,7 @@ var handlerList = []Handler{
 	Animation,
 	AnimationController,
 	Block,
+	Camera,
 	Entity,
 	Feature,
 	FeatureRule,

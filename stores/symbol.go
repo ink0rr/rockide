@@ -83,6 +83,7 @@ var (
 	Animation            = NewSymbolBinding(nil)
 	Animate              = NewSymbolBinding(nil)
 	BlockTag             = NewSymbolBinding(vanilla.BlockTag)
+	CameraId             = NewSymbolBinding(vanilla.CameraId)
 	ControllerState      = NewSymbolBinding(nil)
 	EntityId             = NewSymbolBinding(vanilla.EntityId)
 	EntityProperty       = NewSymbolBinding(nil)
