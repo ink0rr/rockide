@@ -69,6 +69,7 @@ var (
 	BiomeGlob               = behaviorPattern("/biomes/**/*.json")
 	BlockGlob               = behaviorPattern("/blocks/**/*.json")
 	CameraGlob              = behaviorPattern("/cameras/presets/**/*.json")
+	DialogueGlob            = behaviorPattern("/dialogue/**/*.json")
 	EntityGlob              = behaviorPattern("/entities/**/*.json")
 	FeatureRuleGlob         = behaviorPattern("/feature_rules/**/*.json")
 	FeatureGlob             = behaviorPattern("/features/**/*.json")

@@ -46,6 +46,7 @@ var handlerList = []Handler{
 	Biome,
 	Block,
 	Camera,
+	Dialogue,
 	Entity,
 	Feature,
 	FeatureRule,

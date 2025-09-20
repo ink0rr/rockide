@@ -89,6 +89,7 @@ var (
 	BlockTag             = NewSymbolBinding(vanilla.BlockTag)
 	CameraId             = NewSymbolBinding(vanilla.CameraId)
 	ControllerState      = NewSymbolBinding(nil)
+	DialogueId           = NewSymbolBinding(nil)
 	EntityId             = NewSymbolBinding(vanilla.EntityId)
 	EntityProperty       = NewSymbolBinding(nil)
 	EntityPropertyValue  = NewSymbolBinding(nil)
