@@ -111,5 +111,6 @@ var (
 	ParticleEvent         = NewSymbolBinding(nil)
 	RenderControllerId    = NewSymbolBinding(vanilla.RenderController)
 	SoundDefinition       = NewSymbolBinding(vanilla.SoundDefinition)
+	MusicDefinition       = NewSymbolBinding(vanilla.MusicDefinition)
 	TerrainTexture        = NewSymbolBinding(vanilla.TerrainTexture)
 )

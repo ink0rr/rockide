@@ -62,6 +62,7 @@ var handlerList = []Handler{
 	ClientSound,
 	Geometry,
 	ItemTexture,
+	MusicDefintion,
 	Particle,
 	RenderController,
 	Sound,
