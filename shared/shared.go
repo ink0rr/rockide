@@ -62,6 +62,8 @@ func resourcePattern(pattern string) Pattern {
 }
 
 var (
+	AimAssistPresetsGlob    = behaviorPattern("/aim_assist/presets/**/*.json")
+	AimAssistCategoriesGlob = behaviorPattern("/aim_assist/categories/**/*.json")
 	AnimationControllerGlob = behaviorPattern("/animation_controllers/**/*.json")
 	AnimationGlob           = behaviorPattern("/animations/**/*.json")
 	BlockGlob               = behaviorPattern("/blocks/**/*.json")

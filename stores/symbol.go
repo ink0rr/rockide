@@ -80,6 +80,8 @@ func NewSymbolBinding(vanillaData mapset.Set[string]) *SymbolBinding {
 
 // BP
 var (
+	AimAssistId          = NewSymbolBinding(nil)
+	AimAssistCategory    = NewSymbolBinding(nil)
 	Animation            = NewSymbolBinding(nil)
 	Animate              = NewSymbolBinding(nil)
 	BlockTag             = NewSymbolBinding(vanilla.BlockTag)

@@ -42,5 +42,15 @@ var Camera = &JsonHandler{
 				return stores.CameraId.References.Get()
 			},
 		},
+		{
+			Store: stores.AimAssistId.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:camera_preset/aim_assist/preset")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.AimAssistId.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.AimAssistId.References.Get()
+			},
+		},
 	},
 }

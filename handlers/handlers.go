@@ -39,6 +39,8 @@ type SemanticTokenProvider interface {
 
 var handlerList = []Handler{
 	// BP
+	AimAssistPreset,
+	AimAssistCategory,
 	Animation,
 	AnimationController,
 	Block,
