@@ -58,6 +58,7 @@ var handlerList = []Handler{
 	Atmosphere,
 	ClientAnimation,
 	ClientAnimationController,
+	ClientBiome,
 	ClientBlock,
 	ClientEntity,
 	ClientSound,
