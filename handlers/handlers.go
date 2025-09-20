@@ -62,6 +62,7 @@ var handlerList = []Handler{
 	ClientEntity,
 	ClientSound,
 	ColorGrading,
+	Fog,
 	Geometry,
 	ItemTexture,
 	MusicDefintion,
