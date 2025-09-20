@@ -73,6 +73,7 @@ var handlerList = []Handler{
 	SoundDefinition,
 	TerrainTexture,
 	Texture,
+	Water,
 }
 
 func GetAll() []Handler {

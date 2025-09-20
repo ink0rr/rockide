@@ -101,6 +101,7 @@ var (
 	SoundGlob                     = resourcePattern("/sounds/**/*.{fsb,ogg,wav}")
 	TerrainTextureGlob            = resourcePattern("/textures/terrain_texture.json")
 	TextureGlob                   = resourcePattern("/textures/**/*.{png,tga,fsb}")
+	WaterGlob                     = resourcePattern("/water/**/*.json")
 )
 
 var PropertyTests = []string{"bool_property", "enum_property", "float_property", "int_property"}

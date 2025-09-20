@@ -117,4 +117,5 @@ var (
 	SoundDefinition       = NewSymbolBinding(vanilla.SoundDefinition)
 	MusicDefinition       = NewSymbolBinding(vanilla.MusicDefinition)
 	TerrainTexture        = NewSymbolBinding(vanilla.TerrainTexture)
+	Water                 = NewSymbolBinding(vanilla.Water)
 )
