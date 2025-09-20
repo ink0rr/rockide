@@ -89,6 +89,7 @@ var (
 	ClientBlockGlob               = resourcePattern("/blocks.json")
 	ClientEntityGlob              = resourcePattern("/entity/**/*.json")
 	ClientSoundGlob               = resourcePattern("/sounds.json")
+	ColorGradingGlob              = resourcePattern("/color_grading/**/*.json")
 	GeometryGlob                  = resourcePattern("/models/**/*.json")
 	ItemTextureGlob               = resourcePattern("/textures/item_texture.json")
 	MusicDefinitionGlob           = resourcePattern("/sounds/music_definitions.json")
