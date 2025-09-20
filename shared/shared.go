@@ -66,6 +66,7 @@ var (
 	AimAssistCategoriesGlob = behaviorPattern("/aim_assist/categories/**/*.json")
 	AnimationControllerGlob = behaviorPattern("/animation_controllers/**/*.json")
 	AnimationGlob           = behaviorPattern("/animations/**/*.json")
+	BiomeGlob               = behaviorPattern("/biomes/**/*.json")
 	BlockGlob               = behaviorPattern("/blocks/**/*.json")
 	CameraGlob              = behaviorPattern("/cameras/presets/**/*.json")
 	EntityGlob              = behaviorPattern("/entities/**/*.json")

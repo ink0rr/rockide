@@ -43,6 +43,7 @@ var handlerList = []Handler{
 	AimAssistCategory,
 	Animation,
 	AnimationController,
+	Biome,
 	Block,
 	Camera,
 	Entity,

@@ -84,6 +84,8 @@ var (
 	AimAssistCategory    = NewSymbolBinding(nil)
 	Animation            = NewSymbolBinding(nil)
 	Animate              = NewSymbolBinding(nil)
+	BiomeId              = NewSymbolBinding(vanilla.BiomeId)
+	BiomeTag             = NewSymbolBinding(vanilla.BiomeTag)
 	BlockTag             = NewSymbolBinding(vanilla.BlockTag)
 	CameraId             = NewSymbolBinding(vanilla.CameraId)
 	ControllerState      = NewSymbolBinding(nil)
