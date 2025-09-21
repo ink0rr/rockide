@@ -104,6 +104,7 @@ var (
 // RP
 var (
 	Atmosphere            = NewSymbolBinding(vanilla.Atmospheric)
+	BlockCulling          = NewSymbolBinding(nil)
 	ColorGrading          = NewSymbolBinding(vanilla.ColorGrading)
 	ClientAnimation       = NewSymbolBinding(vanilla.ClientAnimation)
 	ClientAnimate         = NewSymbolBinding(nil)

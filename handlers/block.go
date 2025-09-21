@@ -80,6 +80,19 @@ var Block = &JsonHandler{
 				return nil
 			},
 		},
+		{
+			Store: stores.BlockCulling.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:geometry/culling"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/culling"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.BlockCulling.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.BlockCulling.References.Get()
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:block/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),

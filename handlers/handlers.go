@@ -58,6 +58,7 @@ var handlerList = []Handler{
 	// RP
 	Attachable,
 	Atmosphere,
+	BlockCulling,
 	ClientAnimation,
 	ClientAnimationController,
 	ClientBiome,
