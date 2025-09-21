@@ -480,6 +480,23 @@ var Entity = &JsonHandler{
 			},
 		},
 		{
+			Store: stores.ItemTag.References,
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "has_equipment_tag"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemTag.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemTag.References.Get()
+			},
+		},
+		{
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:loot/table",
 				"minecraft:behavior.sneeze/loot_table",
