@@ -480,6 +480,26 @@ var Entity = &JsonHandler{
 			},
 		},
 		{
+			Store: stores.ItemId.References,
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "is_block"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.Source.Get("block")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.References.Get("block")
+			},
+		},
+		{
 			Store: stores.ItemTag.References,
 			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
 				return shared.JsonValue(path + "/value")
