@@ -20,6 +20,7 @@ type JsonContext struct {
 	NodeValue     string
 	GetPath       func() jsonc.Path
 	GetParentNode func() *jsonc.Node
+	GetRootNode   func() *jsonc.Node
 }
 
 type JsonEntry struct {
@@ -79,6 +80,9 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 						path := jsonc.GetNodePath(node)
 						return jsonc.FindNodeAtLocation(root, path[:len(path)-1])
 					},
+					GetRootNode: func() *jsonc.Node {
+						return root
+					},
 				}
 				if entry.Matcher != nil && !entry.Matcher(&ctx) {
 					continue
@@ -127,6 +131,10 @@ func (j *JsonHandler) prepareContext(document *textdocument.TextDocument, locati
 			root, _ := jsonc.ParseTree(document.GetText(), nil)
 			path := location.Path
 			return jsonc.FindNodeAtLocation(root, path[:len(path)-1])
+		},
+		GetRootNode: func() *jsonc.Node {
+			root, _ := jsonc.ParseTree(document.GetText(), nil)
+			return root
 		},
 	}
 	for _, entry := range j.Entries {
