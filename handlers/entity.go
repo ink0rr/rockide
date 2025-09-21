@@ -520,6 +520,23 @@ var Entity = &JsonHandler{
 				return nil
 			},
 		},
+		{
+			Store: stores.BiomeTag.References,
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "has_biome_tag"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.BiomeTag.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.BiomeTag.References.Get()
+			},
+		},
 	},
 	MolangLocations: slices.Concat(
 		[]shared.JsonPath{

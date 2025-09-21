@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"slices"
+
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
-
-// TODO: Add has_biome_tag filter
 
 var Biome = &JsonHandler{
 	Pattern: shared.BiomeGlob,
@@ -28,7 +28,7 @@ var Biome = &JsonHandler{
 			Store: stores.BiomeTag.Source,
 			Path:  []shared.JsonPath{shared.JsonValue("minecraft:biome/components/minecraft:tags/tags/*")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return stores.BiomeTag.Source.Get()
+				return slices.Concat(stores.BiomeTag.Source.Get(), stores.BiomeTag.References.Get())
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
