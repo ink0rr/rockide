@@ -93,6 +93,7 @@ var (
 	ClientEntityGlob              = resourcePattern("/entity/**/*.json")
 	ClientSoundGlob               = resourcePattern("/sounds.json")
 	ColorGradingGlob              = resourcePattern("/color_grading/**/*.json")
+	FlipbookTextureGlob           = resourcePattern("/textures/flipbook_textures.json")
 	FogGlob                       = resourcePattern("/fogs/**/*.json")
 	GeometryGlob                  = resourcePattern("/models/**/*.json")
 	ItemTextureGlob               = resourcePattern("/textures/item_texture.json")

@@ -66,6 +66,7 @@ var handlerList = []Handler{
 	ClientSound,
 	ColorGrading,
 	Fog,
+	FlipbookTexture,
 	Geometry,
 	ItemTexture,
 	Lighting,
