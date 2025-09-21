@@ -110,6 +110,7 @@ var (
 	ClientControllerState = NewSymbolBinding(nil)
 	Fog                   = NewSymbolBinding(vanilla.Fog)
 	Geometry              = NewSymbolBinding(vanilla.Geometry)
+	GeometryBone          = NewSymbolBinding(nil)
 	ItemTexture           = NewSymbolBinding(vanilla.ItemTexture)
 	Lighting              = NewSymbolBinding(vanilla.Lighting)
 	ParticleId            = NewSymbolBinding(vanilla.ParticleId)
