@@ -62,8 +62,10 @@ var Block = &JsonHandler{
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:material_instances/*/texture"),
 				shared.JsonValue("minecraft:block/components/minecraft:item_visual/material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/components/minecraft:destruction_particles/texture"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:material_instances/*/texture"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:destruction_particles/texture"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.TerrainTexture.Source.Get()
