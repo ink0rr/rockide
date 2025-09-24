@@ -50,5 +50,18 @@ var Recipe = &JsonHandler{
 				return stores.RecipeTag.References.Get()
 			},
 		},
+		{
+			Store: stores.ItemTag.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:recipe_shaped/key/*/tag"),
+				shared.JsonValue("minecraft:recipe_shapeless/ingredients/*/tag"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemTag.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemTag.References.Get()
+			},
+		},
 	},
 }
