@@ -45,8 +45,10 @@ var Block = &JsonHandler{
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:geometry"),
 				shared.JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
+				shared.JsonValue("minecraft:block/components/minecraft:item_visual/geometry"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/geometry"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.Geometry.Source.Get()
@@ -59,7 +61,9 @@ var Block = &JsonHandler{
 			Store: stores.TerrainTexture.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/components/minecraft:item_visual/material_instances/*/texture"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/material_instances/*/texture"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.TerrainTexture.Source.Get()
