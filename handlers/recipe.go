@@ -32,5 +32,23 @@ var Recipe = &JsonHandler{
 				return stores.ItemId.References.Get()
 			},
 		},
+		{
+			Store: stores.RecipeTag.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:recipe_shaped/tags/*"),
+				shared.JsonValue("minecraft:recipe_shapeless/tags/*"),
+				shared.JsonValue("minecraft:recipe_furnace/tags"),
+				shared.JsonValue("minecraft:recipe_brewing_container/tags"),
+				shared.JsonValue("minecraft:recipe_brewing_container_mix/tags"),
+				shared.JsonValue("minecraft:recipe_smithing_transform/tags"),
+				shared.JsonValue("minecraft:recipe_smithing_trim/tags"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.RecipeTag.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.RecipeTag.References.Get()
+			},
+		},
 	},
 }

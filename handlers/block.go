@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
@@ -91,6 +92,19 @@ var Block = &JsonHandler{
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return stores.BlockCulling.References.Get()
+			},
+		},
+		{
+			Store: stores.RecipeTag.Source,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:crafting_table/crafting_tags/*"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:crafting_table/crafting_tags/*"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.RecipeTag.Source.Get(), stores.RecipeTag.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
 			},
 		},
 	},
