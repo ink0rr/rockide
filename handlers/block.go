@@ -111,6 +111,22 @@ var Block = &JsonHandler{
 				return nil
 			},
 		},
+		{
+			Store: stores.ItemId.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:placement_filter/block_filter/*/name"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:placement_filter/block_filter/*/name"),
+			},
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.Source.Get("block")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.References.Get("block")
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:block/components/minecraft:destructible_by_mining/item_specific_speeds/*/item/tags"),
