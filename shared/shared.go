@@ -100,6 +100,7 @@ var (
 	GeometryGlob                  = resourcePattern("/models/**/*.json")
 	ItemTextureGlob               = resourcePattern("/textures/item_texture.json")
 	LightingGlob                  = resourcePattern("/lighting/**/*.json")
+	LocalLightingGlob             = resourcePattern("/local_lighting/local_lighting.json")
 	MusicDefinitionGlob           = resourcePattern("/sounds/music_definitions.json")
 	ParticleGlob                  = resourcePattern("/particles/**/*.json")
 	ParticleMaterialGlob          = resourcePattern("/materials/particles.material")

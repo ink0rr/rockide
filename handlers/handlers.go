@@ -72,6 +72,7 @@ var handlerList = []Handler{
 	Geometry,
 	ItemTexture,
 	Lighting,
+	LocalLighting,
 	MusicDefintion,
 	Particle,
 	ParticleMaterial,
