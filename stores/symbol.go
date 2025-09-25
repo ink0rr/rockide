@@ -117,6 +117,7 @@ var (
 	Lighting              = NewSymbolBinding(vanilla.Lighting)
 	ParticleId            = NewSymbolBinding(vanilla.ParticleId)
 	ParticleEvent         = NewSymbolBinding(nil)
+	Material              = NewSymbolBinding(vanilla.Material)
 	RenderControllerId    = NewSymbolBinding(vanilla.RenderController)
 	SoundDefinition       = NewSymbolBinding(vanilla.SoundDefinition)
 	MusicDefinition       = NewSymbolBinding(vanilla.MusicDefinition)
