@@ -81,6 +81,7 @@ var handlerList = []Handler{
 	SoundDefinition,
 	TerrainTexture,
 	Texture,
+	TextureSet,
 	Water,
 }
 

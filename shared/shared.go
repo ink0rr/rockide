@@ -108,7 +108,8 @@ var (
 	SoundDefinitionGlob           = resourcePattern("/sounds/sound_definitions.json")
 	SoundGlob                     = resourcePattern("/sounds/**/*.{fsb,ogg,wav}")
 	TerrainTextureGlob            = resourcePattern("/textures/terrain_texture.json")
-	TextureGlob                   = resourcePattern("/textures/**/*.{png,tga,jpg,jpeg,texture_set.json}")
+	TextureGlob                   = resourcePattern("/textures/**/*.{png,tga,jpg,jpeg}")
+	TextureSetGlob                = resourcePattern("/textures/**/*.texture_set.json")
 	WaterGlob                     = resourcePattern("/water/**/*.json")
 )
 
