@@ -356,7 +356,7 @@ var Entity = &JsonHandler{
 			Matcher: func(ctx *JsonContext) bool {
 				parent := ctx.GetParentNode()
 				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
-				return test != nil && test.Value == "is_family"
+				return test != nil && (test.Value == "is_family" || test.Value == "is_vehicle_family")
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.EntityFamily.Source.Get()
