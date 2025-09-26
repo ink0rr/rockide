@@ -100,6 +100,7 @@ var (
 	ItemId               = NewSymbolBinding(vanilla.ItemId) // Blocks are contained within the "block" scope
 	ItemTag              = NewSymbolBinding(vanilla.ItemTag)
 	RecipeTag            = NewSymbolBinding(vanilla.RecipeTag)
+	WorldgenProcessor    = NewSymbolBinding(nil)
 )
 
 // RP

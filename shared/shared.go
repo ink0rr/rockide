@@ -81,6 +81,7 @@ var (
 	SpawnRuleGlob           = behaviorPattern("/spawn_rules/**/*.json")
 	StructureGlob           = behaviorPattern("/structures/**/*.mcstructure")
 	TradeTableGlob          = behaviorPattern("/trading/**/*.json")
+	WorldgenProcessorGlob   = behaviorPattern("/worldgen/processors/**/*.json")
 )
 
 var (

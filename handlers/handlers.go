@@ -55,6 +55,7 @@ var handlerList = []Handler{
 	LootTable,
 	Recipe,
 	TradeTable,
+	WorldgenProcessor,
 	// RP
 	Attachable,
 	Atmosphere,
