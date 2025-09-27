@@ -84,6 +84,7 @@ var (
 	WorldgenProcessorGlob    = behaviorPattern("/worldgen/processors/**/*.json")
 	WorldgenTemplatePoolGlob = behaviorPattern("/worldgen/template_pools/**/*.json")
 	WorldgenJigsawGlob       = behaviorPattern("/worldgen/structures/**/*.json")
+	WorldgenStructureSetGlob = behaviorPattern("/worldgen/structure_sets/**/*.json")
 )
 
 var (

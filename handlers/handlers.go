@@ -57,6 +57,8 @@ var handlerList = []Handler{
 	TradeTable,
 	WorldgenProcessor,
 	WorldgenTemplatePool,
+	WorldgenJigsaw,
+	WorldgenStructureSet,
 	// RP
 	Attachable,
 	Atmosphere,
