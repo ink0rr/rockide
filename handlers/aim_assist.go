@@ -7,7 +7,7 @@ import (
 )
 
 var AimAssistPreset = &JsonHandler{
-	Pattern: shared.AimAssistPresetsGlob,
+	Pattern: shared.AimAssistPresetGlob,
 	Entries: []JsonEntry{
 		{
 			Store:      stores.AimAssistId.Source,
@@ -67,7 +67,7 @@ var AimAssistPreset = &JsonHandler{
 }
 
 var AimAssistCategory = &JsonHandler{
-	Pattern: shared.AimAssistCategoriesGlob,
+	Pattern: shared.AimAssistCategoryGlob,
 	Entries: []JsonEntry{
 		{
 			Store:      stores.AimAssistCategory.Source,
