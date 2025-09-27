@@ -102,6 +102,7 @@ var (
 	RecipeTag            = NewSymbolBinding(vanilla.RecipeTag)
 	WorldgenProcessor    = NewSymbolBinding(nil)
 	WorldgenTemplatePool = NewSymbolBinding(nil)
+	WorldgenJigsaw       = NewSymbolBinding(nil)
 )
 
 // RP

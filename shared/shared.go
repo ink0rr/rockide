@@ -83,6 +83,7 @@ var (
 	TradeTableGlob           = behaviorPattern("/trading/**/*.json")
 	WorldgenProcessorGlob    = behaviorPattern("/worldgen/processors/**/*.json")
 	WorldgenTemplatePoolGlob = behaviorPattern("/worldgen/template_pools/**/*.json")
+	WorldgenJigsawGlob       = behaviorPattern("/worldgen/structures/**/*.json")
 )
 
 var (
