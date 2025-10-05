@@ -94,8 +94,8 @@ func (j *JsonHandler) Parse(uri protocol.DocumentURI) error {
 					Value: nodeValue,
 					URI:   uri,
 					Range: &protocol.Range{
-						Start: document.PositionAt(node.Offset),
-						End:   document.PositionAt(node.Offset + node.Length),
+						Start: document.PositionAt(node.Offset + 1),
+						End:   document.PositionAt(node.Offset + node.Length - 1),
 					},
 				})
 			}
@@ -317,10 +317,6 @@ func (j *JsonHandler) Rename(document *textdocument.TextDocument, position proto
 			NewText: newName,
 			Range:   *item.Range,
 		}
-		// Exclude quotation marks
-		edit.Range.Start.Character++
-		edit.Range.End.Character--
-
 		changes[item.URI] = append(changes[item.URI], edit)
 	}
 	return &protocol.WorkspaceEdit{Changes: changes}
