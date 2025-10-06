@@ -30,7 +30,6 @@ var Camera = &JsonHandler{
 			Source: func(ctx *JsonContext) []core.Symbol {
 				parent := ctx.GetParentNode()
 				identifier := jsonc.FindNodeAtLocation(parent, jsonc.Path{"identifier"})
-				// Prevent self-inheritance
 				if identifier != nil {
 					return slices.DeleteFunc(stores.CameraId.Source.Get(), func(symbol core.Symbol) bool {
 						return symbol.Value == identifier.Value

@@ -20,7 +20,6 @@ var AimAssistPreset = &JsonHandler{
 				return stores.AimAssistId.Source.Get()
 			},
 		},
-		// Aim assist categories
 		{
 			Store: stores.AimAssistCategory.References,
 			Path: []shared.JsonPath{
@@ -35,7 +34,6 @@ var AimAssistPreset = &JsonHandler{
 				return stores.AimAssistCategory.References.Get()
 			},
 		},
-		// Blocks
 		{
 			Store: stores.ItemId.References,
 			Path: []shared.JsonPath{
@@ -52,7 +50,6 @@ var AimAssistPreset = &JsonHandler{
 				return stores.ItemId.References.Get("block")
 			},
 		},
-		// Items
 		{
 			Store: stores.ItemId.References,
 			Path:  []shared.JsonPath{shared.JsonKey("minecraft:aim_assist_preset/item_settings/*")},
@@ -80,7 +77,6 @@ var AimAssistCategory = &JsonHandler{
 				return stores.AimAssistCategory.Source.Get()
 			},
 		},
-		// Blocks
 		{
 			Store: stores.ItemId.References,
 			Path:  []shared.JsonPath{shared.JsonKey("minecraft:aim_assist_categories/categories/*/priorities/blocks/*")},
@@ -94,7 +90,6 @@ var AimAssistCategory = &JsonHandler{
 				return stores.ItemId.References.Get("block")
 			},
 		},
-		// Entities
 		{
 			Store: stores.EntityId.References,
 			Path:  []shared.JsonPath{shared.JsonKey("minecraft:aim_assist_categories/categories/*/priorities/entities/*")},

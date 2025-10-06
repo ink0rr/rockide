@@ -23,7 +23,6 @@ var Biome = &JsonHandler{
 				return stores.BiomeId.Source.Get()
 			},
 		},
-		// Biome tags
 		{
 			Store: stores.BiomeTag.Source,
 			Path:  []shared.JsonPath{shared.JsonValue("minecraft:biome/components/minecraft:tags/tags/*")},
@@ -34,42 +33,9 @@ var Biome = &JsonHandler{
 				return nil
 			},
 		},
-		// Blocks
 		{
 			Store: stores.ItemId.References,
 			Path: sliceutil.Map([]string{
-				// Deprecated
-				"minecraft:capped_surface/beach_material",
-				"minecraft:capped_surface/ceiling_materials/*",
-				"minecraft:capped_surface/floor_materials/*",
-				"minecraft:capped_surface/foundation_material",
-				"minecraft:capped_surface/sea_material",
-				// Deprecated
-				"minecraft:frozen_ocean_surface/floor_material",
-				"minecraft:frozen_ocean_surface/foundation_material",
-				"minecraft:frozen_ocean_surface/mid_material",
-				"minecraft:frozen_ocean_surface/sea_material",
-				"minecraft:frozen_ocean_surface/sea_floor_material",
-				"minecraft:frozen_ocean_surface/top_material",
-				// Deprecated
-				"minecraft:mesa_surface/bryce_pillars",
-				"minecraft:mesa_surface/clay_material",
-				"minecraft:mesa_surface/floor_material",
-				"minecraft:mesa_surface/foundation_material",
-				"minecraft:mesa_surface/hard_clay_material",
-				"minecraft:mesa_surface/mid_material",
-				"minecraft:mesa_surface/sea_floor_material",
-				"minecraft:mesa_surface/sea_material",
-				"minecraft:mesa_surface/top_material",
-				// Deprecated
-				"minecraft:swamp_surface/floor_material",
-				"minecraft:swamp_surface/foundation_material",
-				"minecraft:swamp_surface/mid_material",
-				"minecraft:swamp_surface/sea_material",
-				"minecraft:swamp_surface/sea_floor_material",
-				"minecraft:swamp_surface/top_material",
-				// Current
-				// TODO: Add support for states.
 				"minecraft:mountain_parameters/steep_material_adjustment/material",
 				"minecraft:mountain_parameters/steep_material_adjustment/material/name",
 				"minecraft:surface_builder/builder/foundation_material",
@@ -107,7 +73,6 @@ var Biome = &JsonHandler{
 				return stores.ItemId.References.Get("block")
 			},
 		},
-		// Forced features
 		{
 			Store: stores.FeatureId.References,
 			Path: []shared.JsonPath{
@@ -120,5 +85,6 @@ var Biome = &JsonHandler{
 				return stores.FeatureId.References.Get()
 			},
 		},
+		// TODO: Add support for states.
 	},
 }
