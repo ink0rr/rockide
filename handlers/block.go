@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
@@ -26,7 +27,7 @@ var Block = &JsonHandler{
 			},
 		},
 		{
-			Store: stores.BlockTag.References,
+			Store: stores.BlockTag.Source,
 			Path: []shared.JsonPath{
 				shared.JsonKey("minecraft:block/components/*"),
 				shared.JsonKey("minecraft:block/permutations/*/components/*"),
@@ -38,14 +39,22 @@ var Block = &JsonHandler{
 				res, _ := strings.CutPrefix(value, "tag:")
 				return res
 			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.BlockTag.Source.Get(), stores.BlockTag.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
 		},
 		{
 			Store: stores.Geometry.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:geometry"),
 				shared.JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
+				shared.JsonValue("minecraft:block/components/minecraft:item_visual/geometry"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/geometry"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.Geometry.Source.Get()
@@ -58,7 +67,11 @@ var Block = &JsonHandler{
 			Store: stores.TerrainTexture.References,
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/components/minecraft:item_visual/material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/components/minecraft:destruction_particles/texture"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/material_instances/*/texture"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:destruction_particles/texture"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.TerrainTexture.Source.Get()
@@ -78,6 +91,48 @@ var Block = &JsonHandler{
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
+			},
+		},
+		{
+			Store: stores.BlockCulling.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:geometry/culling"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/culling"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.BlockCulling.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.BlockCulling.References.Get()
+			},
+		},
+		{
+			Store: stores.RecipeTag.Source,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:crafting_table/crafting_tags/*"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:crafting_table/crafting_tags/*"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.RecipeTag.Source.Get(), stores.RecipeTag.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
+		{
+			Store: stores.ItemId.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:placement_filter/block_filter/*/name"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:placement_filter/block_filter/*/name"),
+			},
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.Source.Get("block")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.References.Get("block")
 			},
 		},
 	},

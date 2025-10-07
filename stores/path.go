@@ -13,13 +13,13 @@ import (
 )
 
 type PathStore struct {
-	store       []core.Symbol
-	trimSuffix  bool
-	VanillaData mapset.Set[string]
+	store        []core.Symbol
+	trimSuffixes []string
+	VanillaData  mapset.Set[string]
 }
 
-func NewPathStore(trimSuffix bool, vanillaData mapset.Set[string]) *PathStore {
-	return &PathStore{trimSuffix: trimSuffix, VanillaData: vanillaData}
+func NewPathStore(vanillaData mapset.Set[string], trimSuffixes ...string) *PathStore {
+	return &PathStore{trimSuffixes: trimSuffixes, VanillaData: vanillaData}
 }
 
 func (s *PathStore) Insert(pattern shared.Pattern, uri protocol.DocumentURI) {
@@ -33,8 +33,12 @@ func (s *PathStore) Insert(pattern shared.Pattern, uri protocol.DocumentURI) {
 	if !found {
 		panic("invalid project path")
 	}
-	if s.trimSuffix {
-		path = strings.TrimSuffix(path, filepath.Ext(path))
+	for _, suffix := range s.trimSuffixes {
+		str, ok := strings.CutSuffix(path, suffix)
+		if ok {
+			path = str
+			break
+		}
 	}
 	s.store = append(s.store, core.Symbol{Value: path, URI: uri})
 }
@@ -50,8 +54,8 @@ func (s *PathStore) Delete(uri protocol.DocumentURI) {
 }
 
 var (
-	LootTablePath  = NewPathStore(false, vanilla.LootTablePath)
-	TradeTablePath = NewPathStore(false, vanilla.TradeTablePath)
-	SoundPath      = NewPathStore(true, vanilla.SoundPath)
-	TexturePath    = NewPathStore(true, vanilla.TexturePath)
+	LootTablePath  = NewPathStore(vanilla.LootTablePath)
+	TradeTablePath = NewPathStore(vanilla.TradeTablePath)
+	SoundPath      = NewPathStore(vanilla.SoundPath, ".fsb", ".ogg", ".wav")
+	TexturePath    = NewPathStore(vanilla.TexturePath, ".png", ".tga", ".jpg", ".jpeg", ".texture_set.json")
 )

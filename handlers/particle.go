@@ -80,6 +80,19 @@ var Particle = &JsonHandler{
 				return stores.ParticleEvent.References.GetFrom(ctx.URI)
 			},
 		},
+		{
+			Store: stores.Material.References,
+			Path:  []shared.JsonPath{shared.JsonValue("particle_effect/description/basic_render_parameters/material")},
+			ScopeKey: func(ctx *JsonContext) string {
+				return "particle"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.Material.Source.Get("particle")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.Material.References.Get("particle")
+			},
+		},
 	},
 	MolangLocations: slices.Concat(
 		[]shared.JsonPath{

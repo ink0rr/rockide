@@ -80,10 +80,16 @@ func NewSymbolBinding(vanillaData mapset.Set[string]) *SymbolBinding {
 
 // BP
 var (
+	AimAssistId          = NewSymbolBinding(nil)
+	AimAssistCategory    = NewSymbolBinding(nil)
 	Animation            = NewSymbolBinding(nil)
 	Animate              = NewSymbolBinding(nil)
+	BiomeId              = NewSymbolBinding(vanilla.BiomeId)
+	BiomeTag             = NewSymbolBinding(vanilla.BiomeTag)
 	BlockTag             = NewSymbolBinding(vanilla.BlockTag)
+	CameraId             = NewSymbolBinding(vanilla.CameraId)
 	ControllerState      = NewSymbolBinding(nil)
+	DialogueId           = NewSymbolBinding(nil)
 	EntityId             = NewSymbolBinding(vanilla.EntityId)
 	EntityProperty       = NewSymbolBinding(nil)
 	EntityPropertyValue  = NewSymbolBinding(nil)
@@ -93,18 +99,31 @@ var (
 	FeatureId            = NewSymbolBinding(nil)
 	ItemId               = NewSymbolBinding(vanilla.ItemId) // Blocks are contained within the "block" scope
 	ItemTag              = NewSymbolBinding(vanilla.ItemTag)
+	RecipeTag            = NewSymbolBinding(vanilla.RecipeTag)
+	WorldgenProcessor    = NewSymbolBinding(vanilla.WorldgenProcessor)
+	WorldgenTemplatePool = NewSymbolBinding(vanilla.WorldgenTemplatePool)
+	WorldgenJigsaw       = NewSymbolBinding(nil)
 )
 
 // RP
 var (
+	Atmosphere            = NewSymbolBinding(vanilla.Atmospheric)
+	BlockCulling          = NewSymbolBinding(nil)
+	ColorGrading          = NewSymbolBinding(vanilla.ColorGrading)
 	ClientAnimation       = NewSymbolBinding(vanilla.ClientAnimation)
 	ClientAnimate         = NewSymbolBinding(nil)
 	ClientControllerState = NewSymbolBinding(nil)
+	Fog                   = NewSymbolBinding(vanilla.Fog)
 	Geometry              = NewSymbolBinding(vanilla.Geometry)
+	GeometryBone          = NewSymbolBinding(nil)
 	ItemTexture           = NewSymbolBinding(vanilla.ItemTexture)
+	Lighting              = NewSymbolBinding(vanilla.Lighting)
 	ParticleId            = NewSymbolBinding(vanilla.ParticleId)
 	ParticleEvent         = NewSymbolBinding(nil)
+	Material              = NewSymbolBinding(vanilla.Material)
 	RenderControllerId    = NewSymbolBinding(vanilla.RenderController)
 	SoundDefinition       = NewSymbolBinding(vanilla.SoundDefinition)
+	MusicDefinition       = NewSymbolBinding(vanilla.MusicDefinition)
 	TerrainTexture        = NewSymbolBinding(vanilla.TerrainTexture)
+	Water                 = NewSymbolBinding(vanilla.Water)
 )

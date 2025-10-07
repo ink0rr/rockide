@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"slices"
+
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
@@ -38,7 +40,7 @@ var Item = &JsonHandler{
 			Store: stores.ItemTag.Source,
 			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:tags/tags/*")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return stores.ItemTag.Source.Get()
+				return slices.Concat(stores.ItemTag.Source.Get(), stores.ItemTag.References.Get())
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil

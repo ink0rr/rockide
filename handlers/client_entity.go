@@ -62,8 +62,17 @@ var ClientEntity = &JsonHandler{
 			// TODO
 		},
 		{
-			Path: []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/materials/*")},
-			// TODO
+			Store: stores.Material.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:client_entity/description/materials/*")},
+			ScopeKey: func(ctx *JsonContext) string {
+				return "entity"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.Material.Source.Get("entity")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.Material.References.Get("entity")
+			},
 		},
 		{
 			Path: []shared.JsonPath{shared.JsonKey("minecraft:client_entity/description/textures/*")},

@@ -356,7 +356,7 @@ var Entity = &JsonHandler{
 			Matcher: func(ctx *JsonContext) bool {
 				parent := ctx.GetParentNode()
 				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
-				return test != nil && test.Value == "is_family"
+				return test != nil && (test.Value == "is_family" || test.Value == "is_vehicle_family")
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.EntityFamily.Source.Get()
@@ -480,6 +480,43 @@ var Entity = &JsonHandler{
 			},
 		},
 		{
+			Store: stores.ItemId.References,
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "is_block"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.Source.Get("block")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.References.Get("block")
+			},
+		},
+		{
+			Store: stores.ItemTag.References,
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "has_equipment_tag"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemTag.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemTag.References.Get()
+			},
+		},
+		{
 			Path: sliceutil.FlatMap([]string{
 				"minecraft:loot/table",
 				"minecraft:behavior.sneeze/loot_table",
@@ -518,6 +555,40 @@ var Entity = &JsonHandler{
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
+			},
+		},
+		{
+			Store: stores.BiomeTag.References,
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "has_biome_tag"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.BiomeTag.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.BiomeTag.References.Get()
+			},
+		},
+		{
+			Store: stores.BiomeId.References,
+			Path: sliceutil.Map(shared.FilterPaths, func(path string) shared.JsonPath {
+				return shared.JsonValue(path + "/value")
+			}),
+			Matcher: func(ctx *JsonContext) bool {
+				parent := ctx.GetParentNode()
+				test := jsonc.FindNodeAtLocation(parent, jsonc.Path{"test"})
+				return test != nil && test.Value == "is_biome"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.BiomeId.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.BiomeId.References.Get()
 			},
 		},
 	},
