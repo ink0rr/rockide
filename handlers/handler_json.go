@@ -150,7 +150,7 @@ func (j *JsonHandler) prepareContext(document *textdocument.TextDocument, locati
 }
 
 func (j *JsonHandler) isMolangLocation(location *jsonc.Location) bool {
-	if location.IsAtPropertyKey {
+	if location.IsAtPropertyKey || location.PreviousNode == nil {
 		return false
 	}
 	if j.MolangLocations != nil {
@@ -164,7 +164,7 @@ func (j *JsonHandler) isMolangLocation(location *jsonc.Location) bool {
 }
 
 func (j *JsonHandler) isMolangSemanticLocation(location *jsonc.Location) bool {
-	if location.IsAtPropertyKey {
+	if location.IsAtPropertyKey || location.PreviousNode == nil {
 		return false
 	}
 	if j.MolangSemanticLocations != nil {
@@ -184,8 +184,13 @@ func (j *JsonHandler) Completions(document *textdocument.TextDocument, position 
 
 	res := []protocol.CompletionItem{}
 	if j.isMolangLocation(location) {
-		if ctx := NewMolangContext(document, location, offset); ctx != nil {
-			res = MolangCompletions(ctx)
+		docRange := protocol.Range{
+			Start: document.PositionAt(node.Offset + 1),
+			End:   document.PositionAt(node.Offset + node.Length - 1),
+		}
+		if isInside(docRange, position) {
+			doc := document.CreateVirtualDocument(docRange)
+			res = Molang.Completions(doc, position)
 		}
 	}
 	entry, ctx := j.prepareContext(document, location)
@@ -240,9 +245,11 @@ func (j *JsonHandler) Definitions(document *textdocument.TextDocument, position 
 
 	res := []protocol.LocationLink{}
 	if j.isMolangLocation(location) {
-		if ctx := NewMolangContext(document, location, offset); ctx != nil {
-			res = MolangDefinitions(ctx)
-		}
+		doc := document.CreateVirtualDocument(protocol.Range{
+			Start: document.PositionAt(node.Offset + 1),
+			End:   document.PositionAt(node.Offset + node.Length - 1),
+		})
+		res = Molang.Definitions(doc, position)
 	}
 	entry, ctx := j.prepareContext(document, location)
 	if entry == nil || entry.Source == nil || entry.References == nil {
@@ -337,10 +344,14 @@ func (j *JsonHandler) Rename(document *textdocument.TextDocument, position proto
 func (j *JsonHandler) Hover(document *textdocument.TextDocument, position protocol.Position) *protocol.Hover {
 	offset := document.OffsetAt(position)
 	location := jsonc.GetLocation(document.GetText(), offset)
+	node := location.PreviousNode
 	if j.isMolangLocation(location) {
-		if ctx := NewMolangContext(document, location, offset); ctx != nil {
-			return MolangHover(ctx)
+		docRange := protocol.Range{
+			Start: document.PositionAt(node.Offset + 1),
+			End:   document.PositionAt(node.Offset + node.Length - 1),
 		}
+		doc := document.CreateVirtualDocument(docRange)
+		return Molang.Hover(doc, position)
 	}
 	return nil
 }
@@ -348,10 +359,14 @@ func (j *JsonHandler) Hover(document *textdocument.TextDocument, position protoc
 func (j *JsonHandler) SignatureHelp(document *textdocument.TextDocument, position protocol.Position) *protocol.SignatureHelp {
 	offset := document.OffsetAt(position)
 	location := jsonc.GetLocation(document.GetText(), offset)
+	node := location.PreviousNode
 	if j.isMolangLocation(location) {
-		if ctx := NewMolangContext(document, location, offset); ctx != nil {
-			return MolangSignatureHelp(ctx)
+		docRange := protocol.Range{
+			Start: document.PositionAt(node.Offset + 1),
+			End:   document.PositionAt(node.Offset + node.Length - 1),
 		}
+		doc := document.CreateVirtualDocument(docRange)
+		return Molang.SignatureHelp(doc, position)
 	}
 	return nil
 }
@@ -359,18 +374,32 @@ func (j *JsonHandler) SignatureHelp(document *textdocument.TextDocument, positio
 func (j *JsonHandler) SemanticTokens(document *textdocument.TextDocument) *protocol.SemanticTokens {
 	tokens := []semtok.Token{}
 
+	molangRanges := []protocol.Range{}
 	jsonc.Visit(document.GetText(), &jsonc.Visitor{
 		OnLiteralValue: func(value any, offset, length, startLine, startCharacter uint32, pathSupplier func() jsonc.Path) {
 			text, ok := value.(string)
 			if !ok || text == "" || text[0] == '@' || text[0] == '/' {
 				return
 			}
-			location := jsonc.Location{Path: pathSupplier()}
+			location := jsonc.Location{
+				Path: pathSupplier(),
+				PreviousNode: &jsonc.Node{
+					Type:   jsonc.NodeTypeString,
+					Value:  value,
+					Offset: offset,
+					Length: length,
+				},
+			}
 			if j.isMolangSemanticLocation(&location) {
-				tokens = append(tokens, MolangSemanticTokens(text, startLine, startCharacter)...)
+				molangRanges = append(molangRanges, protocol.Range{
+					Start: document.PositionAt(offset + 1),
+					End:   document.PositionAt(offset + length - 1),
+				})
 			}
 		},
 	}, nil)
+	molangDocument := document.CreateVirtualDocument(molangRanges...)
+	tokens = append(tokens, Molang.ComputeSemanticTokens(molangDocument)...)
 
 	return &protocol.SemanticTokens{
 		Data: semtok.Encode(tokens, tokenType, tokenModifier),

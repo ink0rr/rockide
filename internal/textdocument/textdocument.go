@@ -78,6 +78,42 @@ func (d *TextDocument) GetText() string {
 	return d.content
 }
 
+func (d *TextDocument) CreateVirtualDocument(ranges ...protocol.Range) *TextDocument {
+	textLength := uint32(len(d.content))
+	result := make([]byte, textLength)
+
+	offsets := make([][2]uint32, len(ranges))
+	for i, r := range ranges {
+		offsets[i][0] = d.OffsetAt(r.Start)
+		offsets[i][1] = d.OffsetAt(r.End)
+	}
+
+	for i := range textLength {
+		ch := d.content[i]
+		if isEOL(ch) {
+			result[i] = ch
+			continue
+		}
+		isInside := false
+		for _, offset := range offsets {
+			if i >= offset[0] && i < offset[1] {
+				isInside = true
+				break
+			}
+		}
+		if isInside {
+			result[i] = ch
+		} else {
+			result[i] = ' '
+		}
+	}
+
+	return &TextDocument{
+		URI:     d.URI,
+		content: string(result),
+	}
+}
+
 var (
 	documents = make(map[protocol.DocumentURI]*TextDocument)
 	mu        sync.RWMutex

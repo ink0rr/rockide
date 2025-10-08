@@ -3,7 +3,6 @@ package molang
 import (
 	"fmt"
 	"slices"
-	"strconv"
 )
 
 type Parser struct {
@@ -12,8 +11,6 @@ type Parser struct {
 }
 
 func NewParser(source string) (*Parser, error) {
-	escaped := strconv.QuoteToASCII(source)
-	source = escaped[1 : len(escaped)-1]
 	parser := &Parser{Source: source}
 
 	current := source
@@ -25,7 +22,7 @@ func NewParser(source string) (*Parser, error) {
 			match := tp.pattern.FindString(current)
 			if match != "" {
 				length := uint32(len(match))
-				if tp.kind != KindUnknown {
+				if tp.kind != KindIgnore {
 					parser.Tokens = append(parser.Tokens, Token{
 						Kind:   tp.kind,
 						Value:  match,

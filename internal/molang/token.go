@@ -15,6 +15,7 @@ const (
 	KindParen    TokenKind = "PAREN"
 	KindComma    TokenKind = "COMMA"
 	KindUnknown  TokenKind = "UNKNOWN"
+	KindIgnore   TokenKind = "IGNORE"
 )
 
 type Token struct {
@@ -39,7 +40,7 @@ var tokenPatterns = []tokenPattern{
 	{KindOperator, regexp.MustCompile(`^[+\-*/%><=!&|;:?]+`)},
 	{KindParen, regexp.MustCompile(`^[\(\)\{\}\[\]]`)},
 	{KindComma, regexp.MustCompile(`^,`)},
-	{KindUnknown, regexp.MustCompile(`^\s+`)},
 	{KindUnknown, regexp.MustCompile(`^\w+`)},
-	{KindUnknown, regexp.MustCompile(`^.`)},
+	{KindIgnore, regexp.MustCompile(`^\s+`)},
+	{KindIgnore, regexp.MustCompile(`^.`)},
 }

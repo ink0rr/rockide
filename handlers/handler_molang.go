@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	mapset "github.com/deckarep/golang-set/v2"
-	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/internal/molang"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/protocol/semtok"
@@ -13,46 +12,39 @@ import (
 	"github.com/ink0rr/rockide/internal/textdocument"
 )
 
-type MolangContext struct {
-	document    *textdocument.TextDocument
-	text        string
-	startOffset uint32
-	offset      uint32
-}
+type MolangHandler struct{}
 
-func NewMolangContext(document *textdocument.TextDocument, location *jsonc.Location, offset uint32) *MolangContext {
-	node := location.PreviousNode
-	if node == nil {
-		return nil
-	}
-	nodeValue, ok := node.Value.(string)
-	if !ok {
-		return nil
-	}
-	startOffset := node.Offset
-	return &MolangContext{
-		document:    document,
-		text:        nodeValue,
-		startOffset: startOffset,
-		offset:      offset - startOffset - 2,
-	}
-}
-
-func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
-	parser, err := molang.NewParser(ctx.text)
+func (m *MolangHandler) Completions(document *textdocument.TextDocument, position protocol.Position) []protocol.CompletionItem {
+	parser, err := molang.NewParser(document.GetText())
 	if err != nil {
 		log.Printf("Molang error: %v", err)
 		return nil
 	}
-	index := parser.FindIndex(ctx.offset)
+	offset := document.OffsetAt(position)
+	index := parser.FindIndex(offset - 1)
 	if index == -1 {
-		return nil
+		editRange := protocol.Range{
+			Start: position,
+			End:   position,
+		}
+		return sliceutil.Map(molang.Prefixes, func(value string) protocol.CompletionItem {
+			return protocol.CompletionItem{
+				Label: value,
+				Kind:  protocol.ClassCompletion,
+				TextEdit: &protocol.Or_CompletionItem_textEdit{
+					Value: protocol.TextEdit{
+						NewText: value,
+						Range:   editRange,
+					},
+				},
+			}
+		})
 	}
 
 	token := parser.Tokens[index]
 	switch token.Kind {
 	case molang.KindString:
-		methodCall := parser.GetMethodCall(ctx.offset)
+		methodCall := parser.GetMethodCall(offset)
 		if methodCall == nil {
 			return nil
 		}
@@ -72,8 +64,9 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 		}
 		values := getTypeValues()
 		editRange := protocol.Range{
-			Start: ctx.document.PositionAt(ctx.startOffset + token.Offset + 2),
-			End:   ctx.document.PositionAt(ctx.startOffset + token.Offset + token.Length),
+			// Exclude surrounding single quotes
+			Start: document.PositionAt(token.Offset + 1),
+			End:   document.PositionAt(token.Offset + token.Length - 1),
 		}
 		res := []protocol.CompletionItem{}
 		if values.literals != nil {
@@ -110,12 +103,13 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 		return res
 	case molang.KindPrefix, molang.KindUnknown:
 		editRange := protocol.Range{
-			Start: ctx.document.PositionAt(ctx.startOffset + token.Offset + 1),
-			End:   ctx.document.PositionAt(ctx.startOffset + token.Offset + token.Length + 1),
+			Start: document.PositionAt(token.Offset),
+			End:   document.PositionAt(token.Offset + token.Length),
 		}
 		return sliceutil.Map(molang.Prefixes, func(value string) protocol.CompletionItem {
 			return protocol.CompletionItem{
 				Label: value,
+				Kind:  protocol.ClassCompletion,
 				TextEdit: &protocol.Or_CompletionItem_textEdit{
 					Value: protocol.TextEdit{
 						NewText: value,
@@ -148,18 +142,20 @@ func MolangCompletions(ctx *MolangContext) []protocol.CompletionItem {
 	})
 }
 
-func MolangDefinitions(ctx *MolangContext) []protocol.LocationLink {
-	parser, err := molang.NewParser(ctx.text)
+func (m *MolangHandler) Definitions(document *textdocument.TextDocument, position protocol.Position) []protocol.LocationLink {
+	parser, err := molang.NewParser(document.GetText())
 	if err != nil {
 		log.Printf("Molang error: %v", err)
 		return nil
 	}
-	index := parser.FindIndex(ctx.offset)
+	offset := document.OffsetAt(position)
+	index := parser.FindIndex(offset)
 	if index == -1 {
 		return nil
 	}
+
 	token := parser.Tokens[index]
-	methodCall := parser.GetMethodCall(ctx.offset)
+	methodCall := parser.GetMethodCall(offset)
 	if token.Kind != molang.KindString || methodCall == nil {
 		return nil
 	}
@@ -183,10 +179,10 @@ func MolangDefinitions(ctx *MolangContext) []protocol.LocationLink {
 		return nil
 	}
 	selectionRange := protocol.Range{
-		Start: ctx.document.PositionAt(ctx.startOffset + token.Offset + 1),
-		End:   ctx.document.PositionAt(ctx.startOffset + token.Offset + token.Length + 1),
+		Start: document.PositionAt(token.Offset),
+		End:   document.PositionAt(token.Offset + token.Length),
 	}
-	molangValue := token.Value[1 : len(token.Value)-1] // Exclude quotes
+	molangValue := token.Value[1 : len(token.Value)-1] // Exclude surrounding single quotes
 	for _, binding := range values.bindings {
 		for _, ref := range binding.Source.Get() {
 			if ref.Value != molangValue {
@@ -206,13 +202,14 @@ func MolangDefinitions(ctx *MolangContext) []protocol.LocationLink {
 	return res
 }
 
-func MolangHover(ctx *MolangContext) *protocol.Hover {
-	parser, err := molang.NewParser(ctx.text)
+func (m *MolangHandler) Hover(document *textdocument.TextDocument, position protocol.Position) *protocol.Hover {
+	parser, err := molang.NewParser(document.GetText())
 	if err != nil {
 		log.Printf("Molang error: %v", err)
 		return nil
 	}
-	index := parser.FindIndex(ctx.offset + 1)
+	offset := document.OffsetAt(position)
+	index := parser.FindIndex(offset)
 	if index < 0 {
 		return nil
 	}
@@ -250,13 +247,14 @@ func MolangHover(ctx *MolangContext) *protocol.Hover {
 	}
 }
 
-func MolangSignatureHelp(ctx *MolangContext) *protocol.SignatureHelp {
-	parser, err := molang.NewParser(ctx.text)
+func (m *MolangHandler) SignatureHelp(document *textdocument.TextDocument, position protocol.Position) *protocol.SignatureHelp {
+	parser, err := molang.NewParser(document.GetText())
 	if err != nil {
 		log.Printf("Molang error: %v", err)
 		return nil
 	}
-	methodCall := parser.GetMethodCall(ctx.offset)
+	offset := document.OffsetAt(position)
+	methodCall := parser.GetMethodCall(offset - 1)
 	if methodCall == nil {
 		return nil
 	}
@@ -284,25 +282,38 @@ func MolangSignatureHelp(ctx *MolangContext) *protocol.SignatureHelp {
 	}
 }
 
-func MolangSemanticTokens(text string, startLine, startCharacter uint32) []semtok.Token {
-	parser, err := molang.NewParser(text)
+func (m *MolangHandler) ComputeSemanticTokens(document *textdocument.TextDocument) []semtok.Token {
+	parser, err := molang.NewParser(document.GetText())
 	if err != nil {
 		log.Printf("Molang error: %v", err)
 		return nil
 	}
-	res := []semtok.Token{}
+
+	tokens := []semtok.Token{}
 	for _, token := range parser.Tokens {
 		tokenType, ok := molangTokenMap[token.Kind]
 		if !ok {
 			continue
 		}
-		res = append(res,
+		position := document.PositionAt(token.Offset)
+		tokens = append(tokens,
 			semtok.Token{
 				Type:  tokenType,
-				Line:  startLine,
-				Start: startCharacter + token.Offset + 1,
+				Line:  position.Line,
+				Start: position.Character,
 				Len:   token.Length,
 			})
 	}
-	return res
+
+	return tokens
 }
+
+func (m *MolangHandler) SemanticTokens(document *textdocument.TextDocument) *protocol.SemanticTokens {
+	tokens := m.ComputeSemanticTokens(document)
+
+	return &protocol.SemanticTokens{
+		Data: semtok.Encode(tokens, tokenType, tokenModifier),
+	}
+}
+
+var Molang = &MolangHandler{}
