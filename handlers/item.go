@@ -56,6 +56,32 @@ var Item = &JsonHandler{
 				return stores.ItemId.References.Get()
 			},
 		},
+		{
+			Store: stores.ItemId.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:item/components/minecraft:block_placer/block"),
+				shared.JsonValue("minecraft:item/components/minecraft:digger/destroy_speeds/*/block"),
+			},
+			ScopeKey: func(ctx *JsonContext) string {
+				return "block"
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.Source.Get("block")
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.ItemId.References.Get("block")
+			},
+		},
+		{
+			Store: stores.EntityId.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:entity_placer/entity")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.EntityId.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.EntityId.References.Get()
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:item/components/**/condition"),
