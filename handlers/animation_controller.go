@@ -100,7 +100,10 @@ var AnimationController = &JsonHandler{
 		},
 		{
 			Store: stores.ControllerState.References,
-			Path:  []shared.JsonPath{shared.JsonKey("animation_controllers/*/states/*/transitions/*/*")},
+			Path: []shared.JsonPath{
+				shared.JsonValue("animation_controllers/*/initial_state"),
+				shared.JsonKey("animation_controllers/*/states/*/transitions/*/*"),
+			},
 			ScopeKey: func(ctx *JsonContext) string {
 				if id, ok := ctx.GetPath()[1].(string); ok {
 					return id
