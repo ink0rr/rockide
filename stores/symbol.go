@@ -86,6 +86,7 @@ var (
 	Animate              = NewSymbolBinding(nil)
 	BiomeId              = NewSymbolBinding(vanilla.BiomeId)
 	BiomeTag             = NewSymbolBinding(vanilla.BiomeTag)
+	BlockState           = NewSymbolBinding(vanilla.BlockState)
 	BlockTag             = NewSymbolBinding(vanilla.BlockTag)
 	CameraId             = NewSymbolBinding(vanilla.CameraId)
 	ControllerState      = NewSymbolBinding(nil)

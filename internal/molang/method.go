@@ -104,22 +104,22 @@ var molangQueries = []Method{
 	},
 	{
 		Name:        "block_has_all_tags",
-		Signature:   "(origin: vector3, ...tags: BlockTag[]): boolean",
+		Signature:   "(x: number, y: number, z: number, ...tags: BlockTag[]): boolean",
 		Description: "Takes a world-origin-relative position and one or more tag names, and returns either 0 or 1 based on if the block at that position has all of the tags provided.",
 	},
 	{
 		Name:        "block_has_any_tag",
-		Signature:   "(origin: vector3, ...tags: BlockTag[]): boolean",
+		Signature:   "(x: number, y: number, z: number, ...tags: BlockTag[]): boolean",
 		Description: "Takes a world-origin-relative position and one or more tag names, and returns either 0 or 1 based on if the block at that position has any of the tags provided.",
 	},
 	{
 		Name:        "block_neighbor_has_all_tags",
-		Signature:   "(origin: vector3, ...tags: BlockTag[]): boolean",
+		Signature:   "(x: number, y: number, z: number, ...tags: BlockTag[]): boolean",
 		Description: "Takes a block-relative position and one or more tag names, and returns either 0 or 1 based on if the block at that position has all of the tags provided.",
 	},
 	{
 		Name:        "block_neighbor_has_any_tag",
-		Signature:   "(origin: vector3, ...tags: BlockTag[]): boolean",
+		Signature:   "(x: number, y: number, z: number, ...tags: BlockTag[]): boolean",
 		Description: "Takes a block-relative position and one or more tag names, and returns either 0 or 1 based on if the block at that position has any of the tags provided.",
 	},
 	{
@@ -130,7 +130,7 @@ var molangQueries = []Method{
 	},
 	{
 		Name:        "block_state",
-		Signature:   "(name: string): string | number | boolean",
+		Signature:   "(identifier: BlockState): string | number | boolean",
 		Description: "Returns the value of the associated block's Block State.",
 	},
 	{
@@ -440,7 +440,7 @@ var molangQueries = []Method{
 	},
 	{
 		Name:        "has_block_state",
-		Signature:   "(name: string): boolean",
+		Signature:   "(identifier: BlockState): boolean",
 		Description: "Returns 1.0 if the associated block has the given block state or 0.0 if not.",
 	},
 	{
@@ -634,9 +634,15 @@ var molangQueries = []Method{
 		Description: "Returns 1.0 if the entity has chests attached to it, else it returns 0.0.",
 	},
 	{
+		Name:        "is_cooldown_category",
+		Signature:   "(category: string, slotName: EquipmentSlot, slotIndex?: number): boolean",
+		Description: "Returns 1.0 if the specified held or worn item has the specified cooldown category, otherwise returns 0.0. First argument is the cooldown name to check for, second argument is the equipment slot name, and if required third argument is the numerical slot id. For second and third arguments, uses the same name and id that the replaceitem command takes when querying entities.",
+	},
+	{
 		Name:        "is_cooldown_type",
 		Signature:   "(cooldownType: string, slotName: EquipmentSlot, slotIndex?: number): boolean",
 		Description: "Returns 1.0 if the specified held or worn item has the specified cooldown type name, otherwise returns 0.0. First argument is the cooldown name to check for, second argument is the equipment slot name, and if required third argument is the numerical slot id. For second and third arguments, uses the same name and id that the replaceitem command takes when querying entities.",
+		Deprecated:  true,
 	},
 	{
 		Name:        "is_crawling",
@@ -1265,12 +1271,12 @@ var molangQueries = []Method{
 	},
 	{
 		Name:        "relative_block_has_all_tags",
-		Signature:   "(position: vector3, ...tags: BlockTag[]): number", // TODO: undocumented
+		Signature:   "(x: number, y: number, z: number, ...tags: BlockTag[]): number",
 		Description: "Takes an entity-relative position and one or more tag names, and returns either 0 or 1 based on if the block at that position has all of the tags provided.",
 	},
 	{
 		Name:        "relative_block_has_any_tag",
-		Signature:   "(position: vector3, ...tags: BlockTag[]): number", // TODO: undocumented
+		Signature:   "(x: number, y: number, z: number, ...tags: BlockTag[]): number",
 		Description: "Takes an entity-relative position and one or more tag names, and returns either 0 or 1 based on if the block at that position has any of the tags provided.",
 	},
 	{

@@ -27,6 +27,17 @@ var Block = &JsonHandler{
 			},
 		},
 		{
+			Store:      stores.BlockState.Source,
+			Path:       []shared.JsonPath{shared.JsonKey("minecraft:block/description/states/*")},
+			FilterDiff: true,
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.BlockState.References.GetFrom(ctx.URI)
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.BlockState.Source.GetFrom(ctx.URI)
+			},
+		},
+		{
 			Store: stores.BlockTag.Source,
 			Path: []shared.JsonPath{
 				shared.JsonKey("minecraft:block/components/*"),

@@ -104,6 +104,9 @@ var molangTypes = map[string]func() molangValue{
 	"BlockAndItemTag": func() molangValue {
 		return molangValue{bindings: []*stores.SymbolBinding{stores.BlockTag, stores.ItemTag}}
 	},
+	"BlockState": func() molangValue {
+		return molangValue{bindings: []*stores.SymbolBinding{stores.BlockState}}
+	},
 	"EntityIdentifier": func() molangValue {
 		return molangValue{bindings: []*stores.SymbolBinding{stores.EntityId}}
 	},
