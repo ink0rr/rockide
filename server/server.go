@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io/fs"
 	"log"
-	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
@@ -16,11 +15,6 @@ import (
 	"github.com/ink0rr/rockide/handlers"
 	"github.com/ink0rr/rockide/internal/protocol"
 )
-
-func cleanPath(path string) string {
-	u := url.URL{Path: filepath.ToSlash(filepath.Clean(path))}
-	return u.String()
-}
 
 func findProjectPaths(params any) (*core.Project, error) {
 	// try to get project paths from user settings
@@ -35,8 +29,8 @@ func findProjectPaths(params any) (*core.Project, error) {
 			return nil, errors.New("invalid initialization options")
 		}
 		return &core.Project{
-			BP: cleanPath(bp),
-			RP: cleanPath(rp),
+			BP: filepath.ToSlash(filepath.Clean(bp)),
+			RP: filepath.ToSlash(filepath.Clean(rp)),
 		}, nil
 	}
 
@@ -62,8 +56,8 @@ func findProjectPaths(params any) (*core.Project, error) {
 	log.Printf("Resource pack: %s", rp)
 
 	return &core.Project{
-		BP: cleanPath(bp),
-		RP: cleanPath(rp),
+		BP: filepath.ToSlash(filepath.Clean(bp)),
+		RP: filepath.ToSlash(filepath.Clean(rp)),
 	}, nil
 }
 
@@ -78,12 +72,7 @@ func indexWorkspace() {
 	for _, store := range handlers.GetAll() {
 		go func() {
 			defer wg.Done()
-			pattern, err := url.PathUnescape(store.GetPattern())
-			if err != nil {
-				log.Printf("Failed to unescape pattern: %s", store.GetPattern())
-				return
-			}
-			doublestar.GlobWalk(fsys, pattern, func(path string, d fs.DirEntry) error {
+			doublestar.GlobWalk(fsys, store.GetPattern(), func(path string, d fs.DirEntry) error {
 				if d.IsDir() {
 					return nil
 				}
