@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"path/filepath"
+
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/internal/textdocument"
@@ -94,8 +96,9 @@ func GetAll() []Handler {
 }
 
 func Find(uri protocol.DocumentURI) Handler {
+	path := filepath.ToSlash(uri.Path())
 	for _, handler := range handlerList {
-		if doublestar.MatchUnvalidated("**/"+handler.GetPattern(), string(uri)) {
+		if doublestar.MatchUnvalidated("**/"+handler.GetPattern(), path) {
 			return handler
 		}
 	}
