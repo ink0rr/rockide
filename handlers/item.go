@@ -85,6 +85,7 @@ var Item = &JsonHandler{
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:item/components/**/condition"),
+		shared.JsonValue("minecraft:item/components/minecraft:digger/destroy_speeds/*/block/tags"),
 		shared.JsonValue("minecraft:item/components/minecraft:repairable/repair_items/*/repair_amount"),
 		shared.JsonValue("minecraft:item/components/minecraft:icon/frame"),
 		shared.JsonValue("minecraft:item/events/**/sequence/*/condition"),

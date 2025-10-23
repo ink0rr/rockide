@@ -63,9 +63,11 @@ var Block = &JsonHandler{
 				shared.JsonValue("minecraft:block/components/minecraft:geometry"),
 				shared.JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
 				shared.JsonValue("minecraft:block/components/minecraft:item_visual/geometry"),
+				shared.JsonValue("minecraft:block/components/minecraft:item_visual/geometry/identifier"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/geometry"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/geometry/identifier"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.Geometry.Source.Get()
@@ -133,8 +135,10 @@ var Block = &JsonHandler{
 		{
 			Store: stores.ItemId.References,
 			Path: []shared.JsonPath{
-				shared.JsonValue("minecraft:block/components/minecraft:placement_filter/block_filter/*/name"),
-				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:placement_filter/block_filter/*/name"),
+				shared.JsonValue("minecraft:block/components/minecraft:placement_filter/conditions/*/block_filter/*"),
+				shared.JsonValue("minecraft:block/components/minecraft:placement_filter/conditions/*/block_filter/*/name"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:placement_filter/conditions/*/block_filter/*"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:placement_filter/conditions/*/block_filter/*/name"),
 			},
 			ScopeKey: func(ctx *JsonContext) string {
 				return "block"
@@ -159,7 +163,11 @@ var Block = &JsonHandler{
 	MolangSemanticLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:block/components/minecraft:geometry"),
 		shared.JsonValue("minecraft:block/components/minecraft:geometry/identifier"),
+		shared.JsonValue("minecraft:block/components/minecraft:item_visual/geometry"),
+		shared.JsonValue("minecraft:block/components/minecraft:item_visual/geometry/identifier"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry"),
 		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:geometry/identifier"),
+		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/geometry"),
+		shared.JsonValue("minecraft:block/permutations/*/components/minecraft:item_visual/geometry/identifier"),
 	},
 }

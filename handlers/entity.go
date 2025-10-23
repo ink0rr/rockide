@@ -307,6 +307,7 @@ var Entity = &JsonHandler{
 		{
 			Store: stores.EntityEvent.References,
 			Path: sliceutil.FlatMap([]string{
+				"minecraft:block_sensor/on_break/*/on_block_broken",
 				"minecraft:rideable/on_rider_enter_event",
 				"minecraft:rideable/on_rider_exit_event",
 			}, func(value string) []shared.JsonPath {
