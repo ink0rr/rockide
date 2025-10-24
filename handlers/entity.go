@@ -595,6 +595,7 @@ var Entity = &JsonHandler{
 	},
 	MolangLocations: slices.Concat(
 		[]shared.JsonPath{
+			shared.JsonValue("minecraft:entity/description/properties/*/default"),
 			shared.JsonValue("minecraft:entity/description/scripts/animate/*/*"),
 			shared.JsonValue("minecraft:entity/events/**/set_property/*"),
 		},
