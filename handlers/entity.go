@@ -552,7 +552,7 @@ var Entity = &JsonHandler{
 			}),
 			DisableRename: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return stores.LootTablePath.Get()
+				return stores.TradeTablePath.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
