@@ -129,10 +129,21 @@ func (m *MolangHandler) Completions(document *textdocument.TextDocument, positio
 		return nil
 	}
 
+	editRange := protocol.Range{
+		Start: document.PositionAt(prefix.Offset),
+		End:   document.PositionAt(token.Offset + token.Length),
+	}
 	return sliceutil.Map(molang.GetMethodList(prefix.Value), func(method molang.Method) protocol.CompletionItem {
+		value := prefix.Value + "." + method.Name
 		return protocol.CompletionItem{
-			Label:  prefix.Value + "." + method.Name,
-			Kind:   protocol.MethodCompletion,
+			Label: value,
+			Kind:  protocol.MethodCompletion,
+			TextEdit: &protocol.Or_CompletionItem_textEdit{
+				Value: protocol.TextEdit{
+					Range:   editRange,
+					NewText: value,
+				},
+			},
 			Detail: method.Name + string(method.Signature),
 			Documentation: &protocol.Or_CompletionItem_documentation{
 				Value: method.Description,
