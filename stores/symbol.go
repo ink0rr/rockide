@@ -100,6 +100,7 @@ var (
 	FeatureId            = NewSymbolBinding(nil)
 	ItemId               = NewSymbolBinding(vanilla.ItemId) // Blocks are contained within the "block" scope
 	ItemTag              = NewSymbolBinding(vanilla.ItemTag)
+	ItemCooldown         = NewSymbolBinding(vanilla.ItemCooldown)
 	RecipeTag            = NewSymbolBinding(vanilla.RecipeTag)
 	WorldgenProcessor    = NewSymbolBinding(vanilla.WorldgenProcessor)
 	WorldgenTemplatePool = NewSymbolBinding(vanilla.WorldgenTemplatePool)
