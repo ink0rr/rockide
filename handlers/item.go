@@ -82,6 +82,16 @@ var Item = &JsonHandler{
 				return stores.EntityId.References.Get()
 			},
 		},
+		{
+			Store: stores.ItemCooldown.Source,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:cooldown/category")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.ItemCooldown.Source.Get(), stores.ItemCooldown.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:item/components/**/condition"),
