@@ -3,6 +3,7 @@ package molang
 import (
 	"fmt"
 	"slices"
+	"unicode/utf8"
 )
 
 type Parser struct {
@@ -21,7 +22,7 @@ func NewParser(source string) (*Parser, error) {
 		for _, tp := range tokenPatterns {
 			match := tp.pattern.FindString(current)
 			if match != "" {
-				length := uint32(len(match))
+				length := uint32(utf8.RuneCountInString(match))
 				if tp.kind != KindIgnore {
 					parser.Tokens = append(parser.Tokens, Token{
 						Kind:   tp.kind,
@@ -30,7 +31,7 @@ func NewParser(source string) (*Parser, error) {
 						Length: length,
 					})
 				}
-				current = current[length:]
+				current = current[len(match):]
 				offset += length
 				matched = true
 				break

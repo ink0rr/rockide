@@ -1,15 +1,15 @@
 package textdocument
 
 const (
-	lineFeed       = 10 // The \n character
-	carriageReturn = 13 // The \r character
+	lineFeed       = '\n'
+	carriageReturn = '\r'
 )
 
-func isEOL(ch byte) bool {
+func isEOL(ch rune) bool {
 	return ch == lineFeed || ch == carriageReturn
 }
 
-func computeLineOffsets(text string, isAtLineStart bool, textOffset uint32) []uint32 {
+func computeLineOffsets(text []rune, isAtLineStart bool, textOffset uint32) []uint32 {
 	result := []uint32{}
 	if isAtLineStart {
 		result = []uint32{textOffset}

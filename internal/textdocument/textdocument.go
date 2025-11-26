@@ -2,6 +2,7 @@ package textdocument
 
 import (
 	"os"
+	"slices"
 	"sync"
 
 	"github.com/ink0rr/rockide/internal/protocol"
@@ -9,7 +10,7 @@ import (
 
 type TextDocument struct {
 	URI         protocol.DocumentURI `json:"uri"`
-	content     string
+	content     []rune
 	lineOffsets []uint32
 }
 
@@ -75,12 +76,12 @@ func (d *TextDocument) OffsetAt(position protocol.Position) uint32 {
 }
 
 func (d *TextDocument) GetText() string {
-	return d.content
+	return string(d.content)
 }
 
 func (d *TextDocument) CreateVirtualDocument(ranges ...protocol.Range) *TextDocument {
 	textLength := uint32(len(d.content))
-	result := make([]byte, textLength)
+	result := make([]rune, textLength)
 
 	offsets := make([][2]uint32, len(ranges))
 	for i, r := range ranges {
@@ -110,7 +111,7 @@ func (d *TextDocument) CreateVirtualDocument(ranges ...protocol.Range) *TextDocu
 
 	return &TextDocument{
 		URI:     d.URI,
-		content: string(result),
+		content: result,
 	}
 }
 
@@ -128,7 +129,7 @@ func Get(uri protocol.DocumentURI) *TextDocument {
 func Open(uri protocol.DocumentURI, txt string) {
 	mu.Lock()
 	defer mu.Unlock()
-	document := TextDocument{URI: uri, content: string(txt)}
+	document := TextDocument{URI: uri, content: []rune(txt)}
 	documents[uri] = &document
 }
 
@@ -149,8 +150,7 @@ func SyncIncremental(uri protocol.DocumentURI, contentChanges []protocol.TextDoc
 	for _, change := range contentChanges {
 		startOffset := document.OffsetAt(change.Range.Start)
 		endOffset := document.OffsetAt(change.Range.End)
-		content := []rune(document.content)
-		document.content = string(content[:startOffset]) + change.Text + string(content[endOffset:])
+		document.content = slices.Concat(document.content[:startOffset], []rune(change.Text), document.content[endOffset:])
 		document.lineOffsets = nil
 	}
 }
@@ -160,19 +160,19 @@ func SyncFull(uri protocol.DocumentURI, txt *string) {
 		return
 	}
 	document := Get(uri)
-	if document == nil || document.content == *txt {
+	if document == nil || document.GetText() == *txt {
 		return
 	}
-	document.content = *txt
+	document.content = []rune(*txt)
 	document.lineOffsets = nil
 }
 
 func ReadFile(uri protocol.DocumentURI) (*TextDocument, error) {
-	txt, err := os.ReadFile(uri.Path())
+	b, err := os.ReadFile(uri.Path())
 	if err != nil {
 		return nil, err
 	}
-	document := TextDocument{URI: uri, content: string(txt)}
+	document := TextDocument{URI: uri, content: []rune(string(b))}
 	return &document, nil
 }
 

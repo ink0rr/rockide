@@ -29,14 +29,14 @@ type Scanner interface {
 }
 
 type scanner struct {
-	text         string
+	text         []rune
 	ignoreTrivia bool
 
 	textLength               uint32
 	token                    SyntaxKind
 	scanError                ScanError
 	pos                      uint32
-	value                    string
+	value                    []rune
 	tokenOffset              uint32
 	lineNumber               uint32
 	lineStartOffset          uint32
@@ -47,11 +47,12 @@ type scanner struct {
 // Creates a JSON scanner on the given text.
 // If ignoreTrivia is set, whitespaces or comments are ignored.
 func CreateScanner(text string, ignoreTrivia bool) Scanner {
+	s := []rune(text)
 	return &scanner{
-		text:         text,
+		text:         s,
 		ignoreTrivia: ignoreTrivia,
 
-		textLength: uint32(len(text)),
+		textLength: uint32(len(s)),
 		token:      SyntaxKindUnknown,
 		scanError:  ScanErrorNone,
 	}
@@ -80,7 +81,7 @@ func (s *scanner) scanHexDigits(count uint32, exact bool) (rune, error) {
 	return value, nil
 }
 
-func (s *scanner) scanNumber() string {
+func (s *scanner) scanNumber() []rune {
 	start := s.pos
 	if charAt(s.text, s.pos) == '0' {
 		s.pos++
@@ -121,23 +122,23 @@ func (s *scanner) scanNumber() string {
 	return substring(s.text, start, end)
 }
 
-func (s *scanner) scanString() string {
-	result := ""
+func (s *scanner) scanString() []rune {
+	result := []rune{}
 	start := s.pos
 	for {
 		if s.pos >= s.textLength {
-			result += substring(s.text, start, s.pos)
+			result = append(result, substring(s.text, start, s.pos)...)
 			s.scanError = ScanErrorUnexpectedEndOfString
 			break
 		}
 		ch := charAt(s.text, s.pos)
 		if ch == '"' {
-			result += substring(s.text, start, s.pos)
+			result = append(result, substring(s.text, start, s.pos)...)
 			s.pos++
 			break
 		}
 		if ch == '\\' {
-			result += substring(s.text, start, s.pos)
+			result = append(result, substring(s.text, start, s.pos)...)
 			s.pos++
 			if s.pos >= s.textLength {
 				s.scanError = ScanErrorUnexpectedEndOfString
@@ -147,27 +148,27 @@ func (s *scanner) scanString() string {
 			s.pos++
 			switch ch2 {
 			case '"':
-				result += "\""
+				result = append(result, '"')
 			case '\\':
-				result += "\\"
+				result = append(result, '\\')
 			case '/':
-				result += "/"
+				result = append(result, '/')
 			case 'b':
-				result += "\b"
+				result = append(result, '\b')
 			case 'f':
-				result += "\f"
+				result = append(result, '\f')
 			case 'n':
-				result += "\n"
+				result = append(result, '\n')
 			case 'r':
-				result += "\r"
+				result = append(result, '\r')
 			case 't':
-				result += "\t"
+				result = append(result, '\t')
 			case 'u':
 				ch3, err := s.scanHexDigits(4, true)
 				if err != nil {
 					s.scanError = ScanErrorInvalidUnicode
 				} else {
-					result += string(ch3)
+					result = append(result, ch3)
 				}
 			default:
 				s.scanError = ScanErrorInvalidEscapeCharacter
@@ -177,7 +178,7 @@ func (s *scanner) scanString() string {
 		}
 		if ch <= 0x1f {
 			if isLineBreak(ch) {
-				result += substring(s.text, start, s.pos)
+				result = append(result, substring(s.text, start, s.pos)...)
 				s.scanError = ScanErrorUnexpectedEndOfString
 				break
 			} else {
@@ -191,7 +192,7 @@ func (s *scanner) scanString() string {
 }
 
 func (s *scanner) scanNext() SyntaxKind {
-	s.value = ""
+	s.value = []rune{}
 	s.scanError = ScanErrorNone
 
 	s.tokenOffset = s.pos
@@ -210,7 +211,7 @@ func (s *scanner) scanNext() SyntaxKind {
 	if isWhiteSpace(code) {
 		for {
 			s.pos++
-			s.value += string(code)
+			s.value = append(s.value, code)
 			code = charAt(s.text, s.pos)
 			if !isWhiteSpace(code) {
 				break
@@ -222,10 +223,10 @@ func (s *scanner) scanNext() SyntaxKind {
 	// trivia: newlines
 	if isLineBreak(code) {
 		s.pos++
-		s.value += string(code)
+		s.value = append(s.value, code)
 		if code == '\r' && charAt(s.text, s.pos) == '\n' {
 			s.pos++
-			s.value += "\n"
+			s.value = append(s.value, '\n')
 		}
 		s.lineNumber++
 		s.tokenLineStartOffset = s.pos
@@ -317,13 +318,13 @@ func (s *scanner) scanNext() SyntaxKind {
 			return s.token
 		}
 		// just a single slash
-		s.value += string(code)
+		s.value = append(s.value, code)
 		s.pos++
 		s.token = SyntaxKindUnknown
 		return s.token
 	// numbers
 	case '-':
-		s.value += string(code)
+		s.value = append(s.value, code)
 		s.pos++
 		if s.pos == s.textLength || !isDigit(charAt(s.text, s.pos)) {
 			s.token = SyntaxKindUnknown
@@ -334,7 +335,7 @@ func (s *scanner) scanNext() SyntaxKind {
 	// we fall through to proceed with scanning
 	// numbers
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		s.value += s.scanNumber()
+		s.value = append(s.value, s.scanNumber()...)
 		s.token = SyntaxKindNumericLiteral
 		return s.token
 	// literals and unknown symbols
@@ -347,7 +348,7 @@ func (s *scanner) scanNext() SyntaxKind {
 		if s.tokenOffset != s.pos {
 			s.value = substring(s.text, s.tokenOffset, s.pos)
 			// keywords: true, false, null
-			switch s.value {
+			switch string(s.value) {
 			case "true":
 				s.token = SyntaxKindTrueKeyword
 			case "false":
@@ -360,7 +361,7 @@ func (s *scanner) scanNext() SyntaxKind {
 			return s.token
 		}
 		// some
-		s.value += string(code)
+		s.value = append(s.value, code)
 		s.pos++
 		s.token = SyntaxKindUnknown
 		return s.token
@@ -377,7 +378,7 @@ func (s *scanner) scanNextNonTrivia() SyntaxKind {
 
 func (s *scanner) SetPosition(pos uint32) {
 	s.pos = pos
-	s.value = ""
+	s.value = []rune{}
 	s.tokenOffset = 0
 	s.token = SyntaxKindUnknown
 	s.scanError = ScanErrorNone
@@ -399,7 +400,7 @@ func (s *scanner) GetToken() SyntaxKind {
 }
 
 func (s *scanner) GetTokenValue() string {
-	return s.value
+	return string(s.value)
 }
 
 func (s *scanner) GetTokenOffset() uint32 {

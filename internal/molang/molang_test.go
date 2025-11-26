@@ -19,6 +19,7 @@ func assertTokens(t *testing.T, input string, expected []molang.Token) {
 
 func TestParser(t *testing.T) {
 	assertTokens(t, "123", []molang.Token{{molang.KindNumber, 0, 3, "123"}})
+	assertTokens(t, "123 §§ 456", []molang.Token{{molang.KindNumber, 0, 3, "123"}, {molang.KindNumber, 7, 3, "456"}})
 	assertTokens(t, "&&", []molang.Token{{molang.KindOperator, 0, 2, "&&"}})
 	assertTokens(t, "q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:iron_sword')", []molang.Token{
 		{molang.KindPrefix, 0, 1, "q"},

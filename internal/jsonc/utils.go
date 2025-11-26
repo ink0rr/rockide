@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-func charAt(s string, pos uint32) byte {
+func charAt(s []rune, pos uint32) rune {
 	length := uint32(len(s))
 	if pos >= length {
 		return 0
@@ -13,7 +13,7 @@ func charAt(s string, pos uint32) byte {
 	return s[pos]
 }
 
-func substring(s string, start, end uint32) string {
+func substring(s []rune, start, end uint32) []rune {
 	length := uint32(len(s))
 	if end > length {
 		end = length
@@ -21,19 +21,19 @@ func substring(s string, start, end uint32) string {
 	return s[start:end]
 }
 
-func isWhiteSpace(ch byte) bool {
+func isWhiteSpace(ch rune) bool {
 	return ch == ' ' || ch == '\t'
 }
 
-func isLineBreak(ch byte) bool {
+func isLineBreak(ch rune) bool {
 	return ch == '\n' || ch == '\r'
 }
 
-func isDigit(ch byte) bool {
+func isDigit(ch rune) bool {
 	return ch >= '0' && ch <= '9'
 }
 
-func isUnknownContentCharacter(code byte) bool {
+func isUnknownContentCharacter(code rune) bool {
 	if isWhiteSpace(code) || isLineBreak(code) {
 		return false
 	}
