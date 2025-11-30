@@ -14,13 +14,6 @@ type TextDocument struct {
 	lineOffsets []uint32
 }
 
-func (d *TextDocument) ensureBeforeEOL(offset uint32, lineOffset uint32) uint32 {
-	for offset > lineOffset && isEOL(d.content[offset-1]) {
-		offset--
-	}
-	return offset
-}
-
 func (d *TextDocument) getLineOffsets() []uint32 {
 	if d.lineOffsets == nil {
 		d.lineOffsets = computeLineOffsets(d.content, true, 0)
@@ -29,13 +22,11 @@ func (d *TextDocument) getLineOffsets() []uint32 {
 }
 
 func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
-	offset = min(offset, uint32(len(d.content)))
+	contentLength := uint32(len(d.content))
+	offset = min(offset, contentLength)
 	lineOffsets := d.getLineOffsets()
 	low := 0
 	high := len(lineOffsets)
-	if high == 0 {
-		return protocol.Position{Character: offset}
-	}
 	for low < high {
 		mid := (low + high) / 2
 		if lineOffsets[mid] > offset {
@@ -44,14 +35,25 @@ func (d *TextDocument) PositionAt(offset uint32) protocol.Position {
 			low = mid + 1
 		}
 	}
-	// low is the least x for which the line offset is larger than the current offset
-	// or array.length if no line offset is larger than the current offset
-	line := low - 1
-	if low == 0 {
-		line = 0
+
+	line := max(low-1, 0)
+	lineStart := lineOffsets[line]
+	runeCol := offset - lineStart
+
+	var lineEnd uint32
+	if line+1 < len(lineOffsets) {
+		lineEnd = lineOffsets[line+1]
+	} else {
+		lineEnd = contentLength
 	}
-	offset = d.ensureBeforeEOL(offset, lineOffsets[line])
-	return protocol.Position{Line: uint32(line), Character: offset - lineOffsets[line]}
+
+	lineRunes := d.content[lineStart:lineEnd]
+	utf16Char := utf16Len(lineRunes[:runeCol])
+
+	return protocol.Position{
+		Line:      uint32(line),
+		Character: utf16Char,
+	}
 }
 
 func (d *TextDocument) OffsetAt(position protocol.Position) uint32 {
@@ -61,18 +63,19 @@ func (d *TextDocument) OffsetAt(position protocol.Position) uint32 {
 	if position.Line >= maxLine {
 		return contentLength
 	}
-	lineOffset := lineOffsets[position.Line]
-	if position.Character <= 0 {
-		return lineOffset
-	}
-	var nextLineOffset uint32
+
+	lineStart := lineOffsets[position.Line]
+	var lineEnd uint32
 	if position.Line+1 < maxLine {
-		nextLineOffset = lineOffsets[position.Line+1]
+		lineEnd = lineOffsets[position.Line+1]
 	} else {
-		nextLineOffset = contentLength
+		lineEnd = contentLength
 	}
-	offset := min(lineOffset+position.Character, nextLineOffset)
-	return d.ensureBeforeEOL(offset, lineOffset)
+
+	lineRunes := d.content[lineStart:lineEnd]
+	runeCol := utf16ToRuneOffset(lineRunes, position.Character)
+
+	return lineStart + runeCol
 }
 
 func (d *TextDocument) GetText() string {

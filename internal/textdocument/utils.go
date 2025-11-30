@@ -26,3 +26,30 @@ func computeLineOffsets(text []rune, isAtLineStart bool, textOffset uint32) []ui
 	}
 	return result
 }
+
+// count UTF-16 code units in a rune slice
+func utf16Len(runes []rune) uint32 {
+	var n uint32
+	for _, r := range runes {
+		if r >= 0x10000 {
+			n += 2 // surrogate pair
+		} else {
+			n++
+		}
+	}
+	return n
+}
+
+// convert a UTF-16 position (char offset) to UTF-32 rune offset within a line
+func utf16ToRuneOffset(runes []rune, utf16Pos uint32) uint32 {
+	var ru, u16 uint32
+	for ru < uint32(len(runes)) && u16 < utf16Pos {
+		if runes[ru] >= 0x10000 {
+			u16 += 2
+		} else {
+			u16++
+		}
+		ru++
+	}
+	return ru
+}
