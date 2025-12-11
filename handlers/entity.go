@@ -27,12 +27,15 @@ var Entity = &JsonHandler{
 		{
 			Store: stores.EntityId.References,
 			Path: sliceutil.FlatMap([]string{
+				"minecraft:addrider/entity_type",
+				"minecraft:addrider/riders/*/entity_type",
 				"minecraft:behavior.follow_mob/preferred_actor_type",
 				"minecraft:behavior.mingle/mingle_partner_type",
 				"minecraft:breedable/breeds_with/baby_type",
 				"minecraft:breedable/breeds_with/*/baby_type",
 				"minecraft:breedable/breeds_with/mate_type",
 				"minecraft:breedable/breeds_with/*/mate_type",
+				"minecraft:spawn_entity/entities/*/spawn_entity",
 				"minecraft:transformation/into",
 			}, func(value string) []shared.JsonPath {
 				return []shared.JsonPath{
