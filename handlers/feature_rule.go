@@ -41,8 +41,6 @@ var FeatureRule = &JsonHandler{
 		shared.JsonValue("minecraft:feature_rules/distribution/scatter_chance"),
 		shared.JsonValue("minecraft:feature_rules/distribution/scatter_chance/*"),
 		shared.JsonValue("minecraft:feature_rules/distribution/*/extent/*"),
-		shared.JsonValue("minecraft:feature_rules/distribution/x"),
-		shared.JsonValue("minecraft:feature_rules/distribution/y"),
-		shared.JsonValue("minecraft:feature_rules/distribution/z"),
+		shared.JsonValue("minecraft:feature_rules/distribution/*"),
 	},
 }
