@@ -36,4 +36,12 @@ var FeatureRule = &JsonHandler{
 			},
 		},
 	},
+	MolangLocations: []shared.JsonPath{
+		shared.JsonValue("minecraft:feature_rules/distribution/iterations"),
+		shared.JsonValue("minecraft:feature_rules/distribution/scatter_chance"),
+		shared.JsonValue("minecraft:feature_rules/distribution/*/extent/*"),
+		shared.JsonValue("minecraft:feature_rules/distribution/x"),
+		shared.JsonValue("minecraft:feature_rules/distribution/y"),
+		shared.JsonValue("minecraft:feature_rules/distribution/z"),
+	},
 }

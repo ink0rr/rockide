@@ -113,5 +113,17 @@ var Feature = &JsonHandler{
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:growing_plant_feature/age"),
 		shared.JsonValue("minecraft:growing_plant_feature/height_distribution/*/*"),
+		shared.JsonValue("minecraft:scatter_feature/*/extent/*"),
+		shared.JsonValue("minecraft:scatter_feature/x"),
+		shared.JsonValue("minecraft:scatter_feature/y"),
+		shared.JsonValue("minecraft:scatter_feature/z"),
+		shared.JsonValue("minecraft:scatter_feature/scatter_chance"),
+		shared.JsonValue("minecraft:scatter_feature/iterations"),
+		shared.JsonValue("minecraft:scatter_feature/distribution/*/extent/*"),
+		shared.JsonValue("minecraft:scatter_feature/distribution/iterations"),
+		shared.JsonValue("minecraft:scatter_feature/distribution/scatter_chance"),
+		shared.JsonValue("minecraft:scatter_feature/distribution/x"),
+		shared.JsonValue("minecraft:scatter_feature/distribution/y"),
+		shared.JsonValue("minecraft:scatter_feature/distribution/z"),
 	},
 }
