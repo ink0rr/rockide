@@ -81,16 +81,13 @@ var Particle = &JsonHandler{
 			},
 		},
 		{
-			Store: stores.Material.References,
+			Store: stores.ParticleMaterial.References,
 			Path:  []shared.JsonPath{shared.JsonValue("particle_effect/description/basic_render_parameters/material")},
-			ScopeKey: func(ctx *JsonContext) string {
-				return "particle"
-			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return stores.Material.Source.Get("particle")
+				return stores.ParticleMaterial.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return stores.Material.References.Get("particle")
+				return stores.ParticleMaterial.References.Get()
 			},
 		},
 	},

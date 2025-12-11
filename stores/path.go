@@ -9,7 +9,7 @@ import (
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/protocol"
 	"github.com/ink0rr/rockide/shared"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/rockide/vanilla"
 )
 
 type PathStore struct {
@@ -54,8 +54,8 @@ func (s *PathStore) Delete(uri protocol.DocumentURI) {
 }
 
 var (
-	LootTablePath  = NewPathStore(vanilla.LootTablePath)
-	TradeTablePath = NewPathStore(vanilla.TradeTablePath)
+	LootTablePath  = NewPathStore(vanilla.LootTable)
+	TradeTablePath = NewPathStore(vanilla.TradeTable)
 	SoundPath      = NewPathStore(vanilla.SoundPath, ".fsb", ".ogg", ".wav")
 	TexturePath    = NewPathStore(vanilla.TexturePath, ".png", ".tga", ".jpg", ".jpeg", ".texture_set.json")
 )

@@ -7,7 +7,7 @@ import (
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/ink0rr/rockide/core"
 	"github.com/ink0rr/rockide/internal/protocol"
-	"github.com/ink0rr/rockide/vanilla"
+	"github.com/rockide/vanilla"
 )
 
 type SymbolStore struct {
@@ -96,35 +96,36 @@ var (
 	EntityPropertyValue  = NewSymbolBinding(nil)
 	EntityComponentGroup = NewSymbolBinding(nil)
 	EntityEvent          = NewSymbolBinding(nil)
-	EntityFamily         = NewSymbolBinding(vanilla.Family)
-	FeatureId            = NewSymbolBinding(nil)
+	EntityFamily         = NewSymbolBinding(vanilla.TypeFamily)
+	FeatureId            = NewSymbolBinding(vanilla.FeatureId)
 	ItemId               = NewSymbolBinding(vanilla.ItemId) // Blocks are contained within the "block" scope
 	ItemTag              = NewSymbolBinding(vanilla.ItemTag)
 	RecipeTag            = NewSymbolBinding(vanilla.RecipeTag)
-	WorldgenProcessor    = NewSymbolBinding(vanilla.WorldgenProcessor)
-	WorldgenTemplatePool = NewSymbolBinding(vanilla.WorldgenTemplatePool)
+	WorldgenProcessor    = NewSymbolBinding(vanilla.WorldgenProcessorId)
+	WorldgenTemplatePool = NewSymbolBinding(vanilla.WorldgenTemplatePoolId)
 	WorldgenJigsaw       = NewSymbolBinding(nil)
 )
 
 // RP
 var (
-	Atmosphere            = NewSymbolBinding(vanilla.Atmospheric)
+	Atmosphere            = NewSymbolBinding(vanilla.AtmosphereId)
 	BlockCulling          = NewSymbolBinding(nil)
-	ColorGrading          = NewSymbolBinding(vanilla.ColorGrading)
-	ClientAnimation       = NewSymbolBinding(vanilla.ClientAnimation)
+	ColorGrading          = NewSymbolBinding(vanilla.ColorGradingId)
+	ClientAnimation       = NewSymbolBinding(vanilla.ClientAnimationId)
 	ClientAnimate         = NewSymbolBinding(nil)
 	ClientControllerState = NewSymbolBinding(nil)
-	Fog                   = NewSymbolBinding(vanilla.Fog)
-	Geometry              = NewSymbolBinding(vanilla.Geometry)
+	EntityMaterial        = NewSymbolBinding(vanilla.EntityMaterial)
+	Fog                   = NewSymbolBinding(vanilla.FogId)
+	Geometry              = NewSymbolBinding(vanilla.GeometryId)
 	GeometryBone          = NewSymbolBinding(nil)
-	ItemTexture           = NewSymbolBinding(vanilla.ItemTexture)
-	Lighting              = NewSymbolBinding(vanilla.Lighting)
+	ItemTexture           = NewSymbolBinding(vanilla.ItemTextureId)
+	Lighting              = NewSymbolBinding(vanilla.LightingId)
 	ParticleId            = NewSymbolBinding(vanilla.ParticleId)
 	ParticleEvent         = NewSymbolBinding(nil)
-	Material              = NewSymbolBinding(vanilla.Material)
-	RenderControllerId    = NewSymbolBinding(vanilla.RenderController)
-	SoundDefinition       = NewSymbolBinding(vanilla.SoundDefinition)
-	MusicDefinition       = NewSymbolBinding(vanilla.MusicDefinition)
-	TerrainTexture        = NewSymbolBinding(vanilla.TerrainTexture)
-	Water                 = NewSymbolBinding(vanilla.Water)
+	ParticleMaterial      = NewSymbolBinding(vanilla.ParticleMaterial)
+	RenderControllerId    = NewSymbolBinding(vanilla.RenderControllerId)
+	SoundDefinition       = NewSymbolBinding(vanilla.SoundDefinitionId)
+	MusicDefinition       = NewSymbolBinding(vanilla.MusicDefinitionId)
+	TerrainTexture        = NewSymbolBinding(vanilla.TerrainTextureId)
+	Water                 = NewSymbolBinding(vanilla.WaterId)
 )

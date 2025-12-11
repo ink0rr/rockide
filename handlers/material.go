@@ -12,21 +12,18 @@ var EntityMaterial = &JsonHandler{
 	Pattern: shared.EntityMaterialGlob,
 	Entries: []JsonEntry{
 		{
-			Store: stores.Material.Source,
+			Store: stores.EntityMaterial.Source,
 			Path:  []shared.JsonPath{shared.JsonKey("materials/*")},
 			Transform: func(value string) string {
 				res, _, _ := strings.Cut(value, ":")
 				return res
 			},
 			FilterDiff: true,
-			ScopeKey: func(ctx *JsonContext) string {
-				return "entity"
-			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return stores.Material.References.Get("entity")
+				return stores.EntityMaterial.References.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return stores.Material.Source.Get("entity")
+				return stores.EntityMaterial.Source.Get()
 			},
 		},
 		// TODO: Add base entity materials for inheritance.
@@ -37,21 +34,18 @@ var ParticleMaterial = &JsonHandler{
 	Pattern: shared.ParticleMaterialGlob,
 	Entries: []JsonEntry{
 		{
-			Store: stores.Material.Source,
+			Store: stores.ParticleMaterial.Source,
 			Path:  []shared.JsonPath{shared.JsonKey("materials/*")},
 			Transform: func(value string) string {
 				res, _, _ := strings.Cut(value, ":")
 				return res
 			},
 			FilterDiff: true,
-			ScopeKey: func(ctx *JsonContext) string {
-				return "particle"
-			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return stores.Material.References.Get("particle")
+				return stores.ParticleMaterial.References.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return stores.Material.Source.Get("particle")
+				return stores.ParticleMaterial.Source.Get()
 			},
 		},
 		// TODO: Add base particle materials for inheritance.
