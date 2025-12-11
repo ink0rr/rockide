@@ -21,7 +21,10 @@ var ItemTexture = &JsonHandler{
 			},
 		},
 		{
-			Path:          []shared.JsonPath{shared.JsonValue("texture_data/*/textures")},
+			Path: []shared.JsonPath{
+				shared.JsonValue("texture_data/*/textures"),
+				shared.JsonValue("texture_data/*/textures/*/path"),
+			},
 			DisableRename: true,
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.TexturePath.Get()
