@@ -282,10 +282,34 @@ var Entity = &JsonHandler{
 			Store:      stores.EntityEvent.Source,
 			Path:       []shared.JsonPath{shared.JsonKey("minecraft:entity/events/*")},
 			FilterDiff: true,
+			ScopeKey: func(ctx *JsonContext) string {
+				root := ctx.GetRootNode()
+				node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return identifier
+					}
+				}
+				return defaultScope
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
+				root := ctx.GetRootNode()
+				node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return stores.EntityEvent.References.Get(identifier)
+					}
+				}
 				return stores.EntityEvent.References.GetFrom(ctx.URI)
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
+				root := ctx.GetRootNode()
+				node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return stores.EntityEvent.Source.Get(identifier)
+					}
+				}
 				return stores.EntityEvent.Source.GetFrom(ctx.URI)
 			},
 		},
@@ -297,11 +321,47 @@ var Entity = &JsonHandler{
 				shared.JsonValue("minecraft:entity/events/**/trigger"),
 				shared.JsonValue("minecraft:entity/events/**/trigger/event"),
 			},
+			ScopeKey: func(ctx *JsonContext) string {
+				parent := ctx.GetParentNode()
+				target := jsonc.FindNodeAtLocation(parent, jsonc.Path{"target"})
+				if target == nil || target.Value == "self" {
+					root := ctx.GetRootNode()
+					node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+					if node != nil {
+						if identifier, ok := node.Value.(string); ok {
+							return identifier
+						}
+					}
+				}
+				return defaultScope
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return stores.EntityEvent.Source.GetFrom(ctx.URI)
+				parent := ctx.GetParentNode()
+				target := jsonc.FindNodeAtLocation(parent, jsonc.Path{"target"})
+				if target == nil || target.Value == "self" {
+					root := ctx.GetRootNode()
+					node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+					if node != nil {
+						if identifier, ok := node.Value.(string); ok {
+							return stores.EntityEvent.Source.Get(identifier)
+						}
+					}
+				}
+				return stores.EntityEvent.Source.Get()
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
-				return stores.EntityEvent.References.GetFrom(ctx.URI)
+				parent := ctx.GetParentNode()
+				target := jsonc.FindNodeAtLocation(parent, jsonc.Path{"target"})
+				if target == nil || target.Value == "self" {
+					root := ctx.GetRootNode()
+					node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+					if node != nil {
+						if identifier, ok := node.Value.(string); ok {
+							return stores.EntityEvent.References.Get(identifier)
+						}
+					}
+				}
+				return stores.EntityEvent.References.Get()
 			},
 		},
 		{
@@ -316,11 +376,69 @@ var Entity = &JsonHandler{
 					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
 				}
 			}),
+			ScopeKey: func(ctx *JsonContext) string {
+				root := ctx.GetRootNode()
+				node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return identifier
+					}
+				}
+				return defaultScope
+			},
 			Source: func(ctx *JsonContext) []core.Symbol {
+				root := ctx.GetRootNode()
+				node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return stores.EntityEvent.Source.Get(identifier)
+					}
+				}
 				return stores.EntityEvent.Source.GetFrom(ctx.URI)
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
+				root := ctx.GetRootNode()
+				node := jsonc.FindNodeAtLocation(root, jsonc.Path{"minecraft:entity", "description", "identifier"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return stores.EntityEvent.References.Get(identifier)
+					}
+				}
 				return stores.EntityEvent.References.GetFrom(ctx.URI)
+			},
+		},
+		{
+			Store: stores.EntityEvent.References,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:entity/components/**/spawn_event")},
+			ScopeKey: func(ctx *JsonContext) string {
+				parent := ctx.GetParentNode()
+				node := jsonc.FindNodeAtLocation(parent, jsonc.Path{"spawn_entity"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return identifier
+					}
+				}
+				return defaultScope
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				parent := ctx.GetParentNode()
+				node := jsonc.FindNodeAtLocation(parent, jsonc.Path{"spawn_entity"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return stores.EntityEvent.Source.Get(identifier)
+					}
+				}
+				return stores.EntityEvent.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				parent := ctx.GetParentNode()
+				node := jsonc.FindNodeAtLocation(parent, jsonc.Path{"spawn_entity"})
+				if node != nil {
+					if identifier, ok := node.Value.(string); ok {
+						return stores.EntityEvent.References.Get(identifier)
+					}
+				}
+				return stores.EntityEvent.References.Get()
 			},
 		},
 		{
