@@ -90,6 +90,7 @@ var (
 	BlockTag             = NewSymbolBinding(vanilla.BlockTag)
 	CameraId             = NewSymbolBinding(vanilla.CameraId)
 	ControllerState      = NewSymbolBinding(nil)
+	CooldownCategory     = NewSymbolBinding(vanilla.CooldownCategory)
 	DialogueId           = NewSymbolBinding(nil)
 	EntityId             = NewSymbolBinding(vanilla.EntityId)
 	EntityProperty       = NewSymbolBinding(nil)
@@ -100,7 +101,6 @@ var (
 	FeatureId            = NewSymbolBinding(vanilla.FeatureId)
 	ItemId               = NewSymbolBinding(vanilla.ItemId) // Blocks are contained within the "block" scope
 	ItemTag              = NewSymbolBinding(vanilla.ItemTag)
-	ItemCooldown         = NewSymbolBinding(vanilla.ItemCooldown)
 	RecipeTag            = NewSymbolBinding(vanilla.RecipeTag)
 	WorldgenProcessor    = NewSymbolBinding(vanilla.WorldgenProcessorId)
 	WorldgenTemplatePool = NewSymbolBinding(vanilla.WorldgenTemplatePoolId)

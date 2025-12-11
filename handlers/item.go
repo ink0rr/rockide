@@ -83,10 +83,10 @@ var Item = &JsonHandler{
 			},
 		},
 		{
-			Store: stores.ItemCooldown.Source,
+			Store: stores.CooldownCategory.Source,
 			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:cooldown/category")},
 			Source: func(ctx *JsonContext) []core.Symbol {
-				return slices.Concat(stores.ItemCooldown.Source.Get(), stores.ItemCooldown.References.Get())
+				return slices.Concat(stores.CooldownCategory.Source.Get(), stores.CooldownCategory.References.Get())
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return nil
