@@ -109,6 +109,18 @@ var Feature = &JsonHandler{
 				return stores.FeatureId.References.Get()
 			},
 		},
+		{
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:structure_template_feature/structure_name")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return sliceutil.Map(stores.StructurePath.Get(), func(s core.Symbol) core.Symbol {
+					s.Value = s.Value[11:]
+					return s
+				})
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:growing_plant_feature/age"),

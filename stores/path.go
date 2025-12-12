@@ -55,6 +55,7 @@ func (s *PathStore) Delete(uri protocol.DocumentURI) {
 
 var (
 	LootTablePath  = NewPathStore(vanilla.LootTable)
+	StructurePath  = NewPathStore(nil, ".mcstructure")
 	TradeTablePath = NewPathStore(vanilla.TradeTable)
 	SoundPath      = NewPathStore(vanilla.SoundPath, ".fsb", ".ogg", ".wav")
 	TexturePath    = NewPathStore(vanilla.TexturePath, ".png", ".tga", ".jpg", ".jpeg", ".texture_set.json")
