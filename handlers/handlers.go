@@ -56,6 +56,7 @@ var handlerList = []Handler{
 	Item,
 	LootTable,
 	Recipe,
+	SpawnRule,
 	TradeTable,
 	WorldgenProcessor,
 	WorldgenTemplatePool,
