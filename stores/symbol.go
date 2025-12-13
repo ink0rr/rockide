@@ -84,6 +84,7 @@ var (
 	AimAssistCategory    = NewSymbolBinding(nil)
 	Animation            = NewSymbolBinding(nil)
 	Animate              = NewSymbolBinding(nil)
+	BlockCustomComponent = NewSymbolBinding(nil)
 	BiomeId              = NewSymbolBinding(vanilla.BiomeId)
 	BiomeTag             = NewSymbolBinding(vanilla.BiomeTag)
 	BlockState           = NewSymbolBinding(vanilla.BlockState)
@@ -99,6 +100,7 @@ var (
 	EntityEvent          = NewSymbolBinding(nil)
 	EntityFamily         = NewSymbolBinding(vanilla.TypeFamily)
 	FeatureId            = NewSymbolBinding(vanilla.FeatureId)
+	ItemCustomComponent  = NewSymbolBinding(nil)
 	ItemId               = NewSymbolBinding(vanilla.ItemId) // Blocks are contained within the "block" scope
 	ItemTag              = NewSymbolBinding(vanilla.ItemTag)
 	RecipeTag            = NewSymbolBinding(vanilla.RecipeTag)

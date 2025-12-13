@@ -5,8 +5,10 @@ import (
 	"strings"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"golang.org/x/mod/semver"
 )
 
 var Block = &JsonHandler{
@@ -152,6 +154,43 @@ var Block = &JsonHandler{
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return stores.ItemId.References.Get("block")
+			},
+		},
+		{
+			Store: stores.BlockCustomComponent.Source,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:block/components/minecraft:custom_components/*"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:custom_components/*"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.BlockCustomComponent.Source.Get(), stores.BlockCustomComponent.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
+		{
+			Store: stores.BlockCustomComponent.Source,
+			Path: []shared.JsonPath{
+				shared.JsonKey("minecraft:block/components/*"),
+				shared.JsonKey("minecraft:block/permutations/*/components/*"),
+			},
+			Matcher: func(ctx *JsonContext) bool {
+				root := ctx.GetRootNode()
+				formatNode := jsonc.FindNodeAtLocation(root, jsonc.Path{"format_version"})
+				if formatNode != nil {
+					if version, ok := formatNode.Value.(string); ok {
+						match := !strings.HasPrefix(ctx.NodeValue, "minecraft:") && !strings.HasPrefix(ctx.NodeValue, "tag:")
+						return semver.Compare("v"+version, "v1.21.80") > 0 && match
+					}
+				}
+				return false
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.BlockCustomComponent.Source.Get(), stores.BlockCustomComponent.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
 			},
 		},
 	},

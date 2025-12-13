@@ -8,3 +8,5 @@ github.com/rockide/vanilla v0.2.0 h1:iv8peYz1rzHgw6r4ceXmXMBB4XD8kABv7kN9y0E8z2w
 github.com/rockide/vanilla v0.2.0/go.mod h1:pVhz7hsBqhwiH+qlfNWph2HGmqpk2ACNCczLtpITRew=
 github.com/sourcegraph/jsonrpc2 v0.2.0 h1:KjN/dC4fP6aN9030MZCJs9WQbTOjWHhrtKVpzzSrr/U=
 github.com/sourcegraph/jsonrpc2 v0.2.0/go.mod h1:ZafdZgk/axhT1cvZAPOhw+95nz2I/Ra5qMlU4gTRwIo=
+golang.org/x/mod v0.31.0 h1:HaW9xtz0+kOcWKwli0ZXy79Ix+UW/vOfmWI5QVd2tgI=
+golang.org/x/mod v0.31.0/go.mod h1:43JraMp9cGx1Rx3AqioxrbrhNsLl2l/iNAvuBkrezpg=
