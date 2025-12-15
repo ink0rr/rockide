@@ -20,9 +20,10 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 	project, err := findProjectPaths(params.InitializationOptions)
 	if err != nil {
 		log.Println(err)
-	} else {
-		shared.SetProject(project)
+		return &protocol.InitializeResult{}, nil
 	}
+	shared.SetProject(project)
+
 	triggerCharacters := strings.Split(`0123456789abcdefghijklmnopqrstuvwxyz.'"() `, "")
 	result := protocol.InitializeResult{
 		ServerInfo: &protocol.ServerInfo{
@@ -57,7 +58,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 func Initialized(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.InitializedParams) error {
 	project := shared.GetProject()
 	if project == nil {
-		return conn.Notify(ctx, "shutdown", nil)
+		return nil
 	}
 	fileWatcher := protocol.Registration{
 		ID:     "fileWatcher",
