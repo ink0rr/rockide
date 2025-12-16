@@ -32,6 +32,19 @@ var ClientSound = &JsonHandler{
 				return stores.SoundDefinition.References.Get()
 			},
 		},
+		{
+			Store: stores.EntityId.References,
+			Path: []shared.JsonPath{
+				shared.JsonKey("entity_sounds/entities/*"),
+				shared.JsonKey("interactive_sounds/entity_sounds/entities/*"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.EntityId.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.EntityId.References.Get()
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("entity_sounds/entities/*/variants/key"),

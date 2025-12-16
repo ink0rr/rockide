@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/sliceutil"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
 )
@@ -39,6 +40,17 @@ var WorldgenTemplatePool = &JsonHandler{
 				return stores.WorldgenTemplatePool.References.Get()
 			},
 		},
-		// TODO: Structure references
+		{
+			Path: []shared.JsonPath{shared.JsonValue("minecraft:template_pool/elements/*/element/location")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return sliceutil.Map(stores.StructurePath.Get(), func(s core.Symbol) core.Symbol {
+					s.Value = s.Value[11:]
+					return s
+				})
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
 	},
 }

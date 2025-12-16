@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/ink0rr/rockide/core"
+	"github.com/ink0rr/rockide/internal/jsonc"
 	"github.com/ink0rr/rockide/shared"
 	"github.com/ink0rr/rockide/stores"
+	"golang.org/x/mod/semver"
 )
 
 var Item = &JsonHandler{
@@ -80,6 +83,47 @@ var Item = &JsonHandler{
 			},
 			References: func(ctx *JsonContext) []core.Symbol {
 				return stores.EntityId.References.Get()
+			},
+		},
+		{
+			Store: stores.CooldownCategory.Source,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:cooldown/category")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.CooldownCategory.Source.Get(), stores.CooldownCategory.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
+		{
+			Store: stores.ItemCustomComponent.Source,
+			Path:  []shared.JsonPath{shared.JsonValue("minecraft:item/components/minecraft:custom_components/*")},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.ItemCustomComponent.Source.Get(), stores.ItemCustomComponent.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
+			},
+		},
+		{
+			Store: stores.ItemCustomComponent.Source,
+			Path:  []shared.JsonPath{shared.JsonKey("minecraft:item/components/*")},
+			Matcher: func(ctx *JsonContext) bool {
+				root := ctx.GetRootNode()
+				formatNode := jsonc.FindNodeAtLocation(root, jsonc.Path{"format_version"})
+				if formatNode != nil {
+					if version, ok := formatNode.Value.(string); ok {
+						match := !strings.HasPrefix(ctx.NodeValue, "minecraft:")
+						return semver.Compare("v"+version, "v1.21.80") > 0 && match
+					}
+				}
+				return false
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return slices.Concat(stores.ItemCustomComponent.Source.Get(), stores.ItemCustomComponent.References.Get())
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return nil
 			},
 		},
 	},
