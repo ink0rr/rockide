@@ -32,8 +32,9 @@ func (p *Parser) Parse() *Node {
 			entry.End = last.End
 			root.children = append(root.children, entry)
 			entry = &Node{
-				Kind:   NodeEntry,
-				parent: root,
+				Kind:     NodeEntry,
+				parent:   root,
+				children: make([]*Node, 0, 3),
 			}
 		}
 	}

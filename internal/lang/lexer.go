@@ -31,8 +31,7 @@ func (l *Lexer) peek() rune {
 	return l.src[l.i]
 }
 
-func (l *Lexer) hasPrefix(prefix string) bool {
-	runes := []rune(prefix)
+func (l *Lexer) hasPrefix(runes []rune) bool {
 	if l.i+len(runes) > len(l.src) {
 		return false
 	}
@@ -82,11 +81,11 @@ func (l *Lexer) emit(kind TokenKind, startPos Position, text string) Token {
 }
 
 func (l *Lexer) collectWhile(cond func(rune) bool) string {
-	runes := []rune{}
+	start := l.i
 	for !l.eof() && cond(l.peek()) {
-		runes = append(runes, l.advance())
+		l.advance()
 	}
-	return string(runes)
+	return string(l.src[start:l.i])
 }
 
 func (l *Lexer) getFormatCode() string {
@@ -210,7 +209,7 @@ func (l *Lexer) Next() iter.Seq[Token] {
 					})
 				}
 				start := l.pos()
-				if l.hasPrefix("##") {
+				if l.hasPrefix(commentRunes) {
 					comment := l.collectWhile(func(r rune) bool {
 						return r != '\n'
 					})
@@ -249,7 +248,7 @@ func (l *Lexer) Next() iter.Seq[Token] {
 					}
 				default:
 					start := l.pos()
-					if l.hasPrefix(LineBreak) {
+					if l.hasPrefix(lineBreakRunes) {
 						l.advance(len(LineBreak))
 						if !yield(l.emit(TokenLineBreak, start, LineBreak)) {
 							return
@@ -271,7 +270,7 @@ func (l *Lexer) Next() iter.Seq[Token] {
 						}
 					} else {
 						value := l.collectWhile(func(r rune) bool {
-							return r != '\n' && r != '\t' && !l.hasPrefix(LineBreak) && l.getFormatCode() == "" && l.getFormatSpecifier() == "" && l.getEmoji() == ""
+							return r != '\n' && r != '\t' && !l.hasPrefix(lineBreakRunes) && l.getFormatCode() == "" && l.getFormatSpecifier() == "" && l.getEmoji() == ""
 						})
 						if value != "" {
 							if !yield(l.emit(TokenText, start, value)) {
