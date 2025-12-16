@@ -181,3 +181,31 @@ var Emojis = []string{
 	":_input_key.flyDownSlow:",
 	":_input_key.mobeffectsandinteractwithtoast:",
 }
+
+type emojiTrie struct {
+	next  map[rune]*emojiTrie
+	emoji bool
+}
+
+var emojiRoot = &emojiTrie{
+	next: make(map[rune]*emojiTrie),
+}
+
+func addEmoji(s string) {
+	n := emojiRoot
+	for _, r := range s {
+		if n.next[r] == nil {
+			n.next[r] = &emojiTrie{
+				next: make(map[rune]*emojiTrie),
+			}
+		}
+		n = n.next[r]
+	}
+	n.emoji = true
+}
+
+func init() {
+	for _, emoji := range Emojis {
+		addEmoji(emoji)
+	}
+}

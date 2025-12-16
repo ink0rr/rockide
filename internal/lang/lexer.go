@@ -144,32 +144,18 @@ func (l *Lexer) getFormatSpecifier() string {
 }
 
 func (l *Lexer) getEmoji() string {
-	if l.peek() == ':' {
-		i := 1
-		emojis := make([]string, len(Emojis))
-		copy(emojis, Emojis)
-		for {
-			if l.i+i >= len(l.src) || len(emojis) == 0 {
-				return ""
-			}
-			j := 0
-			r := l.src[l.i+i]
-			for {
-				if j >= len(emojis) {
-					break
-				}
-				emoji := emojis[j]
-				runes := []rune(emoji)
-				if i >= len(runes) || runes[i] != r {
-					emojis = append(emojis[:j], emojis[j+1:]...)
-					continue
-				}
-				if runes[i] == r && i == len(runes)-1 {
-					return emoji
-				}
-				j++
-			}
-			i++
+	n := emojiRoot
+	i := l.i
+	for i < len(l.src) {
+		r := l.src[i]
+		next := n.next[r]
+		if next == nil {
+			return ""
+		}
+		n = next
+		i++
+		if n.emoji {
+			return string(l.src[l.i:i])
 		}
 	}
 	return ""
