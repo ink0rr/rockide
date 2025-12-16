@@ -126,6 +126,19 @@ var Item = &JsonHandler{
 				return nil
 			},
 		},
+		{
+			Store: stores.Lang.References,
+			Path: []shared.JsonPath{
+				shared.JsonValue("minecraft:item/components/minecraft:display_name"),
+				shared.JsonValue("minecraft:item/components/minecraft:display_name/value"),
+			},
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.Lang.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.Lang.References.Get()
+			},
+		},
 	},
 	MolangLocations: []shared.JsonPath{
 		shared.JsonValue("minecraft:item/components/**/condition"),

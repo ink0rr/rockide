@@ -82,6 +82,10 @@ func (d *TextDocument) GetText() string {
 	return string(d.content)
 }
 
+func (d *TextDocument) GetContent() []rune {
+	return d.content
+}
+
 func (d *TextDocument) CreateVirtualDocument(ranges ...protocol.Range) *TextDocument {
 	textLength := uint32(len(d.content))
 	result := make([]rune, textLength)

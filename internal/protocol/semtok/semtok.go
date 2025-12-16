@@ -50,6 +50,36 @@ const (
 	// TokProperty   TokenType = "property"
 	// TokRegexp     TokenType = "regexp"
 	// TokStruct     TokenType = "struct"
+	// Minecraft Lang color types
+	TokColorDefault             Type = "colorDefault"
+	TokColorGreen               Type = "colorGreen"
+	TokColorAqua                Type = "colorAqua"
+	TokColorRed                 Type = "colorRed"
+	TokColorLightPurple         Type = "colorLightPurple"
+	TokColorYellow              Type = "colorYellow"
+	TokColorWhite               Type = "colorWhite"
+	TokColorMinecoinGold        Type = "colorMinecoinGold"
+	TokColorMaterialQuartz      Type = "colorMaterialQuartz"
+	TokColorMaterialIron        Type = "colorMaterialIron"
+	TokColorMaterialNetherite   Type = "colorMaterialNetherite"
+	TokColorMaterialRedstone    Type = "colorMaterialRedstone"
+	TokColorMaterialCopper      Type = "colorMaterialCopper"
+	TokColorMaterialGold        Type = "colorMaterialGold"
+	TokColorMaterialEmerald     Type = "colorMaterialEmerald"
+	TokColorMaterialDiamond     Type = "colorDiamond"
+	TokColorMaterialLapisLazuli Type = "colorLapisLazuli"
+	TokColorMaterialAmethyst    Type = "colorMaterialAmethyst"
+	TokColorMaterialResin       Type = "colorMaterialResin"
+	TokColorBlack               Type = "colorBlack"
+	TokColorDarkBlue            Type = "colorDarkBlue"
+	TokColorDarkGreen           Type = "colorDarkGreen"
+	TokColorDarkAqua            Type = "colorDarkAqua"
+	TokColorDarkRed             Type = "colorDarkRed"
+	TokColorDarkPurple          Type = "colorDarkPurple"
+	TokColorGold                Type = "colorGold"
+	TokColorGray                Type = "colorGray"
+	TokColorDarkGray            Type = "colorDarkGray"
+	TokColorBlue                Type = "colorBlue"
 )
 
 // TokenTypes is a slice of types gopls will return as its server capabilities.
@@ -69,6 +99,36 @@ var TokenTypes = []Type{
 	TokNumber,
 	TokOperator,
 	TokLabel,
+	// Minecraft Lang color types
+	TokColorDefault,
+	TokColorGreen,
+	TokColorAqua,
+	TokColorRed,
+	TokColorLightPurple,
+	TokColorYellow,
+	TokColorWhite,
+	TokColorMinecoinGold,
+	TokColorMaterialQuartz,
+	TokColorMaterialIron,
+	TokColorMaterialNetherite,
+	TokColorMaterialRedstone,
+	TokColorMaterialCopper,
+	TokColorMaterialGold,
+	TokColorMaterialEmerald,
+	TokColorMaterialDiamond,
+	TokColorMaterialLapisLazuli,
+	TokColorMaterialAmethyst,
+	TokColorMaterialResin,
+	TokColorBlack,
+	TokColorDarkBlue,
+	TokColorDarkGreen,
+	TokColorDarkAqua,
+	TokColorDarkRed,
+	TokColorDarkPurple,
+	TokColorGold,
+	TokColorGray,
+	TokColorDarkGray,
+	TokColorBlue,
 }
 
 type Modifier string
@@ -112,6 +172,10 @@ const (
 	ModSlice     Modifier = "slice"
 	ModString    Modifier = "string"
 	ModStruct    Modifier = "struct"
+	// Minecraft Lang formatting codes
+	ModObfuscated Modifier = "obfuscated"
+	ModBold       Modifier = "bold"
+	ModItalic     Modifier = "italic"
 )
 
 // TokenModifiers is a slice of modifiers gopls will return as its server
@@ -134,6 +198,10 @@ var TokenModifiers = []Modifier{
 	ModSlice,
 	ModString,
 	ModStruct,
+	// Minecraft Lang formatting codes
+	ModObfuscated,
+	ModBold,
+	ModItalic,
 }
 
 // Encode returns the LSP encoding of a sequence of tokens.
