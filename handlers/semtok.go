@@ -14,6 +14,7 @@ var tokenType = map[semtok.Type]bool{
 	semtok.TokKeyword:                  true,
 	semtok.TokOperator:                 true,
 	semtok.TokEnumMember:               true,
+	semtok.TokColorDefault:             true,
 	semtok.TokColorGreen:               true,
 	semtok.TokColorAqua:                true,
 	semtok.TokColorRed:                 true,
