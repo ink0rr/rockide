@@ -70,12 +70,40 @@ func (l *LangHandler) Completions(document *textdocument.TextDocument, position 
 	parser := lang.NewParser(content)
 	root := parser.Parse()
 	node := lang.NodeAt(root, position)
-	if node == nil || (node.Kind != lang.NodeKey && node.Kind != lang.NodeFile) {
+	if node == nil {
 		return nil
 	}
 	editRange := protocol.Range{
 		Start: position,
 		End:   position,
+	}
+	if parent := node.Parent(); parent != nil && parent.Kind == lang.NodeValue {
+		offset := document.OffsetAt(position)
+		if offset > 0 {
+			if prev := content[offset-1]; prev == lang.SectionSign || prev == ' ' {
+				if prev == lang.SectionSign {
+					editRange.Start.Character -= 1
+				}
+				res := []protocol.CompletionItem{}
+				for r, item := range lang.FormatCodes {
+					value := "§" + string(r)
+					res = append(res, protocol.CompletionItem{
+						Label: value + " - " + item.Description,
+						TextEdit: &protocol.Or_CompletionItem_textEdit{
+							Value: protocol.TextEdit{
+								NewText: value,
+								Range:   editRange,
+							},
+						},
+					})
+				}
+				return res
+			}
+		}
+	}
+
+	if node.Kind != lang.NodeKey && node.Kind != lang.NodeFile {
+		return nil
 	}
 	if node.Kind == lang.NodeKey {
 		editRange.Start = document.PositionAt(node.Offset)
