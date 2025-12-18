@@ -198,8 +198,10 @@ var Block = &JsonHandler{
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:block/components/minecraft:display_name"),
 				shared.JsonValue("minecraft:block/components/minecraft:display_name/value"),
+				shared.JsonValue("minecraft:block/components/minecraft:crafting_table/table_name"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:display_name"),
 				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:display_name/value"),
+				shared.JsonValue("minecraft:block/permutations/*/components/minecraft:crafting_table/table_name"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.Lang.Source.Get()
