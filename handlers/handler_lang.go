@@ -146,7 +146,7 @@ func (l *LangHandler) Completions(document *textdocument.TextDocument, position 
 	for _, item := range stores.ItemId.Source.Get("block") {
 		if !uriSet.ContainsOne(item.URI) {
 			uriSet.Add(item.URI)
-			add("tile." + item.Value)
+			add("tile." + item.Value + ".name")
 		}
 	}
 	for _, item := range stores.ItemId.Source.Get() {
