@@ -131,6 +131,7 @@ var Item = &JsonHandler{
 			Path: []shared.JsonPath{
 				shared.JsonValue("minecraft:item/components/minecraft:display_name"),
 				shared.JsonValue("minecraft:item/components/minecraft:display_name/value"),
+				shared.JsonValue("minecraft:item/components/minecraft:interact_button"),
 			},
 			Source: func(ctx *JsonContext) []core.Symbol {
 				return stores.Lang.Source.Get()
