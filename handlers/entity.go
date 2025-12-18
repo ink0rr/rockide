@@ -719,6 +719,27 @@ var Entity = &JsonHandler{
 				return stores.BiomeId.References.Get()
 			},
 		},
+		{
+			Store: stores.Lang.References,
+			Path: sliceutil.FlatMap([]string{
+				"minecraft:equippable/slots/*/interact_text",
+				"minecraft:interact/interactions/interact_text",
+				"minecraft:interact/interactions/*/interact_text",
+				"minecraft:is_dyeable/interact_text",
+				"minecraft:rideable/interact_text",
+			}, func(value string) []shared.JsonPath {
+				return []shared.JsonPath{
+					shared.JsonValue("minecraft:entity/components/" + value),
+					shared.JsonValue("minecraft:entity/component_groups/*/" + value),
+				}
+			}),
+			Source: func(ctx *JsonContext) []core.Symbol {
+				return stores.Lang.Source.Get()
+			},
+			References: func(ctx *JsonContext) []core.Symbol {
+				return stores.Lang.References.Get()
+			},
+		},
 	},
 	MolangLocations: slices.Concat(
 		[]shared.JsonPath{
