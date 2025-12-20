@@ -46,7 +46,7 @@ func Initialize(ctx context.Context, conn *jsonrpc2.Conn, params *protocol.Initi
 			SemanticTokensProvider: protocol.SemanticTokensOptions{
 				Legend: protocol.SemanticTokensLegend{
 					TokenTypes:     semtok.TokenTypes,
-					TokenModifiers: []semtok.Modifier{},
+					TokenModifiers: semtok.TokenModifiers,
 				},
 				Full: &protocol.Or_SemanticTokensOptions_full{Value: true},
 			},
